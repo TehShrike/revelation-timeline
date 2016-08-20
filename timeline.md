@@ -1,0 +1,96 @@
+- Crucifixion
+	- H: Ab 14, 4030
+	- S: Xanthicus 14, 341
+	- G: April 4, 30
+	- Josephus
+	- Day: -14731
+	- AMD: 1471937
+	- R:
+- Resurrection
+	- H: Ab 16, 4030
+	- S: Xanthicus 16, 341
+	- G: April 6, 30
+	- Josephus
+	- Day: -14729
+	- AMD: 1471939
+	- R:
+- Ascension
+	- H: Iyar 24, 4030
+	- S: Xanthicus 24, 341
+	- G: May 14, 30
+	- Josephus
+	- Day: -14689
+	- AMD: 1471977
+	- R: Revelation 4-5
+- Seventh Seal
+	- H: Sivan 7, 4066
+	- S: Daisios 7, 377
+	- G: May 18, 66
+	- Josephus War 6:299
+	- Day: -1538
+	- AMD: 1485130
+	- R: Revelation 4-5
+- First Trumpet
+	- H: Tishri 1, 4066
+	- S: Hyperberataios 1, 377
+	- G: September 8, 66
+	- Josephus
+	- Day: -1426
+	- AMD: 1485242
+	- R: Revelation 8:7
+- Second Trumpet
+	- H: Tishri 15, 4066
+	- S: Hyperberataios 15, 377
+	- G: Sept 22, 66
+	- Josephus War 2:515
+	- Day: -1412
+	- AMD: 1484256
+	- R: Revelation 8:8-9
+- Third Trumpet
+	- H: Tishri 22, 4066
+	- S: Hyperberataios 22, 377
+	- G: September 28, 66
+	- Josephus War
+	- Day: -1405
+	- AMD: 1485263
+	- R: Revelation 8:10-11
+- Fourth Trumpet - Cestius defeated
+	- H: Heshvan 9, 4066
+	- S: Dios 9, 377
+	- G: October 15, 66
+	- Josephus War 2:555
+	- Day: -1388
+	- AMD: 1485280
+	- R: Revelation 8:12-13
+- Nero orders Vespasian and Titus to invade Israel
+	- H: Heshvan 24, 4070
+	- S: Dius 24, 377
+	- G: October 31, 66
+	- Josephus War
+	- Day: -1373
+	- AMD: 1485295
+	- R: Revelation 9:1
+- Five months lull in killing
+	- H: Heshvan 24, 4070 - Vedar 25, 4066
+	- S: Dius 24, 377 - Dystos II 25, 377
+	- G: October 31, 66 - March 28, 67
+	- Josephus War
+	- Day: 1373 - 1224
+	- AMD: 1485295 - 1485444
+	- R: Revelation 9:5,10
+- Temple burned
+	- H: Ab 9, 4070
+	- S: Loos 9, 381
+	- G: August 4, 70
+	- Josephus War 6:250
+	- Day: 0
+	- AMD: 1486668
+	- R:
+- Masada fell
+	- H: Nisan 15, 4074
+	- S: Xanthicus 15, 385
+	- G: March 30, 74
+	- Josephus
+	- Day: 1335
+	- AMD: 1488003
+	- R: Daniel 12:12
