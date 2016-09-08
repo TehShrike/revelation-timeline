@@ -1,0 +1,20 @@
+body {
+	background-color: #efefef;
+	font-family: sans-serif;
+}
+#container {
+	display: flex;
+	background-color: #F3F3F3;
+	border-radius: 25px;
+	margin: 20px auto;
+	max-width: 900px;
+	padding: 20px 50px;
+}
+
+td {
+	padding: 5px 10px;
+}
+
+hr {
+	border: 1px solid #E5E5E5;
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Revelation Timeline</title>
+		<link rel="stylesheet" href="style.css">
+		<meta charset="utf-8" />
+	</head>
+	<body>
+		<div id="container">
+			<div>
+				<h1>
+					Revelation timeline
+				</h1>
+				<h3>
+					By Phillip Kayser
+				</h3>
+				<hr>
+
+				<div id="timeline">
+				</div>
+			</div>
+		</div>
+
+		<script id='body' type='text/html'>
+			<table>
+				<tbody>
+					{{#events}}
+						<tr>
+							<td>{{hebrew}}</td>
+							<td>{{gregorian}}</td>
+							<td>
+								{{#start}}START{{/start}}{{#end}}END{{/end}}
+								<strong>{{title}}</strong>
+								{{#sermon}}
+									({{sermon}})
+								{{/sermon}}
+							</td>
+						</tr>
+					{{/}}
+				</tbody>
+			</table>
+		</script>
+	</body>
+
+
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/ractive/0.7.3/ractive.min.js"></script>
+	<script src="timeline-data.js"></script>
+	<script>
+		function splitUpRangesIntoTwoEvents(timelineData) {
+			const dateFields = ['hebrew', 'macedonian', 'gregorian', 'day', 'amd']
+			const endingEvents = []
+			const startingDates = timelineData.map(event => {
+				function eventWithoutDates() {
+					return {
+						sermon: event.sermon,
+						title: event.title
+					}
+				}
+
+				const newEvent = eventWithoutDates()
+				let endingEvent = null
+
+				function setEndEvent(fieldName, endDate) {
+					if (!endingEvent) {
+						endingEvent = eventWithoutDates()
+						endingEvent.end = true
+						newEvent.start = true
+					}
+					endingEvent[fieldName] = endDate
+				}
+
+				dateFields.filter(fieldName => event[fieldName].start !== event[fieldName].end)
+					.forEach(fieldName => setEndEvent(fieldName, event[fieldName].end))
+
+				dateFields.forEach(fieldName => newEvent[fieldName] = event[fieldName].start)
+
+				if (endingEvent) {
+					endingEvents.push(endingEvent)
+				}
+
+				return newEvent
+			})
+			return startingDates.concat(endingEvents).sort((a, b) => a.amd - b.amd)
+		}
+		new Ractive({
+			el: '#timeline',
+			template: '#body',
+			data: {
+				events: splitUpRangesIntoTwoEvents(window.timelineData)
+			},
+			oninit: function() {
+				var r = this
+			}
+		})
+	</script>
+</html>
