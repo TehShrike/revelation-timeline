@@ -18,3 +18,15 @@ td {
 hr {
 	border: 1px solid #E5E5E5;
 }
+
+@media (max-width: 600px) {
+	#container {
+		margin: 1px;
+		padding: 5px 2px;
+	}
+
+	td {
+		padding: 10px 2px;
+	}
+}
+
