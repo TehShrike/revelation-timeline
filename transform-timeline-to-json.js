@@ -24,7 +24,7 @@ const structure = matches(markdown).map(({ title, properties }) => {
 	return newEvent
 })
 
-fs.writeFileSync('./timeline-data.js', `window.timelineData = ${JSON.stringify(structure)}`)
+fs.writeFileSync('./timeline-data.js', `module.exports = ${JSON.stringify(structure)}`)
 
 function parseRange(str) {
 	const match = /^(-?[^\-]+) *- *([^\-]+)/.exec(str)
