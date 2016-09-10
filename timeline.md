@@ -44,7 +44,7 @@
 	- G: Sept 22, 66
 	- Josephus War 2:515
 	- Day: -1412
-	- AMD: 1484256
+	- AMD: 1485256
 	- R: Revelation 8:8-9
 - Third Trumpet
 	- H: Tishri 22, 4066
