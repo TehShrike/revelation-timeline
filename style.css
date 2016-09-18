@@ -11,22 +11,44 @@ body {
 	padding: 20px 50px;
 }
 
+table {
+	border-collapse: collapse
+}
+
+tr:nth-child(even) {
+	background-color: #e6e6e6;
+}
+
 td {
 	padding: 5px 10px;
+}
+
+.date-dolumn {
+	white-space: nowrap;
+}
+.two-date-dolumn {
+	display: none;
 }
 
 hr {
 	border: 1px solid #E5E5E5;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+	.single-date-dolumn {
+		display: none;
+	}
+	.two-date-dolumn {
+		display: inherit;
+	}
+
 	#container {
 		margin: 1px;
 		padding: 5px 2px;
 	}
 
 	td {
-		padding: 10px 2px;
+		padding: 15px 2px;
 	}
 }
 

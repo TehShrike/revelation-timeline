@@ -30,10 +30,27 @@
 				<tbody>
 					{{#events}}
 						<tr>
-							<td>{{hebrew}}</td>
-							<td>{{gregorian}}</td>
+							<td class="single-date-dolumn date-dolumn">
+								{{hebrew}}
+							</td>
+							<td class="single-date-dolumn date-dolumn">
+								{{gregorian}}
+							</td>
+							<td class="two-date-dolumn date-dolumn">
+								<div>
+									{{hebrew}}
+								</div>
+								<div>
+									{{gregorian}}
+								</div>
+							</td>
 							<td>
-								{{#start}}START{{/start}}{{#end}}END{{/end}}
+								{{#start}}
+									START
+								{{/start}}
+								{{#end}}
+									END
+								{{/end}}
 								<strong>{{title}}</strong>
 								{{#sermon}}
 									({{sermon}})
