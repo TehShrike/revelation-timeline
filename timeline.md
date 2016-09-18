@@ -1,3 +1,10 @@
+- Burning of temple by Nebuchadnezzar
+	- H: Ab 9, 3413
+	- S: NA
+	- G: August 1, 588 BC
+	- Josephus Wars 6.250
+	- Day: -239966
+	- AMD: 1246702
 - Crucifixion
 	- H: Ab 14, 4030
 	- S: Xanthicus 14, 341
@@ -30,6 +37,27 @@
 	- Day: -1538
 	- AMD: 1485130
 	- R: Revelation 4-5
+- Seventh Seal
+	- H: Sivan 6, 4066
+	- S: Daisios 6, 377
+	- G: May 18, 66
+	- Josephus War 6.299
+	- Day: -1538
+	- AMD: 1485130
+- Ending sacrifice to Caesar and any foreigners?????
+	- H: Tammuz 17, 4066
+	- S: Panemos 17, 377
+	- G: June 27, 66
+	- Josephus War 2.408-410
+	- Day: -1498
+	- AMD: 1485170
+- Romans evacuated from Jerusalem
+	- H: Ellul 6
+	- S: Gorpiaios 6, 377
+	- G: August 26, 66
+	- Josephus War 2.449-456
+	- Day: -1439
+	- AMD: 1485229
 - First Trumpet
 	- H: Tishri 1, 4066
 	- S: Hyperberataios 1, 377
@@ -71,21 +99,63 @@
 	- AMD: 1485295
 	- R: Revelation 9:1
 - Five months lull in killing
-	- H: Heshvan 24, 4070 - Vedar 25, 4066
+	- H: Heshvan 24, 4066 - Vedar 25, 4067
 	- S: Dius 24, 377 - Dystos II 25, 377
 	- G: October 31, 66 - March 28, 67
 	- Josephus War
-	- Day: 1373 - 1224
+	- Day: -1373 to -1224
 	- AMD: 1485295 - 1485444
 	- R: Revelation 9:5,10
+- Jewish preparations for defence of temple and city start in earnest
+	- H: Adar 19, 4067
+	- S: Dystos 19, 378
+	- G: February 20, 67
+	- Josephus War
+	- Day: -1260
+	- AMD: 1485408
+- Jerusalem surrounded by Titus/Vespasian armies
+	- H: Ab 14, 4070
+	- S: Xanthicus 14, 381
+	- G: April 12, 70
+	- Josephus War: 5:99
+	- Day: -113
+	- AMD: 1486555
+- Even the unlawful sacrifices now end in temple
+	- H: Tammuz 17, 4070
+	- S: Panemus 17, 381
+	- G: July 13, 70
+	- Josephus War: 6.94
+	- Day: -22
+	- AMD: 1486646
 - Temple burned
 	- H: Ab 9, 4070
 	- S: Loos 9, 381
-	- G: August 4, 70
-	- Josephus War 6:250
+	- G: August 3, 70
+	- Josephus War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
 	- Day: 0
 	- AMD: 1486668
 	- R:
+- Jerusalem completely defeated
+	- H: Elul 8, 4070
+	- S: Gorpiaios 8, 381
+	- G: September 1, 70
+	- Josephus War 6:407
+	- Day: 28
+	- AMD: 1486696
+- Romans stamp out all resistance in Israel (other than Masada)
+	- H: Tebeth 29, 4074
+	- S: Audynios 29, 385
+	- G: January 15, 74
+	- Josephus War Book 7
+	- Day: 1260
+	- AMD: 1487928
+- Romans finish their atrocities against Jews throughout empire
+	- H: Shebat 30, 4074
+	- S: Peritios 30, 385
+	- G: February 15, 74
+	- Josephus
+	- Day: 1290
+	- AMD: 1487959
 - Masada fell
 	- H: Nisan 15, 4074
 	- S: Xanthicus 15, 385
