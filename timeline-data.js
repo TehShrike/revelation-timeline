@@ -81,26 +81,106 @@ module.exports = [
 		"sermon": "Revelation 4-5"
 	},
 	{
-		"title": "Seventh Seal",
+		"title": "First Seal - Tiberius",
 		"hebrew": {
-			"start": "Sivan 7, 4066",
-			"end": "Sivan 7, 4066"
+			"start": "4030",
+			"end": "4037"
 		},
-		"macedonian": "Daisios 7, 377",
+		"macedonian": "341-348",
 		"gregorian": {
-			"start": "May 18, 66",
-			"end": "May 18, 66"
-		},
-		"josephus war 6": "299",
-		"day": {
-			"start": "-1538",
-			"end": "-1538"
+			"start": "April 22, 30 ",
+			"end": "March 16, 37"
 		},
 		"amd": {
-			"start": 1485130,
-			"end": 1485130
+			"start": 1471955,
+			"end": 1474475
 		},
-		"sermon": "Revelation 4-5"
+		"sermon": "Revelation 6:1-2"
+	},
+	{
+		"title": "Second Seal - Caligula",
+		"hebrew": {
+			"start": "4037 ",
+			"end": "4040"
+		},
+		"macedonian": "348-351",
+		"gregorian": {
+			"start": "March 16, 37 ",
+			"end": "January 24, 41"
+		},
+		"amd": {
+			"start": 1474475,
+			"end": 1475885
+		},
+		"sermon": "Revelation 6:3-4"
+	},
+	{
+		"title": "Third Seal - Claudius",
+		"hebrew": {
+			"start": "4040",
+			"end": "4054"
+		},
+		"macedonian": "351-365",
+		"gregorian": {
+			"start": "January 24, 41 ",
+			"end": "October 13, 54"
+		},
+		"amd": {
+			"start": 1475885,
+			"end": 1480895
+		},
+		"sermon": "Revelation 6:5-6"
+	},
+	{
+		"title": "Fourth Seal - Nero early years",
+		"hebrew": {
+			"start": "4054",
+			"end": "4061"
+		},
+		"macedonian": "365-372",
+		"gregorian": {
+			"start": "October 13, 54 ",
+			"end": "early 66"
+		},
+		"amd": {
+			"start": 1480895,
+			"end": null
+		},
+		"sermon": "Revelation 6:7-8"
+	},
+	{
+		"title": "Fifth Seal",
+		"hebrew": {
+			"start": "4061",
+			"end": "4066"
+		},
+		"macedonian": "372-377",
+		"gregorian": {
+			"start": "62",
+			"end": "66"
+		},
+		"amd": {
+			"start": null,
+			"end": 1485114
+		},
+		"sermon": "Revelation 6:9-11"
+	},
+	{
+		"title": "Sixth Seal",
+		"hebrew": {
+			"start": "4066",
+			"end": "4066"
+		},
+		"macedonian": "377",
+		"gregorian": {
+			"start": "May 2, 66",
+			"end": "May 2, 66"
+		},
+		"amd": {
+			"start": 1485114,
+			"end": 1485129
+		},
+		"sermon": "Revelation 6:1-2; Rev 12:7-12"
 	},
 	{
 		"title": "Seventh Seal",
@@ -118,9 +198,10 @@ module.exports = [
 			"end": "-1538"
 		},
 		"amd": {
-			"start": 1485130,
-			"end": 1485130
-		}
+			"start": 1485129,
+			"end": 1485129
+		},
+		"sermon": "Revelation 8:1-6; 16:1"
 	},
 	{
 		"title": "Ending sacrifice to Caesar and any foreigners?????",
@@ -249,7 +330,7 @@ module.exports = [
 		"sermon": "Revelation 8:12-13"
 	},
 	{
-		"title": "Nero orders Vespasian and Titus to invade Israel",
+		"title": "Fifth Trumpet - Nero orders Vespasian and Titus to invade Israel",
 		"hebrew": {
 			"start": "Heshvan 24, 4070",
 			"end": "Heshvan 24, 4070"
@@ -311,6 +392,65 @@ module.exports = [
 		}
 	},
 	{
+		"title": "Nero dies - Rome dies with him",
+		"hebrew": {
+			"start": "Sivan 22, 4068",
+			"end": "Sivan 22, 4068"
+		},
+		"macedonian": "Daisios 22, 379",
+		"gregorian": {
+			"start": "June 9, 68",
+			"end": "June 9, 68"
+		},
+		"amd": {
+			"start": -785,
+			"end": -785
+		},
+		"sermon": "REvelation 13:3"
+	},
+	{
+		"title": "Vespasian proclaimed emperor by armies of Egypt and Judea",
+		"hebrew": {
+			"start": "Tammuz 24, 4069",
+			"end": "Tammuz 24, 4069"
+		},
+		"macedonian": "Panemos 24, 380",
+		"gregorian": {
+			"start": "July 1, 69",
+			"end": "July 1, 69"
+		},
+		"day": {
+			"start": "-399",
+			"end": "-399"
+		},
+		"amd": {
+			"start": 1486269,
+			"end": 1486269
+		},
+		"sermon": "Revelation 17:8-10"
+	},
+	{
+		"title": "Vespasian crowned emperor - beast comes back to life",
+		"hebrew": {
+			"start": "Tebeth 20, 4069",
+			"end": "Tebeth 20, 4069"
+		},
+		"macedonian": "Audynios 20, 380",
+		"gregorian": {
+			"start": "December 21, 69",
+			"end": "December 21, 69"
+		},
+		"day": {
+			"start": "-225",
+			"end": "-225"
+		},
+		"amd": {
+			"start": 1486443,
+			"end": 1486443
+		},
+		"sermon": "Revelation 13:3"
+	},
+	{
 		"title": "Jerusalem surrounded by Titus/Vespasian armies",
 		"hebrew": {
 			"start": "Ab 14, 4070",
@@ -329,6 +469,170 @@ module.exports = [
 		"amd": {
 			"start": 1486555,
 			"end": 1486555
+		}
+	},
+	{
+		"title": "First three and a half years of the war of Titus the prince",
+		"hebrew": {
+			"start": "Adar 19, 4067 ",
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": "Dystos 19, 378 - Loos 9, 381 SE",
+		"gregorian": {
+			"start": "February 20, 67 ",
+			"end": "August 3, 70"
+		},
+		"day": {
+			"start": "-1260 ",
+			"end": "0"
+		},
+		"amd": {
+			"start": 1485408,
+			"end": 1486668
+		},
+		"sermon": "Revelation 11:1,3-14"
+	},
+	{
+		"title": "Second three and a half years of the war of Titus the prince",
+		"hebrew": {
+			"start": "Ab 9, 4070 ",
+			"end": "Tebeth 29, 4073"
+		},
+		"macedonian": "Loos 9, 381 SE - Audynios 29, 384",
+		"gregorian": {
+			"start": "August 3, 70 ",
+			"end": "January 15, 74"
+		},
+		"day": {
+			"start": "0 ",
+			"end": "1260"
+		},
+		"amd": {
+			"start": 1486668,
+			"end": 1487929
+		},
+		"sermon": "Revelation 11:2; 18:1-24"
+	},
+	{
+		"title": "Third wall of Jerusalem breached by Titus' battering rams",
+		"hebrew": {
+			"start": "Iyar 7, 4070",
+			"end": "Iyar 7, 4070"
+		},
+		"macedonian": "Artemisios 7, 381",
+		"gregorian": {
+			"start": "May 5, 70",
+			"end": "May 5, 70"
+		},
+		"josephus war": "War 5.300-302",
+		"day": {
+			"start": "-91",
+			"end": "-91"
+		},
+		"amd": {
+			"start": 1486577,
+			"end": 1486577
+		}
+	},
+	{
+		"title": "Second wall of Jerusalem breached by Titus' battering rams, but Romans ambushed, barely escaping. Many soldiers wounded.",
+		"hebrew": {
+			"start": "Iyar 12, 4070",
+			"end": "Iyar 12, 4070"
+		},
+		"macedonian": "Artemisios 12, 381",
+		"gregorian": {
+			"start": "May 10, 70",
+			"end": "May 10, 70"
+		},
+		"josephus war": "War 5.331-347",
+		"day": {
+			"start": "-86",
+			"end": "-86"
+		},
+		"amd": {
+			"start": 1486582,
+			"end": 1486582
+		}
+	},
+	{
+		"title": "Titus builds earthworks against Antonia Fortress & in northern city",
+		"hebrew": {
+			"start": "Iyar 20, 4070",
+			"end": "Iyar 20, 4070"
+		},
+		"macedonian": "Artemisios 20, 381",
+		"gregorian": {
+			"start": "May 18, 70",
+			"end": "May 18, 70"
+		},
+		"josephus war": "War 5.347-348",
+		"day": {
+			"start": "-78",
+			"end": "-78"
+		}
+	},
+	{
+		"title": "John undermines Antonia earthworks built by Titus and burns them",
+		"hebrew": {
+			"start": "Iyar 29, 4070",
+			"end": "Iyar 29, 4070"
+		},
+		"macedonian": "Artemisios 29, 381",
+		"gregorian": {
+			"start": "May 27, 70",
+			"end": "May 27, 70"
+		},
+		"josephus war": "War 5.466-490; 5.522-526",
+		"day": {
+			"start": "-69",
+			"end": "-69"
+		},
+		"amd": {
+			"start": 1486599,
+			"end": 1486599
+		}
+	},
+	{
+		"title": "Titus finally finishes Antonia earthworks",
+		"hebrew": {
+			"start": "Tammuz 1, 4070",
+			"end": "Tammuz 1, 4070"
+		},
+		"macedonian": "Panemos 1, 381",
+		"gregorian": {
+			"start": "June 27, 70",
+			"end": "June 27, 70"
+		},
+		"josephus war": "War 6.1-22",
+		"day": {
+			"start": "-37",
+			"end": "-37"
+		},
+		"amd": {
+			"start": 1486631,
+			"end": 1486631
+		}
+	},
+	{
+		"title": "Antonia Fortress taken by Romans, but they are repulsed from temple",
+		"hebrew": {
+			"start": "Tammuz 5, 4070",
+			"end": "Tammuz 5, 4070"
+		},
+		"macedonian": "Panemos 5, 381",
+		"gregorian": {
+			"start": "July 1, 70",
+			"end": "July 1, 70"
+		},
+		"josephus war": "War 6.54-67",
+		"day": {
+			"start": "-34",
+			"end": "-34"
+		},
+		"amd": {
+			"start": 1486634,
+			"end": 1486634
 		}
 	},
 	{
@@ -353,6 +657,111 @@ module.exports = [
 		}
 	},
 	{
+		"title": "Antonia disconnected from temple by rebels; major setback for Romans",
+		"hebrew": {
+			"start": "Tammuz 24, 4070",
+			"end": "Tammuz 24, 4070"
+		},
+		"macedonian": "Panemos 24, 381",
+		"gregorian": {
+			"start": "July 20",
+			"end": "July 20"
+		},
+		"josephus war": "6.166; 6:311",
+		"day": {
+			"start": "-15",
+			"end": "-15"
+		},
+		"amd": {
+			"start": 1486653,
+			"end": 1486653
+		}
+	},
+	{
+		"title": "Romans burned alive by rebels in west portico ambush",
+		"hebrew": {
+			"start": "Tammuz 27, 4070",
+			"end": "Tammuz 27, 4070"
+		},
+		"macedonian": "Panemos 27, 381",
+		"gregorian": {
+			"start": "July 23, 70",
+			"end": "July 23, 70"
+		},
+		"josephus war": "6.170-190",
+		"day": {
+			"start": "-12",
+			"end": "-12"
+		},
+		"amd": {
+			"start": 1486656,
+			"end": 1486656
+		}
+	},
+	{
+		"title": "Prophets are killed",
+		"hebrew": {
+			"start": "Ab 5, 4070",
+			"end": "Ab 5, 4070"
+		},
+		"macedonian": "Loos 5, 381",
+		"gregorian": {
+			"start": "July 31",
+			"end": "July 31"
+		},
+		"day": {
+			"start": "-4",
+			"end": "-4"
+		},
+		"amd": {
+			"start": 1486664,
+			"end": 1486664
+		},
+		"sermon": "Revelation 11:7-11"
+	},
+	{
+		"title": "Roman battering rams utterly unable to penetrate western wall of Temple. Romans suffer heavy losses seeking to scale walls",
+		"hebrew": {
+			"start": "Ab 8, 4070",
+			"end": "Ab 8, 4070"
+		},
+		"macedonian": "Loos 8, 381",
+		"gregorian": {
+			"start": "August 2",
+			"end": "August 2"
+		},
+		"josephus war": "6.220-228",
+		"day": {
+			"start": "-1",
+			"end": "-1"
+		},
+		"amd": {
+			"start": 1486667,
+			"end": 1486667
+		},
+		"sermon": "Revelation 11:7-11"
+	},
+	{
+		"title": "Romans scale wall in dead of night and capture temple",
+		"hebrew": {
+			"start": "Ab 8, 4070",
+			"end": "Ab 8, 4070"
+		},
+		"macedonian": "Loos 8, 381",
+		"gregorian": {
+			"start": "August 2, 70",
+			"end": "August 2, 70"
+		},
+		"day": {
+			"start": "-1",
+			"end": "-1"
+		},
+		"amd": {
+			"start": 1486667,
+			"end": 1486667
+		}
+	},
+	{
 		"title": "Temple burned",
 		"hebrew": {
 			"start": "Ab 9, 4070",
@@ -363,7 +772,7 @@ module.exports = [
 			"start": "August 3, 70",
 			"end": "August 3, 70"
 		},
-		"josephus war 6": "250 says 10th, but Talmud and Dio Cassius say 9th-10th",
+		"josephus war 6": "250 says 10th, but Talmud and Dio Cassius say 9th-10th; War 6.233-237; 6.265, 271ff, 281-288",
 		"day": {
 			"start": "0",
 			"end": "0"
@@ -371,6 +780,42 @@ module.exports = [
 		"amd": {
 			"start": 1486668,
 			"end": 1486668
+		}
+	},
+	{
+		"title": "Resurrection and events of Rev. 11:11-19",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": "Loos 9, 381",
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "August 3, 70"
+		},
+		"day": {
+			"start": "0",
+			"end": "0"
+		},
+		"amd": {
+			"start": 1486668,
+			"end": 1486668
+		}
+	},
+	{
+		"title": "Titus orders earthworks against Upper City",
+		"hebrew": {
+			"start": "Ab 19, 4070",
+			"end": "Ab 19, 4070"
+		},
+		"macedonian": "Loos 19, 381",
+		"gregorian": {
+			"start": "August 14, 70",
+			"end": "August 14, 70"
+		},
+		"amd": {
+			"start": 1486678,
+			"end": 1486678
 		}
 	},
 	{

@@ -1,4 +1,5 @@
 const fs = require('fs')
+const got = require('got')
 
 const longPropertyNames = {
 	h: 'hebrew',
@@ -9,22 +10,34 @@ const longPropertyNames = {
 
 const datePropertyNames = [ 'h', 'm', 'g', 'day', 'amd' ]
 
-const markdown = fs.readFileSync('./timeline.md', { encoding: 'utf8' })
+async function main() {
+	const { body: markdown } = await got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
+	//fs.readFileSync('./timeline.md', { encoding: 'utf8' })
 
-const structure = matches(markdown).map(({ title, properties }) => {
-	const newEvent = {
-		title
-	}
-	copyAndElongatePropertyNames(properties, newEvent)
+	const structure = matches(markdown).map(({ title, properties }) => {
+		const newEvent = {
+			title
+		}
+		copyAndElongatePropertyNames(properties, newEvent)
 
-	// castToInt(newEvent, 'day')
-	// gotta ignore 'day' until we figure out ranges with negative days
+		// castToInt(newEvent, 'day')
+		// gotta ignore 'day' until we figure out ranges with negative days
 
-	castToInt(newEvent, 'amd')
-	return newEvent
-})
+		castToInt(newEvent, 'amd')
+		return newEvent
+	})
 
-fs.writeFileSync('./timeline-data.js', `module.exports = ${JSON.stringify(structure)}`)
+	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(structure)}`)
+}
+
+main()
+
+
+
+
+function formattedJson(structure) {
+	return JSON.stringify(structure, null, '\t')
+}
 
 function parseRange(str) {
 	const match = /^(-?[^\-]+) *- *([^\-]+)/.exec(str)
@@ -38,7 +51,7 @@ function matches(str) {
 	const output = []
 	while ((match = regex.exec(str)) !== null) {
 		output.push({
-			title: match[1],
+			title: match[1].trim(),
 			properties: turnLinesToObject(parseChildLines(match[2]))
 		})
 	}
@@ -51,7 +64,7 @@ function parseChildLines(str) {
 	const propertiesRegex = /^\t-\s*(.+)$/gm
 	const output = []
 	while ((match = propertiesRegex.exec(str)) !== null) {
-		output.push(match[1])
+		output.push(match[1].trim())
 	}
 	return output
 }
