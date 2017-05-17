@@ -87,15 +87,15 @@ title: "Timeline of Revelation Events"
 	- Day:
 	- AMD: [1483532-1483647] - 1485114
 	- R: Revelation 6:9-11
-- Sixth Seal
-	- H: 4066
+- Sixth Seal - visible appearance of Christ in the sky
+	- H: Iyar 20 4066
 	- S: 377
 	- G: May 2, 66
 	- Josephus War:
-	- Day:
+	- Day: -1554
 	- AMD: 1485114 - 1485129
 	- R: Revelation 6:1-2; Rev 12:7-12
-- Seventh Seal
+- Seventh Seal - silence in heaven
 	- H: Sivan 6, 4066
 	- S: Daisios 6, 377
 	- G: May 18, 66
