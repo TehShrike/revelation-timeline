@@ -20,24 +20,25 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Crucifixion",
+		"title": "Masada fell",
 		"hebrew": {
-			"start": "Ab 14, 4030",
-			"end": "Ab 14, 4030"
+			"start": "Nisan 15, 4074",
+			"end": "Nisan 15, 4074"
 		},
-		"macedonian": "Xanthicus 14, 341",
+		"macedonian": "Xanthicus 15, 385",
 		"gregorian": {
-			"start": "April 4, 30",
-			"end": "April 4, 30"
+			"start": "March 30, 74",
+			"end": "March 30, 74"
 		},
 		"day": {
-			"start": "-14731",
-			"end": "-14731"
+			"start": "1335",
+			"end": "1335"
 		},
 		"amd": {
-			"start": 1471937,
-			"end": 1471937
-		}
+			"start": 1488003,
+			"end": 1488003
+		},
+		"reference": "Daniel 12:12"
 	},
 	{
 		"title": "Resurrection",
@@ -78,7 +79,7 @@ module.exports = [
 			"start": 1471977,
 			"end": 1471977
 		},
-		"sermon": "Revelation 4-5"
+		"reference": "Revelation 4-5"
 	},
 	{
 		"title": "First Seal - Tiberius",
@@ -95,7 +96,7 @@ module.exports = [
 			"start": 1471955,
 			"end": 1474475
 		},
-		"sermon": "Revelation 6:1-2"
+		"reference": "Revelation 6:1-2"
 	},
 	{
 		"title": "Second Seal - Caligula",
@@ -112,7 +113,7 @@ module.exports = [
 			"start": 1474475,
 			"end": 1475885
 		},
-		"sermon": "Revelation 6:3-4"
+		"reference": "Revelation 6:3-4"
 	},
 	{
 		"title": "Third Seal - Claudius",
@@ -129,7 +130,7 @@ module.exports = [
 			"start": 1475885,
 			"end": 1480895
 		},
-		"sermon": "Revelation 6:5-6"
+		"reference": "Revelation 6:5-6"
 	},
 	{
 		"title": "Fourth Seal - Nero early years",
@@ -145,8 +146,7 @@ module.exports = [
 		"amd": {
 			"start": 1480895,
 			"end": null
-		},
-		"sermon": "Revelation 6:7-8"
+		}
 	},
 	{
 		"title": "Fifth Seal",
@@ -161,9 +161,9 @@ module.exports = [
 		},
 		"amd": {
 			"start": null,
-			"end": 1485114
+			"end": 1483647
 		},
-		"sermon": "Revelation 6:9-11"
+		"reference": "Revelation 6:9-11"
 	},
 	{
 		"title": "Sixth Seal",
@@ -180,7 +180,7 @@ module.exports = [
 			"start": 1485114,
 			"end": 1485129
 		},
-		"sermon": "Revelation 6:1-2; Rev 12:7-12"
+		"reference": "Revelation 6:1-2; Rev 12:7-12"
 	},
 	{
 		"title": "Seventh Seal",
@@ -201,7 +201,7 @@ module.exports = [
 			"start": 1485129,
 			"end": 1485129
 		},
-		"sermon": "Revelation 8:1-6; 16:1"
+		"reference": "Revelation 8:1-6; 16:1"
 	},
 	{
 		"title": "Ending sacrifice to Caesar and any foreigners?????",
@@ -262,7 +262,7 @@ module.exports = [
 			"start": 1485242,
 			"end": 1485242
 		},
-		"sermon": "Revelation 8:7"
+		"reference": "Revelation 8:7"
 	},
 	{
 		"title": "Second Trumpet",
@@ -284,7 +284,7 @@ module.exports = [
 			"start": 1485256,
 			"end": 1485256
 		},
-		"sermon": "Revelation 8:8-9"
+		"reference": "Revelation 8:8-9"
 	},
 	{
 		"title": "Third Trumpet",
@@ -305,7 +305,7 @@ module.exports = [
 			"start": 1485263,
 			"end": 1485263
 		},
-		"sermon": "Revelation 8:10-11"
+		"reference": "Revelation 8:10-11"
 	},
 	{
 		"title": "Fourth Trumpet - Cestius defeated",
@@ -327,7 +327,7 @@ module.exports = [
 			"start": 1485280,
 			"end": 1485280
 		},
-		"sermon": "Revelation 8:12-13"
+		"reference": "Revelation 8:12-13"
 	},
 	{
 		"title": "Fifth Trumpet - Nero orders Vespasian and Titus to invade Israel",
@@ -348,7 +348,7 @@ module.exports = [
 			"start": 1485295,
 			"end": 1485295
 		},
-		"sermon": "Revelation 9:1"
+		"reference": "Revelation 9:1"
 	},
 	{
 		"title": "Five months lull in killing",
@@ -369,7 +369,7 @@ module.exports = [
 			"start": 1485295,
 			"end": 1485444
 		},
-		"sermon": "Revelation 9:5,10"
+		"reference": "Revelation 9:5,10"
 	},
 	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",
@@ -402,11 +402,15 @@ module.exports = [
 			"start": "June 9, 68",
 			"end": "June 9, 68"
 		},
-		"amd": {
-			"start": -785,
-			"end": -785
+		"day": {
+			"start": "-785",
+			"end": "-785"
 		},
-		"sermon": "REvelation 13:3"
+		"amd": {
+			"start": 1485883,
+			"end": 1485883
+		},
+		"reference": "REvelation 13:3"
 	},
 	{
 		"title": "Vespasian proclaimed emperor by armies of Egypt and Judea",
@@ -427,28 +431,27 @@ module.exports = [
 			"start": 1486269,
 			"end": 1486269
 		},
-		"sermon": "Revelation 17:8-10"
+		"reference": "Revelation 17:8-10"
 	},
 	{
-		"title": "Vespasian crowned emperor - beast comes back to life",
+		"title": "Crucifixion",
 		"hebrew": {
-			"start": "Tebeth 20, 4069",
-			"end": "Tebeth 20, 4069"
+			"start": "Ab 14, 4030",
+			"end": "Ab 14, 4030"
 		},
-		"macedonian": "Audynios 20, 380",
+		"macedonian": "Xanthicus 14, 341",
 		"gregorian": {
-			"start": "December 21, 69",
-			"end": "December 21, 69"
+			"start": "April 4, 30",
+			"end": "April 4, 30"
 		},
 		"day": {
-			"start": "-225",
-			"end": "-225"
+			"start": "-14731",
+			"end": "-14731"
 		},
 		"amd": {
-			"start": 1486443,
-			"end": 1486443
-		},
-		"sermon": "Revelation 13:3"
+			"start": 1471937,
+			"end": 1471937
+		}
 	},
 	{
 		"title": "Jerusalem surrounded by Titus/Vespasian armies",
@@ -490,7 +493,7 @@ module.exports = [
 			"start": 1485408,
 			"end": 1486668
 		},
-		"sermon": "Revelation 11:1,3-14"
+		"reference": "Revelation 11:1,3-14"
 	},
 	{
 		"title": "Second three and a half years of the war of Titus the prince",
@@ -511,7 +514,7 @@ module.exports = [
 			"start": 1486668,
 			"end": 1487929
 		},
-		"sermon": "Revelation 11:2; 18:1-24"
+		"reference": "Revelation 11:2; 18:1-24"
 	},
 	{
 		"title": "Third wall of Jerusalem breached by Titus' battering rams",
@@ -570,6 +573,10 @@ module.exports = [
 		"day": {
 			"start": "-78",
 			"end": "-78"
+		},
+		"amd": {
+			"start": 1486591,
+			"end": 1486591
 		}
 	},
 	{
@@ -717,7 +724,7 @@ module.exports = [
 			"start": 1486664,
 			"end": 1486664
 		},
-		"sermon": "Revelation 11:7-11"
+		"reference": "Revelation 11:7-11"
 	},
 	{
 		"title": "Roman battering rams utterly unable to penetrate western wall of Temple. Romans suffer heavy losses seeking to scale walls",
@@ -739,7 +746,7 @@ module.exports = [
 			"start": 1486667,
 			"end": 1486667
 		},
-		"sermon": "Revelation 11:7-11"
+		"reference": "Revelation 11:7-11"
 	},
 	{
 		"title": "Romans scale wall in dead of night and capture temple",
@@ -880,24 +887,24 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Masada fell",
+		"title": "Vespasian crowned emperor - beast comes back to life",
 		"hebrew": {
-			"start": "Nisan 15, 4074",
-			"end": "Nisan 15, 4074"
+			"start": "Tebeth 20, 4069",
+			"end": "Tebeth 20, 4069"
 		},
-		"macedonian": "Xanthicus 15, 385",
+		"macedonian": "Audynios 20, 380",
 		"gregorian": {
-			"start": "March 30, 74",
-			"end": "March 30, 74"
+			"start": "December 21, 69",
+			"end": "December 21, 69"
 		},
 		"day": {
-			"start": "1335",
-			"end": "1335"
+			"start": "-225",
+			"end": "-225"
 		},
 		"amd": {
-			"start": 1488003,
-			"end": 1488003
+			"start": 1486443,
+			"end": 1486443
 		},
-		"sermon": "Daniel 12:12"
+		"reference": "Revelation 13:3"
 	}
 ]

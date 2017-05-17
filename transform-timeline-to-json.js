@@ -1,17 +1,30 @@
 const fs = require('fs')
 const got = require('got')
+const denodeify = require('then-denodeify')
+const readFile = denodeify(fs.readFile)
 
 const longPropertyNames = {
 	h: 'hebrew',
 	s: 'macedonian',
 	g: 'gregorian',
-	r: 'sermon'
+	r: 'reference'
+}
+
+// if a non-AMD date is empty or NA, ignore it
+// collect all description lines (lines without an opening dash) into a single field/array
+
+
+async function get() {
+	const markdown = await readFile('./demo-input.md', { encoding: 'utf8' })
+	// const { body: markdown } = got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
+
+	return markdown
 }
 
 const datePropertyNames = [ 'h', 'm', 'g', 'day', 'amd' ]
 
 async function main() {
-	const { body: markdown } = await got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
+	const markdown = await get()
 	//fs.readFileSync('./timeline.md', { encoding: 'utf8' })
 
 	const structure = matches(markdown).map(({ title, properties }) => {
@@ -25,6 +38,8 @@ async function main() {
 
 		castToInt(newEvent, 'amd')
 		return newEvent
+	}).sort((itemA, itemB) => {
+		return itemA
 	})
 
 	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(structure)}`)
