@@ -21,25 +21,24 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Masada fell",
+		"title": "Crucifixion",
 		"hebrew": {
-			"start": "Nisan 15, 4074",
-			"end": "Nisan 15, 4074"
+			"start": "Ab 14, 4030",
+			"end": "Ab 14, 4030"
 		},
-		"macedonian": "Xanthicus 15, 385",
+		"macedonian": "Xanthicus 14, 341",
 		"gregorian": {
-			"start": "March 30, 74",
-			"end": "March 30, 74"
+			"start": "April 4, 30",
+			"end": "April 4, 30"
 		},
 		"day": {
-			"start": 1335,
-			"end": 1335
+			"start": -14731,
+			"end": -14731
 		},
 		"amd": {
-			"start": 1488003,
-			"end": 1488003
-		},
-		"reference": "Daniel 12:12"
+			"start": 1471937,
+			"end": 1471937
+		}
 	},
 	{
 		"title": "Resurrection",
@@ -62,6 +61,23 @@ module.exports = [
 		}
 	},
 	{
+		"title": "First Seal - Tiberius",
+		"hebrew": {
+			"start": "4030",
+			"end": "4037"
+		},
+		"macedonian": "341-348",
+		"gregorian": {
+			"start": "April 22, 30",
+			"end": "March 16, 37"
+		},
+		"amd": {
+			"start": 1471955,
+			"end": 1474475
+		},
+		"reference": "Revelation 6:1-2"
+	},
+	{
 		"title": "Ascension",
 		"hebrew": {
 			"start": "Iyar 24, 4030",
@@ -81,23 +97,6 @@ module.exports = [
 			"end": 1471977
 		},
 		"reference": "Revelation 4-5"
-	},
-	{
-		"title": "First Seal - Tiberius",
-		"hebrew": {
-			"start": "4030",
-			"end": "4037"
-		},
-		"macedonian": "341-348",
-		"gregorian": {
-			"start": "April 22, 30",
-			"end": "March 16, 37"
-		},
-		"amd": {
-			"start": 1471955,
-			"end": 1474475
-		},
-		"reference": "Revelation 6:1-2"
 	},
 	{
 		"title": "Second Seal - Caligula",
@@ -401,6 +400,27 @@ module.exports = [
 		}
 	},
 	{
+		"title": "First three and a half years of the war of Titus the prince",
+		"hebrew": {
+			"start": "Adar 19, 4067",
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": "Dystos 19, 378 - Loos 9, 381 SE",
+		"gregorian": {
+			"start": "February 20, 67",
+			"end": "August 3, 70"
+		},
+		"day": {
+			"start": -1260,
+			"end": 0
+		},
+		"amd": {
+			"start": 1485408,
+			"end": 1486668
+		},
+		"reference": "Revelation 11:1, Rev 11:3-14"
+	},
+	{
 		"title": "Nero dies - Rome dies with him",
 		"hebrew": {
 			"start": "Sivan 22, 4068",
@@ -443,24 +463,25 @@ module.exports = [
 		"reference": "Revelation 17:8-10"
 	},
 	{
-		"title": "Crucifixion",
+		"title": "Vespasian crowned emperor - beast comes back to life",
 		"hebrew": {
-			"start": "Ab 14, 4030",
-			"end": "Ab 14, 4030"
+			"start": "Tebeth 20, 4069",
+			"end": "Tebeth 20, 4069"
 		},
-		"macedonian": "Xanthicus 14, 341",
+		"macedonian": "Audynios 20, 380",
 		"gregorian": {
-			"start": "April 4, 30",
-			"end": "April 4, 30"
+			"start": "December 21, 69",
+			"end": "December 21, 69"
 		},
 		"day": {
-			"start": -14731,
-			"end": -14731
+			"start": -225,
+			"end": -225
 		},
 		"amd": {
-			"start": 1471937,
-			"end": 1471937
-		}
+			"start": 1486443,
+			"end": 1486443
+		},
+		"reference": "Revelation 13:3"
 	},
 	{
 		"title": "Jerusalem surrounded by Titus/Vespasian armies",
@@ -482,48 +503,6 @@ module.exports = [
 			"start": 1486555,
 			"end": 1486555
 		}
-	},
-	{
-		"title": "First three and a half years of the war of Titus the prince",
-		"hebrew": {
-			"start": "Adar 19, 4067",
-			"end": "Ab 9, 4070"
-		},
-		"macedonian": "Dystos 19, 378 - Loos 9, 381 SE",
-		"gregorian": {
-			"start": "February 20, 67",
-			"end": "August 3, 70"
-		},
-		"day": {
-			"start": -1260,
-			"end": 0
-		},
-		"amd": {
-			"start": 1485408,
-			"end": 1486668
-		},
-		"reference": "Revelation 11:1, Rev 11:3-14"
-	},
-	{
-		"title": "Second three and a half years of the war of Titus the prince",
-		"hebrew": {
-			"start": "Ab 9, 4070",
-			"end": "Tebeth 29, 4073"
-		},
-		"macedonian": "Loos 9, 381 SE - Audynios 29, 384",
-		"gregorian": {
-			"start": "August 3, 70",
-			"end": "January 15, 74"
-		},
-		"day": {
-			"start": 0,
-			"end": 1260
-		},
-		"amd": {
-			"start": 1486668,
-			"end": 1487929
-		},
-		"reference": "Revelation 11:2; Rev 18:1-24"
 	},
 	{
 		"title": "Third wall of Jerusalem breached by Titus' battering rams",
@@ -778,6 +757,27 @@ module.exports = [
 		}
 	},
 	{
+		"title": "Resurrection and events of Rev. 11:11-19",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": "Loos 9, 381",
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "August 3, 70"
+		},
+		"day": {
+			"start": 0,
+			"end": 0
+		},
+		"amd": {
+			"start": 1486668,
+			"end": 1486668
+		},
+		"reference": "Rev. 11:11-19"
+	},
+	{
 		"title": "Temple burned",
 		"hebrew": {
 			"start": "Ab 9, 4070",
@@ -799,25 +799,25 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Resurrection and events of Rev. 11:11-19",
+		"title": "Second three and a half years of the war of Titus the prince",
 		"hebrew": {
 			"start": "Ab 9, 4070",
-			"end": "Ab 9, 4070"
+			"end": "Tebeth 29, 4073"
 		},
-		"macedonian": "Loos 9, 381",
+		"macedonian": "Loos 9, 381 SE - Audynios 29, 384",
 		"gregorian": {
 			"start": "August 3, 70",
-			"end": "August 3, 70"
+			"end": "January 15, 74"
 		},
 		"day": {
 			"start": 0,
-			"end": 0
+			"end": 1260
 		},
 		"amd": {
 			"start": 1486668,
-			"end": 1486668
+			"end": 1487929
 		},
-		"reference": "Rev. 11:11-19"
+		"reference": "Revelation 11:2; Rev 18:1-24"
 	},
 	{
 		"title": "Titus orders earthworks against Upper City",
@@ -899,24 +899,24 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Vespasian crowned emperor - beast comes back to life",
+		"title": "Masada fell",
 		"hebrew": {
-			"start": "Tebeth 20, 4069",
-			"end": "Tebeth 20, 4069"
+			"start": "Nisan 15, 4074",
+			"end": "Nisan 15, 4074"
 		},
-		"macedonian": "Audynios 20, 380",
+		"macedonian": "Xanthicus 15, 385",
 		"gregorian": {
-			"start": "December 21, 69",
-			"end": "December 21, 69"
+			"start": "March 30, 74",
+			"end": "March 30, 74"
 		},
 		"day": {
-			"start": -225,
-			"end": -225
+			"start": 1335,
+			"end": 1335
 		},
 		"amd": {
-			"start": 1486443,
-			"end": 1486443
+			"start": 1488003,
+			"end": 1488003
 		},
-		"reference": "Revelation 13:3"
+		"reference": "Daniel 12:12"
 	}
 ]

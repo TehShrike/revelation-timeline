@@ -39,8 +39,16 @@ async function main() {
 		copyAndElongatePropertyNames(properties, newEvent)
 
 		return newEvent
+	}).filter(({ title, amd }) => {
+		const hasAmdDay = amd && amd.start !== undefined
+
+		if (!hasAmdDay) {
+			console.log('No AMD date for', title)
+		}
+
+		return hasAmdDay
 	}).sort((itemA, itemB) => {
-		return itemA
+		return itemA.amd.start - itemB.amd.start
 	})
 
 	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(structure)}`)
