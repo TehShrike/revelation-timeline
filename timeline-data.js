@@ -10,9 +10,10 @@ module.exports = [
 			"start": "August 1, 588 BC",
 			"end": "August 1, 588 BC"
 		},
+		"josephus war": "6.250",
 		"day": {
-			"start": "-239966",
-			"end": "-239966"
+			"start": -239966,
+			"end": -239966
 		},
 		"amd": {
 			"start": 1246702,
@@ -31,8 +32,8 @@ module.exports = [
 			"end": "March 30, 74"
 		},
 		"day": {
-			"start": "1335",
-			"end": "1335"
+			"start": 1335,
+			"end": 1335
 		},
 		"amd": {
 			"start": 1488003,
@@ -52,8 +53,8 @@ module.exports = [
 			"end": "April 6, 30"
 		},
 		"day": {
-			"start": "-14729",
-			"end": "-14729"
+			"start": -14729,
+			"end": -14729
 		},
 		"amd": {
 			"start": 1471939,
@@ -72,8 +73,8 @@ module.exports = [
 			"end": "May 14, 30"
 		},
 		"day": {
-			"start": "-14689",
-			"end": "-14689"
+			"start": -14689,
+			"end": -14689
 		},
 		"amd": {
 			"start": 1471977,
@@ -89,7 +90,7 @@ module.exports = [
 		},
 		"macedonian": "341-348",
 		"gregorian": {
-			"start": "April 22, 30 ",
+			"start": "April 22, 30",
 			"end": "March 16, 37"
 		},
 		"amd": {
@@ -101,12 +102,12 @@ module.exports = [
 	{
 		"title": "Second Seal - Caligula",
 		"hebrew": {
-			"start": "4037 ",
+			"start": "4037",
 			"end": "4040"
 		},
 		"macedonian": "348-351",
 		"gregorian": {
-			"start": "March 16, 37 ",
+			"start": "March 16, 37",
 			"end": "January 24, 41"
 		},
 		"amd": {
@@ -123,7 +124,7 @@ module.exports = [
 		},
 		"macedonian": "351-365",
 		"gregorian": {
-			"start": "January 24, 41 ",
+			"start": "January 24, 41",
 			"end": "October 13, 54"
 		},
 		"amd": {
@@ -140,13 +141,14 @@ module.exports = [
 		},
 		"macedonian": "365-372",
 		"gregorian": {
-			"start": "October 13, 54 ",
+			"start": "October 13, 54",
 			"end": "early 66"
 		},
 		"amd": {
 			"start": 1480895,
-			"end": null
-		}
+			"end": 1483647
+		},
+		"reference": "Revelation 6:7-8"
 	},
 	{
 		"title": "Fifth Seal",
@@ -160,21 +162,25 @@ module.exports = [
 			"end": "66"
 		},
 		"amd": {
-			"start": null,
-			"end": 1483647
+			"start": 1483532,
+			"end": 1485114
 		},
 		"reference": "Revelation 6:9-11"
 	},
 	{
-		"title": "Sixth Seal",
+		"title": "Sixth Seal - visible appearance of Christ in the sky",
 		"hebrew": {
-			"start": "4066",
-			"end": "4066"
+			"start": "Iyar 20 4066",
+			"end": "Iyar 20 4066"
 		},
 		"macedonian": "377",
 		"gregorian": {
 			"start": "May 2, 66",
 			"end": "May 2, 66"
+		},
+		"day": {
+			"start": -1554,
+			"end": -1554
 		},
 		"amd": {
 			"start": 1485114,
@@ -183,7 +189,7 @@ module.exports = [
 		"reference": "Revelation 6:1-2; Rev 12:7-12"
 	},
 	{
-		"title": "Seventh Seal",
+		"title": "Seventh Seal - silence in heaven",
 		"hebrew": {
 			"start": "Sivan 6, 4066",
 			"end": "Sivan 6, 4066"
@@ -193,15 +199,16 @@ module.exports = [
 			"start": "May 18, 66",
 			"end": "May 18, 66"
 		},
+		"josephus war": "6.299",
 		"day": {
-			"start": "-1538",
-			"end": "-1538"
+			"start": -1538,
+			"end": -1538
 		},
 		"amd": {
 			"start": 1485129,
 			"end": 1485129
 		},
-		"reference": "Revelation 8:1-6; 16:1"
+		"reference": "Revelation 8:1-6; Rev 16:1"
 	},
 	{
 		"title": "Ending sacrifice to Caesar and any foreigners?????",
@@ -214,9 +221,10 @@ module.exports = [
 			"start": "June 27, 66",
 			"end": "June 27, 66"
 		},
+		"josephus war": "2.408-410",
 		"day": {
-			"start": "-1498",
-			"end": "-1498"
+			"start": -1498,
+			"end": -1498
 		},
 		"amd": {
 			"start": 1485170,
@@ -234,9 +242,10 @@ module.exports = [
 			"start": "August 26, 66",
 			"end": "August 26, 66"
 		},
+		"josephus war": "2.449-456",
 		"day": {
-			"start": "-1439",
-			"end": "-1439"
+			"start": -1439,
+			"end": -1439
 		},
 		"amd": {
 			"start": 1485229,
@@ -255,8 +264,8 @@ module.exports = [
 			"end": "September 8, 66"
 		},
 		"day": {
-			"start": "-1426",
-			"end": "-1426"
+			"start": -1426,
+			"end": -1426
 		},
 		"amd": {
 			"start": 1485242,
@@ -275,10 +284,10 @@ module.exports = [
 			"start": "Sept 22, 66",
 			"end": "Sept 22, 66"
 		},
-		"josephus war 2": "515",
+		"josephus war": "2:515",
 		"day": {
-			"start": "-1412",
-			"end": "-1412"
+			"start": -1412,
+			"end": -1412
 		},
 		"amd": {
 			"start": 1485256,
@@ -298,8 +307,8 @@ module.exports = [
 			"end": "September 28, 66"
 		},
 		"day": {
-			"start": "-1405",
-			"end": "-1405"
+			"start": -1405,
+			"end": -1405
 		},
 		"amd": {
 			"start": 1485263,
@@ -318,10 +327,10 @@ module.exports = [
 			"start": "October 15, 66",
 			"end": "October 15, 66"
 		},
-		"josephus war 2": "555",
+		"josephus war": "2:555",
 		"day": {
-			"start": "-1388",
-			"end": "-1388"
+			"start": -1388,
+			"end": -1388
 		},
 		"amd": {
 			"start": 1485280,
@@ -341,8 +350,8 @@ module.exports = [
 			"end": "October 31, 66"
 		},
 		"day": {
-			"start": "-1373",
-			"end": "-1373"
+			"start": -1373,
+			"end": -1373
 		},
 		"amd": {
 			"start": 1485295,
@@ -353,23 +362,23 @@ module.exports = [
 	{
 		"title": "Five months lull in killing",
 		"hebrew": {
-			"start": "Heshvan 24, 4066 ",
+			"start": "Heshvan 24, 4066",
 			"end": "Vedar 25, 4067"
 		},
 		"macedonian": "Dius 24, 377 - Dystos II 25, 377",
 		"gregorian": {
-			"start": "October 31, 66 ",
+			"start": "October 31, 66",
 			"end": "March 28, 67"
 		},
 		"day": {
-			"start": "-1373 to ",
-			"end": "1224"
+			"start": -1373,
+			"end": -1224
 		},
 		"amd": {
 			"start": 1485295,
 			"end": 1485444
 		},
-		"reference": "Revelation 9:5,10"
+		"reference": "Revelation 9:5, Rev 9:10"
 	},
 	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",
@@ -383,8 +392,8 @@ module.exports = [
 			"end": "February 20, 67"
 		},
 		"day": {
-			"start": "-1260",
-			"end": "-1260"
+			"start": -1260,
+			"end": -1260
 		},
 		"amd": {
 			"start": 1485408,
@@ -403,8 +412,8 @@ module.exports = [
 			"end": "June 9, 68"
 		},
 		"day": {
-			"start": "-785",
-			"end": "-785"
+			"start": -785,
+			"end": -785
 		},
 		"amd": {
 			"start": 1485883,
@@ -424,8 +433,8 @@ module.exports = [
 			"end": "July 1, 69"
 		},
 		"day": {
-			"start": "-399",
-			"end": "-399"
+			"start": -399,
+			"end": -399
 		},
 		"amd": {
 			"start": 1486269,
@@ -445,8 +454,8 @@ module.exports = [
 			"end": "April 4, 30"
 		},
 		"day": {
-			"start": "-14731",
-			"end": "-14731"
+			"start": -14731,
+			"end": -14731
 		},
 		"amd": {
 			"start": 1471937,
@@ -466,8 +475,8 @@ module.exports = [
 		},
 		"josephus war": "5:99",
 		"day": {
-			"start": "-113",
-			"end": "-113"
+			"start": -113,
+			"end": -113
 		},
 		"amd": {
 			"start": 1486555,
@@ -477,44 +486,44 @@ module.exports = [
 	{
 		"title": "First three and a half years of the war of Titus the prince",
 		"hebrew": {
-			"start": "Adar 19, 4067 ",
+			"start": "Adar 19, 4067",
 			"end": "Ab 9, 4070"
 		},
 		"macedonian": "Dystos 19, 378 - Loos 9, 381 SE",
 		"gregorian": {
-			"start": "February 20, 67 ",
+			"start": "February 20, 67",
 			"end": "August 3, 70"
 		},
 		"day": {
-			"start": "-1260 ",
-			"end": "0"
+			"start": -1260,
+			"end": 0
 		},
 		"amd": {
 			"start": 1485408,
 			"end": 1486668
 		},
-		"reference": "Revelation 11:1,3-14"
+		"reference": "Revelation 11:1, Rev 11:3-14"
 	},
 	{
 		"title": "Second three and a half years of the war of Titus the prince",
 		"hebrew": {
-			"start": "Ab 9, 4070 ",
+			"start": "Ab 9, 4070",
 			"end": "Tebeth 29, 4073"
 		},
 		"macedonian": "Loos 9, 381 SE - Audynios 29, 384",
 		"gregorian": {
-			"start": "August 3, 70 ",
+			"start": "August 3, 70",
 			"end": "January 15, 74"
 		},
 		"day": {
-			"start": "0 ",
-			"end": "1260"
+			"start": 0,
+			"end": 1260
 		},
 		"amd": {
 			"start": 1486668,
 			"end": 1487929
 		},
-		"reference": "Revelation 11:2; 18:1-24"
+		"reference": "Revelation 11:2; Rev 18:1-24"
 	},
 	{
 		"title": "Third wall of Jerusalem breached by Titus' battering rams",
@@ -527,10 +536,10 @@ module.exports = [
 			"start": "May 5, 70",
 			"end": "May 5, 70"
 		},
-		"josephus war": "War 5.300-302",
+		"josephus war": "5.300-302",
 		"day": {
-			"start": "-91",
-			"end": "-91"
+			"start": -91,
+			"end": -91
 		},
 		"amd": {
 			"start": 1486577,
@@ -548,10 +557,10 @@ module.exports = [
 			"start": "May 10, 70",
 			"end": "May 10, 70"
 		},
-		"josephus war": "War 5.331-347",
+		"josephus war": "5.331-347",
 		"day": {
-			"start": "-86",
-			"end": "-86"
+			"start": -86,
+			"end": -86
 		},
 		"amd": {
 			"start": 1486582,
@@ -569,10 +578,10 @@ module.exports = [
 			"start": "May 18, 70",
 			"end": "May 18, 70"
 		},
-		"josephus war": "War 5.347-348",
+		"josephus war": "5.347-348",
 		"day": {
-			"start": "-78",
-			"end": "-78"
+			"start": -78,
+			"end": -78
 		},
 		"amd": {
 			"start": 1486591,
@@ -590,10 +599,10 @@ module.exports = [
 			"start": "May 27, 70",
 			"end": "May 27, 70"
 		},
-		"josephus war": "War 5.466-490; 5.522-526",
+		"josephus war": "5.466-490; 5.522-526",
 		"day": {
-			"start": "-69",
-			"end": "-69"
+			"start": -69,
+			"end": -69
 		},
 		"amd": {
 			"start": 1486599,
@@ -611,10 +620,10 @@ module.exports = [
 			"start": "June 27, 70",
 			"end": "June 27, 70"
 		},
-		"josephus war": "War 6.1-22",
+		"josephus war": "6.1-22",
 		"day": {
-			"start": "-37",
-			"end": "-37"
+			"start": -37,
+			"end": -37
 		},
 		"amd": {
 			"start": 1486631,
@@ -632,10 +641,10 @@ module.exports = [
 			"start": "July 1, 70",
 			"end": "July 1, 70"
 		},
-		"josephus war": "War 6.54-67",
+		"josephus war": "6.54-67",
 		"day": {
-			"start": "-34",
-			"end": "-34"
+			"start": -34,
+			"end": -34
 		},
 		"amd": {
 			"start": 1486634,
@@ -655,8 +664,8 @@ module.exports = [
 		},
 		"josephus war": "6.94",
 		"day": {
-			"start": "-22",
-			"end": "-22"
+			"start": -22,
+			"end": -22
 		},
 		"amd": {
 			"start": 1486646,
@@ -676,8 +685,8 @@ module.exports = [
 		},
 		"josephus war": "6.166; 6:311",
 		"day": {
-			"start": "-15",
-			"end": "-15"
+			"start": -15,
+			"end": -15
 		},
 		"amd": {
 			"start": 1486653,
@@ -697,8 +706,8 @@ module.exports = [
 		},
 		"josephus war": "6.170-190",
 		"day": {
-			"start": "-12",
-			"end": "-12"
+			"start": -12,
+			"end": -12
 		},
 		"amd": {
 			"start": 1486656,
@@ -717,8 +726,8 @@ module.exports = [
 			"end": "July 31"
 		},
 		"day": {
-			"start": "-4",
-			"end": "-4"
+			"start": -4,
+			"end": -4
 		},
 		"amd": {
 			"start": 1486664,
@@ -739,8 +748,8 @@ module.exports = [
 		},
 		"josephus war": "6.220-228",
 		"day": {
-			"start": "-1",
-			"end": "-1"
+			"start": -1,
+			"end": -1
 		},
 		"amd": {
 			"start": 1486667,
@@ -760,8 +769,8 @@ module.exports = [
 			"end": "August 2, 70"
 		},
 		"day": {
-			"start": "-1",
-			"end": "-1"
+			"start": -1,
+			"end": -1
 		},
 		"amd": {
 			"start": 1486667,
@@ -779,10 +788,10 @@ module.exports = [
 			"start": "August 3, 70",
 			"end": "August 3, 70"
 		},
-		"josephus war 6": "250 says 10th, but Talmud and Dio Cassius say 9th-10th; War 6.233-237; 6.265, 271ff, 281-288",
+		"josephus war": "6:250; 6.233-237; 6.265, 271ff, 281-288",
 		"day": {
-			"start": "0",
-			"end": "0"
+			"start": 0,
+			"end": 0
 		},
 		"amd": {
 			"start": 1486668,
@@ -801,13 +810,14 @@ module.exports = [
 			"end": "August 3, 70"
 		},
 		"day": {
-			"start": "0",
-			"end": "0"
+			"start": 0,
+			"end": 0
 		},
 		"amd": {
 			"start": 1486668,
 			"end": 1486668
-		}
+		},
+		"reference": "Rev. 11:11-19"
 	},
 	{
 		"title": "Titus orders earthworks against Upper City",
@@ -820,6 +830,7 @@ module.exports = [
 			"start": "August 14, 70",
 			"end": "August 14, 70"
 		},
+		"josephus war": "6.374",
 		"amd": {
 			"start": 1486678,
 			"end": 1486678
@@ -836,10 +847,10 @@ module.exports = [
 			"start": "September 1, 70",
 			"end": "September 1, 70"
 		},
-		"josephus war 6": "407",
+		"josephus war": "6:407",
 		"day": {
-			"start": "28",
-			"end": "28"
+			"start": 28,
+			"end": 28
 		},
 		"amd": {
 			"start": 1486696,
@@ -857,9 +868,10 @@ module.exports = [
 			"start": "January 15, 74",
 			"end": "January 15, 74"
 		},
+		"josephus war": "Book 7",
 		"day": {
-			"start": "1260",
-			"end": "1260"
+			"start": 1260,
+			"end": 1260
 		},
 		"amd": {
 			"start": 1487928,
@@ -878,8 +890,8 @@ module.exports = [
 			"end": "February 15, 74"
 		},
 		"day": {
-			"start": "1290",
-			"end": "1290"
+			"start": 1290,
+			"end": 1290
 		},
 		"amd": {
 			"start": 1487959,
@@ -898,8 +910,8 @@ module.exports = [
 			"end": "December 21, 69"
 		},
 		"day": {
-			"start": "-225",
-			"end": "-225"
+			"start": -225,
+			"end": -225
 		},
 		"amd": {
 			"start": 1486443,

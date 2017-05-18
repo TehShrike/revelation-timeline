@@ -2,6 +2,10 @@ const fs = require('fs')
 const got = require('got')
 const denodeify = require('then-denodeify')
 const readFile = denodeify(fs.readFile)
+const {
+	parseIntegerRange,
+	parseAnyRange
+} = require('./parse-range.js')
 
 const longPropertyNames = {
 	h: 'hebrew',
@@ -22,6 +26,7 @@ async function get() {
 }
 
 const datePropertyNames = [ 'h', 'm', 'g', 'day', 'amd' ]
+const integerDatePropertyNames = [ 'day', 'amd' ]
 
 async function main() {
 	const markdown = await get()
@@ -33,10 +38,6 @@ async function main() {
 		}
 		copyAndElongatePropertyNames(properties, newEvent)
 
-		// castToInt(newEvent, 'day')
-		// gotta ignore 'day' until we figure out ranges with negative days
-
-		castToInt(newEvent, 'amd')
 		return newEvent
 	}).sort((itemA, itemB) => {
 		return itemA
@@ -54,21 +55,20 @@ function formattedJson(structure) {
 	return JSON.stringify(structure, null, '\t')
 }
 
-function parseRange(str) {
-	const match = /^(-?[^\-]+) *- *([^\-]+)/.exec(str)
-	return match ? { start: match[1], end: match[2] } : { start: str, end: str }
-}
-
 function matches(str) {
 	var match
-	const regex = /^-\s*(.+?)((?:\n\t-\s*.+)+)/gm
+	const regex = /^-([^-].+?)\n((?:\n|(?:[^-].*\n))+)/gm
 
 	const output = []
 	while ((match = regex.exec(str)) !== null) {
-		output.push({
-			title: match[1].trim(),
-			properties: turnLinesToObject(parseChildLines(match[2]))
-		})
+		const [ , first, second ] = match
+
+		if (first && second) {
+			output.push({
+				title: first.trim(),
+				properties: turnLinesToObject(parseChildLines(second))
+			})
+		}
 	}
 
 	return output
@@ -76,7 +76,7 @@ function matches(str) {
 
 function parseChildLines(str) {
 	var match
-	const propertiesRegex = /^\t-\s*(.+)$/gm
+	const propertiesRegex = /^\t-(.+)$/gm
 	const output = []
 	while ((match = propertiesRegex.exec(str)) !== null) {
 		output.push(match[1].trim())
@@ -88,6 +88,14 @@ function isShortDateFieldName(field) {
 	return datePropertyNames.indexOf(field) >= 0
 }
 
+function isIntegerDateFieldName(field) {
+	return integerDatePropertyNames.indexOf(field) >= 0
+}
+
+function rangeArrayToObject([ start, end ]) {
+	return { start, end }
+}
+
 function turnLinesToObject(lines) {
 	const o = {}
 
@@ -97,7 +105,14 @@ function turnLinesToObject(lines) {
 
 		if (secondPart) {
 			const shortFieldName = parts[0].toLowerCase()
-			o[shortFieldName] = isShortDateFieldName(shortFieldName) ? parseRange(secondPart) : secondPart
+
+			if (isIntegerDateFieldName(shortFieldName)) {
+				o[shortFieldName] = rangeArrayToObject(parseIntegerRange(secondPart))
+			} else if (isShortDateFieldName(shortFieldName)) {
+				o[shortFieldName] = rangeArrayToObject(parseAnyRange(secondPart))
+			} else {
+				o[shortFieldName] = secondPart
+			}
 		}
 	})
 
@@ -106,21 +121,4 @@ function turnLinesToObject(lines) {
 
 function copyAndElongatePropertyNames(o, target) {
 	Object.keys(o).forEach(key => target[longPropertyNames[key] || key] = o[key])
-}
-
-function castToInt(o, property) {
-	if (!o[property]) {
-		return
-	}
-	const definitelyTruthyValue = o[property]
-
-	switch (typeof definitelyTruthyValue) {
-		case 'string':
-			o[property] = parseInt(definitelyTruthyValue, 10)
-			break
-		case 'object':
-			castToInt(definitelyTruthyValue, 'start')
-			castToInt(definitelyTruthyValue, 'end')
-			break
-	}
 }

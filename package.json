@@ -22,7 +22,8 @@
   "devDependencies": {
     "babel-preset-es2015": "6.14.0",
     "babelify": "7.3.0",
-    "browserify": "13.1.0"
+    "browserify": "13.1.0",
+    "power-assert": "1.4.2"
   },
   "browserify": {
     "transform": [
@@ -36,6 +37,7 @@
   },
   "dependencies": {
     "got": "6.7.1",
+    "regex-fun": "2.0.1",
     "then-denodeify": "1.0.1"
   }
 }
