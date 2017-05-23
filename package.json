@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-client": "browserify . -o build.js",
-    "build-data": "node transform-timeline-to-json.js",
-    "build": "npm run build-data && npm run build-client"
+    "build:client": "rollup -c",
+    "watch:client": "rollup -c -w --dev --sourcemap",
+    "build:data": "node timeline-data/transform-timeline-to-json.js",
+    "build": "npm run build:data && npm run build:client"
   },
   "repository": {
     "type": "git",
@@ -20,24 +21,19 @@
   },
   "homepage": "https://github.com/TehShrike/revelation-timeline#readme",
   "devDependencies": {
-    "babel-preset-es2015": "6.14.0",
-    "babelify": "7.3.0",
-    "browserify": "13.1.0",
-    "power-assert": "1.4.2"
-  },
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": "es2015"
-        }
-      ]
-    ]
+    "babel-plugin-external-helpers": "6.22.0",
+    "babel-preset-es2015": "6.24.1",
+    "power-assert": "1.4.2",
+    "rollup": "0.41.6",
+    "rollup-plugin-babel": "2.7.1",
+    "rollup-plugin-commonjs": "8.0.2",
+    "rollup-plugin-node-resolve": "3.0.0",
+    "rollup-plugin-svelte": "1.8.1"
   },
   "dependencies": {
     "got": "6.7.1",
     "regex-fun": "2.0.1",
+    "svelte": "1.20.2",
     "then-denodeify": "1.0.1"
   }
 }
