@@ -5,8 +5,7 @@ import timelineData from '../timeline-data/timeline-data.js'
 
 new Main({
 	target: document.querySelector('#timeline'),
+	data: {
+		timelineData
+	}
 })
-
-const lol = () => console.log('butts', timelineData.length)
-
-lol()

@@ -3,31 +3,11 @@ body {
 	font-family: sans-serif;
 }
 #container {
-	display: flex;
-	background-color: #F3F3F3;
+/*	background-color: #F3F3F3;*/
 	border-radius: 25px;
 	margin: 20px auto;
 	max-width: 900px;
 	padding: 20px 50px;
-}
-
-table {
-	border-collapse: collapse
-}
-
-tr:nth-child(even) {
-	background-color: #e6e6e6;
-}
-
-td {
-	padding: 5px 10px;
-}
-
-.date-dolumn {
-	white-space: nowrap;
-}
-.two-date-dolumn {
-	display: none;
 }
 
 hr {
@@ -35,13 +15,6 @@ hr {
 }
 
 @media (max-width: 900px) {
-	.single-date-dolumn {
-		display: none;
-	}
-	.two-date-dolumn {
-		display: inherit;
-	}
-
 	#container {
 		margin: 1px;
 		padding: 5px 2px;
