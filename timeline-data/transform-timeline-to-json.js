@@ -19,14 +19,15 @@ const longPropertyNames = {
 
 
 async function get() {
-	const markdown = await readFile('./demo-input.md', { encoding: 'utf8' })
-	// const { body: markdown } = got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
+	// const markdown = await readFile('./demo-input.md', { encoding: 'utf8' })
+	const { body: markdown } = await got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
 
 	return markdown
 }
 
-const datePropertyNames = [ 'h', 'm', 'g', 'day', 'amd' ]
-const integerDatePropertyNames = [ 'day', 'amd' ]
+const keepPropertyNames = [ 'title', 'josephus war', 'r' ]
+const datePropertyNames = [ 'h', 's', 'g', 'amd' ]
+const integerDatePropertyNames = [ 'amd' ]
 
 async function main() {
 	const markdown = await get()
@@ -43,7 +44,7 @@ async function main() {
 		const hasAmdDay = amd && amd.start !== undefined
 
 		if (!hasAmdDay) {
-			console.log('No AMD date for', title)
+			throw new Error(`No AMD date for ${title}`)
 		}
 
 		return hasAmdDay
@@ -118,7 +119,7 @@ function turnLinesToObject(lines) {
 				o[shortFieldName] = rangeArrayToObject(parseIntegerRange(secondPart))
 			} else if (isShortDateFieldName(shortFieldName)) {
 				o[shortFieldName] = rangeArrayToObject(parseAnyRange(secondPart))
-			} else {
+			} else if (keepPropertyNames.indexOf(shortFieldName) >= 0) {
 				o[shortFieldName] = secondPart
 			}
 		}
