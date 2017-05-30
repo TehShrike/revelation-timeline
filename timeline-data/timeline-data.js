@@ -259,6 +259,22 @@ module.exports = [
 		}
 	},
 	{
+		"title": "The \"time\" portion of \"time, times, and half a time\"",
+		"reference": "Revelation 12:14",
+		"hebrew": {
+			"start": "Elul 26, 4066",
+			"end": "Heshvan 27, 4066"
+		},
+		"gregorian": {
+			"start": "September 4, 66",
+			"end": "November 4, 66"
+		},
+		"amd": {
+			"start": 1485238,
+			"end": 1485298
+		}
+	},
+	{
 		"title": "First Trumpet",
 		"hebrew": {
 			"start": "Tishri 1, 4066",
@@ -381,6 +397,22 @@ module.exports = [
 		"reference": "Revelation 9:5, Rev 9:10"
 	},
 	{
+		"title": "The \"times\" portion of \"time, times, and half a time\"",
+		"reference": "Revelation 12:14",
+		"hebrew": {
+			"start": "Heshvan 24, 4066",
+			"end": "Sivan 22, 4068"
+		},
+		"gregorian": {
+			"start": "October 31, 66",
+			"end": "June 9, 68"
+		},
+		"amd": {
+			"start": 1485295,
+			"end": 1485883
+		}
+	},
+	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",
 		"hebrew": {
 			"start": "Adar 19, 4067",
@@ -497,6 +529,22 @@ module.exports = [
 		"amd": {
 			"start": 1486555,
 			"end": 1486555
+		}
+	},
+	{
+		"title": "The \"half a time\" portion of \"time, times, and half a time\"",
+		"reference": "Revelation 12:14",
+		"hebrew": {
+			"start": "Ab 14, 4070",
+			"end": "Elul 8, 4070"
+		},
+		"gregorian": {
+			"start": "April 12, 70 September 1, 70",
+			"end": "April 12, 70 September 1, 70"
+		},
+		"amd": {
+			"start": 1486555,
+			"end": 1486696
 		}
 	},
 	{
@@ -740,24 +788,40 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Resurrection and events of Rev. 11:11-19",
+		"title": "1290 days",
+		"reference": "Daniel 12:11",
 		"hebrew": {
 			"start": "Ab 9, 4070",
-			"end": "Ab 9, 4070"
-		},
-		"macedonian": {
-			"start": "Loos 9, 381",
-			"end": "Loos 9, 381"
+			"end": "Shebat 30, 4074"
 		},
 		"gregorian": {
 			"start": "August 3, 70",
-			"end": "August 3, 70"
+			"end": "February 14, 74"
 		},
 		"amd": {
 			"start": 1486668,
-			"end": 1486668
+			"end": 1487959
+		}
+	},
+	{
+		"title": "Second three and a half years of the war of Titus the prince",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Tebeth 29, 4073"
 		},
-		"reference": "Rev. 11:11-19"
+		"macedonian": {
+			"start": "Loos 9, 381 SE",
+			"end": "Audynios 29, 384"
+		},
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "January 15, 74"
+		},
+		"amd": {
+			"start": 1486668,
+			"end": 1487929
+		},
+		"reference": "Revelation 11:2; Rev 18:1-24"
 	},
 	{
 		"title": "Temple burned",
@@ -780,24 +844,40 @@ module.exports = [
 		}
 	},
 	{
-		"title": "Second three and a half years of the war of Titus the prince",
+		"title": "Resurrection and events of Rev. 11:11-19",
 		"hebrew": {
 			"start": "Ab 9, 4070",
-			"end": "Tebeth 29, 4073"
+			"end": "Ab 9, 4070"
 		},
 		"macedonian": {
-			"start": "Loos 9, 381 SE",
-			"end": "Audynios 29, 384"
+			"start": "Loos 9, 381",
+			"end": "Loos 9, 381"
 		},
 		"gregorian": {
 			"start": "August 3, 70",
-			"end": "January 15, 74"
+			"end": "August 3, 70"
 		},
 		"amd": {
 			"start": 1486668,
-			"end": 1487929
+			"end": 1486668
 		},
-		"reference": "Revelation 11:2; Rev 18:1-24"
+		"reference": "Rev. 11:11-19"
+	},
+	{
+		"title": "Forty months",
+		"reference": "Revelation 11:2",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Tebeth 29, AD 4074"
+		},
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "January 15, AD 74"
+		},
+		"amd": {
+			"start": 1486668,
+			"end": 1487928
+		}
 	},
 	{
 		"title": "Titus orders earthworks against Upper City",
@@ -897,5 +977,21 @@ module.exports = [
 			"end": 1488003
 		},
 		"reference": "Daniel 12:12"
+	},
+	{
+		"title": "1335 days",
+		"reference": "Daniel 12:12",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Nisan 15, 4074"
+		},
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "March 31, 74"
+		},
+		"amd": {
+			"start": 1488003,
+			"end": 1488003
+		}
 	}
 ]
