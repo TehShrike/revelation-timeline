@@ -112,16 +112,19 @@ function turnLinesToObject(lines) {
 		const parts = str.split(/:\s*/)
 		const secondPart = parts.slice(1).join(':').trim()
 
+		const shortFieldName = parts[0].toLowerCase()
 		if (secondPart) {
-			const shortFieldName = parts[0].toLowerCase()
-
 			if (isIntegerDateFieldName(shortFieldName)) {
 				o[shortFieldName] = rangeArrayToObject(parseIntegerRange(secondPart))
 			} else if (isShortDateFieldName(shortFieldName)) {
 				o[shortFieldName] = rangeArrayToObject(parseAnyRange(secondPart))
 			} else if (keepPropertyNames.indexOf(shortFieldName) >= 0) {
 				o[shortFieldName] = secondPart
+			} else {
+				console.log('Unknown field name', shortFieldName)
 			}
+		} else if (keepPropertyNames.indexOf(shortFieldName) === -1){
+			console.log('Unparseable line', str)
 		}
 	})
 
