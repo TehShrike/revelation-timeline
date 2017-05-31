@@ -1,6 +1,7 @@
 const fs = require('fs')
 const got = require('got')
 const denodeify = require('then-denodeify')
+const sortRange = require('./sort-range.js')
 const readFile = denodeify(fs.readFile)
 const {
 	parseIntegerRange,
@@ -48,11 +49,11 @@ async function main() {
 		}
 
 		return hasAmdDay
-	}).sort((itemA, itemB) => {
-		return itemA.amd.start - itemB.amd.start
 	})
 
-	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(structure)}`)
+	const sorted = sortRange(structure, event => [ event.amd.start, event.amd.end ])
+
+	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(sorted)}`)
 }
 
 main()

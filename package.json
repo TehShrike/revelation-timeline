@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tape **/*-test.js",
     "build:client": "rollup -c",
     "watch:client": "rollup -c -w --dev --sourcemap",
     "build:data": "node timeline-data/transform-timeline-to-json.js",
@@ -21,19 +21,22 @@
   },
   "homepage": "https://github.com/TehShrike/revelation-timeline#readme",
   "devDependencies": {
+    "power-assert": "1.4.2",
+    "tape": "4.6.3"
+  },
+  "dependencies": {
     "babel-plugin-external-helpers": "6.22.0",
     "babel-preset-es2015": "6.24.1",
-    "power-assert": "1.4.2",
+    "binary-search-range": "1.0.0",
+    "got": "6.7.1",
+    "multi-part-range-compare": "1.0.3",
+    "regex-fun": "2.0.1",
     "rollup": "0.41.6",
     "rollup-plugin-babel": "2.7.1",
     "rollup-plugin-commonjs": "8.0.2",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-svelte": "1.8.1",
-    "rollup-watch": "3.2.2"
-  },
-  "dependencies": {
-    "got": "6.7.1",
-    "regex-fun": "2.0.1",
+    "rollup-watch": "3.2.2",
     "svelte": "1.20.2",
     "then-denodeify": "1.0.1"
   }

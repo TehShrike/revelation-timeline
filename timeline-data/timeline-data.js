@@ -748,6 +748,25 @@ module.exports = [
 		"reference": "Revelation 11:7-11"
 	},
 	{
+		"title": "Romans scale wall in dead of night and capture temple",
+		"hebrew": {
+			"start": "Ab 8, 4070",
+			"end": "Ab 8, 4070"
+		},
+		"macedonian": {
+			"start": "Loos 8, 381",
+			"end": "Loos 8, 381"
+		},
+		"gregorian": {
+			"start": "August 2, 70",
+			"end": "August 2, 70"
+		},
+		"amd": {
+			"start": 1486667,
+			"end": 1486667
+		}
+	},
+	{
 		"title": "Roman battering rams utterly unable to penetrate western wall of Temple. Romans suffer heavy losses seeking to scale walls",
 		"hebrew": {
 			"start": "Ab 8, 4070",
@@ -769,38 +788,59 @@ module.exports = [
 		"reference": "Revelation 11:7-11"
 	},
 	{
-		"title": "Romans scale wall in dead of night and capture temple",
-		"hebrew": {
-			"start": "Ab 8, 4070",
-			"end": "Ab 8, 4070"
-		},
-		"macedonian": {
-			"start": "Loos 8, 381",
-			"end": "Loos 8, 381"
-		},
-		"gregorian": {
-			"start": "August 2, 70",
-			"end": "August 2, 70"
-		},
-		"amd": {
-			"start": 1486667,
-			"end": 1486667
-		}
-	},
-	{
-		"title": "1290 days",
-		"reference": "Daniel 12:11",
+		"title": "Resurrection and events of Rev. 11:11-19",
 		"hebrew": {
 			"start": "Ab 9, 4070",
-			"end": "Shebat 30, 4074"
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": {
+			"start": "Loos 9, 381",
+			"end": "Loos 9, 381"
 		},
 		"gregorian": {
 			"start": "August 3, 70",
-			"end": "February 14, 74"
+			"end": "August 3, 70"
 		},
 		"amd": {
 			"start": 1486668,
-			"end": 1487959
+			"end": 1486668
+		},
+		"reference": "Rev. 11:11-19"
+	},
+	{
+		"title": "Temple burned",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": {
+			"start": "Loos 9, 381",
+			"end": "Loos 9, 381"
+		},
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "August 3, 70"
+		},
+		"josephus war": "6:250; 6.233-237; 6.265, 271ff, 281-288",
+		"amd": {
+			"start": 1486668,
+			"end": 1486668
+		}
+	},
+	{
+		"title": "Forty months",
+		"reference": "Revelation 11:2",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Tebeth 29, AD 4074"
+		},
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "January 15, AD 74"
+		},
+		"amd": {
+			"start": 1486668,
+			"end": 1487928
 		}
 	},
 	{
@@ -824,59 +864,19 @@ module.exports = [
 		"reference": "Revelation 11:2; Rev 18:1-24"
 	},
 	{
-		"title": "Temple burned",
+		"title": "1290 days",
+		"reference": "Daniel 12:11",
 		"hebrew": {
 			"start": "Ab 9, 4070",
-			"end": "Ab 9, 4070"
-		},
-		"macedonian": {
-			"start": "Loos 9, 381",
-			"end": "Loos 9, 381"
+			"end": "Shebat 30, 4074"
 		},
 		"gregorian": {
 			"start": "August 3, 70",
-			"end": "August 3, 70"
-		},
-		"josephus war": "6:250; 6.233-237; 6.265, 271ff, 281-288",
-		"amd": {
-			"start": 1486668,
-			"end": 1486668
-		}
-	},
-	{
-		"title": "Resurrection and events of Rev. 11:11-19",
-		"hebrew": {
-			"start": "Ab 9, 4070",
-			"end": "Ab 9, 4070"
-		},
-		"macedonian": {
-			"start": "Loos 9, 381",
-			"end": "Loos 9, 381"
-		},
-		"gregorian": {
-			"start": "August 3, 70",
-			"end": "August 3, 70"
+			"end": "February 14, 74"
 		},
 		"amd": {
 			"start": 1486668,
-			"end": 1486668
-		},
-		"reference": "Rev. 11:11-19"
-	},
-	{
-		"title": "Forty months",
-		"reference": "Revelation 11:2",
-		"hebrew": {
-			"start": "Ab 9, 4070",
-			"end": "Tebeth 29, AD 4074"
-		},
-		"gregorian": {
-			"start": "August 3, 70",
-			"end": "January 15, AD 74"
-		},
-		"amd": {
-			"start": 1486668,
-			"end": 1487928
+			"end": 1487959
 		}
 	},
 	{
