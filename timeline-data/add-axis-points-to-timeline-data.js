@@ -1,15 +1,21 @@
-const sortRange = require('./sort-range.js')
+module.exports = addSnipsToTimelineData
 
-module.exports = addAxisPointsToTimelineData
+function addSnipsToTimelineData(axisPoints, timelineData) {
+	const amdToAxisPoint = axisPoints.reduce((map, axis) =>
+		(map[axis.amd] = axis.axisPoint, map),
+		Object.create(null))
 
-function addAxisPointsToTimelineData(axisPoints, timelineData) {
-	sortRange()
+	return timelineData.map(data => {
+		if (data.amd) {
+			return Object.assign({
+				axis: {
+					start: amdToAxisPoint[data.amd.start],
+					end: amdToAxisPoint[data.amd.end]
+				}
+			}, data)
+		} else {
+			return data
+		}
+	})
 }
 
-test()
-
-function test() {
-	const timelineData = require('./timeline-data')
-	const axisPoints = require('./create-timeline-axis.js')(require('./filter-and-sort')(timelineData), 5)
-	console.log(addAxisPointsToTimelineData(axisPoints, timelineData))
-}

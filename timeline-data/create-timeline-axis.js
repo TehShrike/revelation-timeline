@@ -1,4 +1,4 @@
-const snipSectionsLongerThan = 300
+const snipSectionsLongerThan = 100
 
 const pipe = (input, ...fns) => fns.reduce((last, fn) => fn(last), input)
 const flatMap = (fn, ary) => ary.reduce((acc, element) => [ ...acc, ...fn(element) ], [])
