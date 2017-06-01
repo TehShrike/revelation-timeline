@@ -178,10 +178,17 @@ module.exports = [
 		"reference": "Revelation 6:9-11"
 	},
 	{
+		"title": "Great Tribulation (Rome & Israel killing Christians)",
+		"amd": {
+			"start": 1483532,
+			"end": 1485883
+		}
+	},
+	{
 		"title": "Sixth Seal - visible appearance of Christ in the sky",
 		"hebrew": {
 			"start": "Iyar 20 4066",
-			"end": "Iyar 20 4066"
+			"end": "Sivan 5, 4066"
 		},
 		"macedonian": {
 			"start": "377",
@@ -189,7 +196,7 @@ module.exports = [
 		},
 		"gregorian": {
 			"start": "May 2, 66",
-			"end": "May 2, 66"
+			"end": "May 18, 66"
 		},
 		"amd": {
 			"start": 1485114,
@@ -201,20 +208,20 @@ module.exports = [
 		"title": "Seventh Seal - silence in heaven",
 		"hebrew": {
 			"start": "Sivan 6, 4066",
-			"end": "Sivan 6, 4066"
+			"end": "Tishri 1, 4066"
 		},
 		"macedonian": {
 			"start": "Daisios 6, 377",
-			"end": "Daisios 6, 377"
+			"end": "Hyperberataios 1, 377"
 		},
 		"gregorian": {
 			"start": "May 18, 66",
-			"end": "May 18, 66"
+			"end": "September 8, 66"
 		},
 		"josephus war": "6.299",
 		"amd": {
 			"start": 1485129,
-			"end": 1485129
+			"end": 1485229
 		},
 		"reference": "Revelation 8:1-6; Rev 16:1"
 	},
@@ -413,6 +420,13 @@ module.exports = [
 			"end": 1485883
 		},
 		"type": "time"
+	},
+	{
+		"title": "Great Wrath (Rome against Israel)",
+		"amd": {
+			"start": 1485295,
+			"end": 1487959
+		}
 	},
 	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",

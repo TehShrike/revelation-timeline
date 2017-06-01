@@ -67,7 +67,7 @@ function formattedJson(structure) {
 
 function matches(str) {
 	var match
-	const regex = /^-([^-].+?)\n((?:\n|(?:[^-].*\n))+)/gm
+	const regex = /^[\-+]([^-].+?)\n((?:\n|(?:[^-].*\n))+)/gm
 
 	const output = []
 	while ((match = regex.exec(str)) !== null) {
@@ -86,7 +86,7 @@ function matches(str) {
 
 function parseChildLines(str) {
 	var match
-	const propertiesRegex = /^\t-(.+)$/gm
+	const propertiesRegex = /^\t[\-+](.+)$/gm
 	const output = []
 	while ((match = propertiesRegex.exec(str)) !== null) {
 		output.push(match[1].trim())

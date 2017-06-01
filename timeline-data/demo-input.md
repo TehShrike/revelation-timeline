@@ -79,18 +79,18 @@ title: "Timeline of Revelation Events"
 	- AMD: [1483532-1483647] - 1485114
 	- R: Revelation 6:9-11
 - Sixth Seal - visible appearance of Christ in the sky
-	- H: Iyar 20 4066
+	- H: Iyar 20 4066 to Sivan 5, 4066
 	- S: 377
-	- G: May 2, 66
+	- G: May 2, 66 to May 18, 66
 	- Josephus War:
 	- AMD: 1485114 - 1485129
 	- R: Revelation 6:1-2; Rev 12:7-12
 - Seventh Seal - silence in heaven
-	- H: Sivan 6, 4066
-	- S: Daisios 6, 377
-	- G: May 18, 66
+	- H: Sivan 6, 4066 to Tishri 1, 4066
+	- S: Daisios 6, 377 to Hyperberataios 1, 377
+	- G: May 18, 66 to September 8, 66
 	- Josephus War: 6.299
-	- AMD: 1485129
+	- AMD: 1485129-1485229
 	- R: Revelation 8:1-6; Rev 16:1
 - Ending sacrifice to Caesar and any foreigners?????
 	- H: Tammuz 17, 4066
@@ -315,6 +315,14 @@ Josephus's War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
 	- Josephus War:
 	- AMD: 1488003
 	- R: Daniel 12:12
+- Great Tribulation (Rome & Israel killing Christians)
+	+ AMD: [1483532-1483647] - 1485883
+
+AMD is fuzzy for start
+From fifth seal to death of Nero
+
+- Great Wrath (Rome against Israel)
+	+ AMD: 1485295- [1487928-1487959]
 - Forty months
 	- R: Revelation 11:2
 	- H: Ab 9, 4070 to Tebeth 29, AD 4074
