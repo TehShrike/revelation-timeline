@@ -1,4 +1,4 @@
-<div ref:container style="top: {{topOffsetByContent}}px; left: {{left}}px;" class="vcentered">
+<div ref:container style="top: {{top}}px; left: {{left}}px;" class="vcentered">
 	{{yield}}	
 </div>
 
@@ -12,7 +12,7 @@
 export default {
 	data() {
 		return {
-			top: 0,
+			point: 0,
 			left: 0
 		}
 	},
@@ -25,7 +25,7 @@ export default {
 		})
 	},
 	computed: {
-		topOffsetByContent: (top, height) => (top - (height / 2))
+		top: (point, height) => (point - (height / 2))
 	}
 }
 </script>

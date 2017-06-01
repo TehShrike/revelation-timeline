@@ -5,7 +5,7 @@
 {{/if}}
 <div class="timeline-container">
 	{{#each axis as date}}
-	<VCenter left="-110" top="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
+	<VCenter left="-110" point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
 		<span class="axis">
 			{{#if date.type === 'snip'}}
 			...snip ({{date.days}} days)
@@ -16,20 +16,35 @@
 	</VCenter>
 	{{/each}}
 	{{#each relevantTimelineData as timelineEvent}}
-		<div 
-			class="event" 
-			data-title="{{timelineEvent.title}}" 
-			style="
-				top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
-				height: {{multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start)}}px;
-				left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
-			"
-			on:mouseover="startHover(timelineEvent)"
-			on:mouseleave="endHover(timelineEvent)"
-
-		>
-			
-		</div>
+		{{#if timelineEvent.axis.end === timelineEvent.axis.start}}
+			<VCenter
+				left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
+				point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
+			>
+				<div 
+					class="event" 
+					data-title="{{timelineEvent.title}}"
+					style="height: 4px;"
+					on:mouseover="startHover(timelineEvent)"
+					on:mouseleave="endHover(timelineEvent)"
+				>
+					&nbsp;
+				</div>
+			</VCenter>
+		{{else}}
+			<div 
+				style="
+					position: absolute;
+					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
+					left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
+					height: {{multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start)}}px;
+				"
+				class="event" 
+				data-title="{{timelineEvent.title}}"
+				on:mouseover="startHover(timelineEvent)"
+				on:mouseleave="endHover(timelineEvent)"
+			/>
+		{{/if}}
 	{{/each}}	
 </div>
 
@@ -44,7 +59,6 @@
 	text-align: right;
 }
 .event {
-	position: absolute;
 	width: 16px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;

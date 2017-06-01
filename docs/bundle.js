@@ -108,6 +108,10 @@ function createText(data) {
 	return document.createTextNode(data);
 }
 
+function createComment() {
+	return document.createComment('');
+}
+
 function addEventListener(node, event, handler) {
 	node.addEventListener(event, handler, false);
 }
@@ -260,8 +264,8 @@ var proto = {
 };
 
 function recompute$1(state, newState, oldState, isInitial) {
-	if (isInitial || 'top' in newState && differs(state.top, oldState.top) || 'height' in newState && differs(state.height, oldState.height)) {
-		state.topOffsetByContent = newState.topOffsetByContent = template$1.computed.topOffsetByContent(state.top, state.height);
+	if (isInitial || 'point' in newState && differs(state.point, oldState.point) || 'height' in newState && differs(state.height, oldState.height)) {
+		state.top = newState.top = template$1.computed.top(state.point, state.height);
 	}
 }
 
@@ -269,7 +273,7 @@ var template$1 = function () {
 	return {
 		data: function data() {
 			return {
-				top: 0,
+				point: 0,
 				left: 0
 			};
 		},
@@ -284,8 +288,8 @@ var template$1 = function () {
 		},
 
 		computed: {
-			topOffsetByContent: function topOffsetByContent(top, height) {
-				return top - height / 2;
+			top: function top(point, height) {
+				return point - height / 2;
 			}
 		}
 	};
@@ -293,8 +297,8 @@ var template$1 = function () {
 
 function add_css$1() {
 	var style = createElement('style');
-	style.id = "svelte-2434625387-style";
-	style.textContent = "\n\t[svelte-2434625387].vcentered, [svelte-2434625387] .vcentered {\n\t\tposition: absolute;\n\t}\n";
+	style.id = "svelte-629105964-style";
+	style.textContent = "\n\t[svelte-629105964].vcentered, [svelte-629105964] .vcentered {\n\t\tposition: absolute;\n\t}\n";
 	appendNode(style, document.head);
 }
 
@@ -302,8 +306,8 @@ function create_main_fragment$1(state, component) {
 	var div_style_value;
 
 	var div = createElement('div');
-	setAttribute(div, 'svelte-2434625387', '');
-	div.style.cssText = div_style_value = "top: " + state.topOffsetByContent + "px; left: " + state.left + "px;";
+	setAttribute(div, 'svelte-629105964', '');
+	div.style.cssText = div_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
 	div.className = "vcentered";
 	component.refs.container = div;
 	if (component._yield) component._yield.mount(div, null);
@@ -314,7 +318,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		update: function update(changed, state) {
-			if (div_style_value !== (div_style_value = "top: " + state.topOffsetByContent + "px; left: " + state.left + "px;")) {
+			if (div_style_value !== (div_style_value = "top: " + state.top + "px; left: " + state.left + "px;")) {
 				div.style.cssText = div_style_value;
 			}
 		},
@@ -347,7 +351,7 @@ function VerticallyCentered(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-2434625387-style")) add_css$1();
+	if (!document.getElementById("svelte-629105964-style")) add_css$1();
 
 	this._fragment = create_main_fragment$1(this._state, this);
 	if (options.target) this._fragment.mount(options.target, null);
@@ -540,6 +544,12 @@ function calculateAxisPoints(dates) {
 	});
 }
 
+// console.log(createTimelineAxis(require('./filter-and-sort')(require('./timeline-data')), 5).map(date => {
+// 	return Object.assign({
+// 		afterCrucifixion: (date.start || date.amd) - 1471937
+// 	}, date)
+// }))
+
 var addAxisPointsToTimelineData = addSnipsToTimelineData;
 
 function addSnipsToTimelineData(axisPoints, timelineData) {
@@ -653,8 +663,8 @@ var template = function () {
 
 function add_css() {
 	var style = createElement('style');
-	style.id = "svelte-4062899931-style";
-	style.textContent = "\n[svelte-4062899931].timeline-container, [svelte-4062899931] .timeline-container {\n\tposition: relative;\n}\n[svelte-4062899931].axis, [svelte-4062899931] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\tfloat: right;\n\ttext-align: right;\n}\n[svelte-4062899931].event, [svelte-4062899931] .event {\n\tposition: absolute;\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-4062899931].event:hover, [svelte-4062899931] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-4062899931].eventhover, [svelte-4062899931] .eventhover {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n}\n";
+	style.id = "svelte-766923707-style";
+	style.textContent = "\n[svelte-766923707].timeline-container, [svelte-766923707] .timeline-container {\n\tposition: relative;\n}\n[svelte-766923707].axis, [svelte-766923707] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\tfloat: right;\n\ttext-align: right;\n}\n[svelte-766923707].event, [svelte-766923707] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-766923707].event:hover, [svelte-766923707] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-766923707].eventhover, [svelte-766923707] .eventhover {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -663,7 +673,7 @@ function create_main_fragment(state, component) {
 
 	var text = createText("\n");
 	var div = createElement('div');
-	setAttribute(div, 'svelte-4062899931', '');
+	setAttribute(div, 'svelte-766923707', '');
 	div.className = "timeline-container";
 	var each_block_value = state.axis;
 
@@ -757,7 +767,7 @@ function create_if_block(state, component) {
 	var text_value, text_2_value, text_4_value;
 
 	var div = createElement('div');
-	setAttribute(div, 'svelte-4062899931', '');
+	setAttribute(div, 'svelte-766923707', '');
 	div.className = "eventhover";
 	var text = createText(text_value = state.hoveredEvent.title);
 	appendNode(text, div);
@@ -803,7 +813,7 @@ function create_each_block(state, each_block_value, date, date_index, component)
 		target: null,
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
-		data: { left: -110, top: template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
+		data: { left: -110, point: template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
 	});
 
 	return {
@@ -816,7 +826,7 @@ function create_each_block(state, each_block_value, date, date_index, component)
 
 			var vcenter_1_changes = {};
 
-			if ('distanceFromStartDay' in changed || 'axis' in changed) vcenter_1_changes.top = template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint));
+			if ('distanceFromStartDay' in changed || 'axis' in changed) vcenter_1_changes.point = template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint));
 
 			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
 		},
@@ -921,14 +931,126 @@ function create_if_block_2(state, each_block_value, date, date_index, component)
 }
 
 function create_each_block_1(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
-	var div_data_title_value, div_style_value;
+	function get_block(state, each_block_value_1, timelineEvent, timelineEvent_index) {
+		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block_3;
+		return create_if_block_4;
+	}
+
+	var current_block = get_block(state, each_block_value_1, timelineEvent, timelineEvent_index);
+	var if_block_2 = current_block(state, each_block_value_1, timelineEvent, timelineEvent_index, component);
+
+	var if_block_2_anchor = createComment();
+
+	return {
+		mount: function mount(target, anchor) {
+			if_block_2.mount(target, anchor);
+			insertNode(if_block_2_anchor, target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
+			if (current_block === (current_block = get_block(state, each_block_value_1, timelineEvent, timelineEvent_index)) && if_block_2) {
+				if_block_2.update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index);
+			} else {
+				if_block_2.destroy(true);
+				if_block_2 = current_block(state, each_block_value_1, timelineEvent, timelineEvent_index, component);
+				if_block_2.mount(if_block_2_anchor.parentNode, if_block_2_anchor);
+			}
+		},
+
+		destroy: function destroy(detach) {
+			if_block_2.destroy(detach);
+
+			if (detach) {
+				detachNode(if_block_2_anchor);
+			}
+		}
+	};
+}
+
+function create_vcenter_yield_fragment_1(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
+	var div_data_title_value;
 
 	var div = createElement('div');
 	div.className = "event";
 	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
-	div.style.cssText = div_style_value = "\n\t\t\t\ttop: " + template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\theight: " + template.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t\tleft: " + template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t";
+	div.style.cssText = "height: 4px;";
 	addEventListener(div, 'mouseover', mouseover_handler);
 	addEventListener(div, 'mouseleave', mouseleave_handler);
+
+	div._svelte = {
+		component: component,
+		each_block_value_1: each_block_value_1,
+		timelineEvent_index: timelineEvent_index
+	};
+
+	appendNode(createText(" "), div);
+
+	return {
+		mount: function mount(target, anchor) {
+			insertNode(div, target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
+			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
+				setAttribute(div, 'data-title', div_data_title_value);
+			}
+
+			div._svelte.each_block_value_1 = each_block_value_1;
+			div._svelte.timelineEvent_index = timelineEvent_index;
+		},
+
+		destroy: function destroy(detach) {
+			removeEventListener(div, 'mouseover', mouseover_handler);
+			removeEventListener(div, 'mouseleave', mouseleave_handler);
+
+			if (detach) {
+				detachNode(div);
+			}
+		}
+	};
+}
+
+function create_if_block_3(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
+	var vcenter_1_yield_fragment = create_vcenter_yield_fragment_1(state, each_block_value_1, timelineEvent, timelineEvent_index, component);
+
+	var vcenter_1 = new VerticallyCentered({
+		target: null,
+		_root: component._root,
+		_yield: vcenter_1_yield_fragment,
+		data: { left: template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
+	});
+
+	return {
+		mount: function mount(target, anchor) {
+			vcenter_1._fragment.mount(target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
+			vcenter_1_yield_fragment.update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index);
+
+			var vcenter_1_changes = {};
+
+			if ('relevantTimelineData' in changed) vcenter_1_changes.left = template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
+			if ('relevantTimelineData' in changed) vcenter_1_changes.point = template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart);
+
+			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
+		},
+
+		destroy: function destroy(detach) {
+			vcenter_1.destroy(detach);
+		}
+	};
+}
+
+function create_if_block_4(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
+	var div_style_value, div_data_title_value;
+
+	var div = createElement('div');
+	div.style.cssText = div_style_value = "\n\t\t\t\t\tposition: absolute;\n\t\t\t\t\ttop: " + template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\t\tleft: " + template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\theight: " + template.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t\t";
+	div.className = "event";
+	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+	addEventListener(div, 'mouseover', mouseover_handler_1);
+	addEventListener(div, 'mouseleave', mouseleave_handler_1);
 
 	div._svelte = {
 		component: component,
@@ -942,12 +1064,12 @@ function create_each_block_1(state, each_block_value_1, timelineEvent, timelineE
 		},
 
 		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
-			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
-				setAttribute(div, 'data-title', div_data_title_value);
+			if (div_style_value !== (div_style_value = "\n\t\t\t\t\tposition: absolute;\n\t\t\t\t\ttop: " + template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\t\tleft: " + template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\theight: " + template.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t\t")) {
+				div.style.cssText = div_style_value;
 			}
 
-			if (div_style_value !== (div_style_value = "\n\t\t\t\ttop: " + template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\theight: " + template.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t\tleft: " + template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t")) {
-				div.style.cssText = div_style_value;
+			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
+				setAttribute(div, 'data-title', div_data_title_value);
 			}
 
 			div._svelte.each_block_value_1 = each_block_value_1;
@@ -955,8 +1077,8 @@ function create_each_block_1(state, each_block_value_1, timelineEvent, timelineE
 		},
 
 		destroy: function destroy(detach) {
-			removeEventListener(div, 'mouseover', mouseover_handler);
-			removeEventListener(div, 'mouseleave', mouseleave_handler);
+			removeEventListener(div, 'mouseover', mouseover_handler_1);
+			removeEventListener(div, 'mouseleave', mouseleave_handler_1);
 
 			if (detach) {
 				detachNode(div);
@@ -981,6 +1103,22 @@ function mouseleave_handler(event) {
 	component.endHover(timelineEvent);
 }
 
+function mouseover_handler_1(event) {
+	var component = this._svelte.component;
+	var each_block_value_1 = this._svelte.each_block_value_1,
+	    timelineEvent_index = this._svelte.timelineEvent_index,
+	    timelineEvent = each_block_value_1[timelineEvent_index];
+	component.startHover(timelineEvent);
+}
+
+function mouseleave_handler_1(event) {
+	var component = this._svelte.component;
+	var each_block_value_1 = this._svelte.each_block_value_1,
+	    timelineEvent_index = this._svelte.timelineEvent_index,
+	    timelineEvent = each_block_value_1[timelineEvent_index];
+	component.endHover(timelineEvent);
+}
+
 function Main(options) {
 	options = options || {};
 	this._state = options.data || {};
@@ -997,7 +1135,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-4062899931-style")) add_css();
+	if (!document.getElementById("svelte-766923707-style")) add_css();
 	this._renderHooks = [];
 
 	this._fragment = create_main_fragment(this._state, this);
@@ -1287,7 +1425,8 @@ var timelineData = [{
 	"amd": {
 		"start": 1485238,
 		"end": 1485298
-	}
+	},
+	"type": "time"
 }, {
 	"title": "First Trumpet",
 	"hebrew": {
@@ -1369,8 +1508,8 @@ var timelineData = [{
 }, {
 	"title": "Fifth Trumpet - Nero orders Vespasian and Titus to invade Israel",
 	"hebrew": {
-		"start": "Heshvan 24, 4070",
-		"end": "Heshvan 24, 4070"
+		"start": "Heshvan 24, 4066",
+		"end": "Heshvan 24, 4066"
 	},
 	"macedonian": {
 		"start": "Dius 24, 377",
@@ -1418,7 +1557,8 @@ var timelineData = [{
 	"amd": {
 		"start": 1485295,
 		"end": 1485883
-	}
+	},
+	"type": "time"
 }, {
 	"title": "Jewish preparations for defence of temple and city start in earnest",
 	"hebrew": {
@@ -1546,7 +1686,8 @@ var timelineData = [{
 	"amd": {
 		"start": 1486555,
 		"end": 1486696
-	}
+	},
+	"type": "time"
 }, {
 	"title": "Third wall of Jerusalem breached by Titus' battering rams",
 	"hebrew": {
@@ -1827,7 +1968,8 @@ var timelineData = [{
 	"amd": {
 		"start": 1486668,
 		"end": 1487928
-	}
+	},
+	"type": "time"
 }, {
 	"title": "Second three and a half years of the war of Titus the prince",
 	"hebrew": {
@@ -1861,7 +2003,8 @@ var timelineData = [{
 	"amd": {
 		"start": 1486668,
 		"end": 1487959
-	}
+	},
+	"type": "time"
 }, {
 	"title": "Titus orders earthworks against Upper City",
 	"hebrew": {
@@ -1970,7 +2113,8 @@ var timelineData = [{
 	"amd": {
 		"start": 1488003,
 		"end": 1488003
-	}
+	},
+	"type": "time"
 }];
 
 new Main({
@@ -1981,3 +2125,4 @@ new Main({
 });
 
 }());
+//# sourceMappingURL=bundle.js.map
