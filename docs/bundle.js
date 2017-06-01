@@ -384,19 +384,27 @@ VerticallyCentered.prototype.teardown = VerticallyCentered.prototype.destroy = f
 	this._torndown = true;
 };
 
-function multiplyDaysByHeight(days) {
-	return (days + 1) * 3;
-}
-
 function multiplyIndentByWidth(indentLevel) {
 	return indentLevel * 20;
+}
+
+function recompute$2(state, newState, oldState, isInitial) {
+	if (isInitial || 'dayHeight' in newState && differs(state.dayHeight, oldState.dayHeight)) {
+		state.multiplyDaysByHeight = newState.multiplyDaysByHeight = template$2.computed.multiplyDaysByHeight(state.dayHeight);
+	}
 }
 
 var template$2 = function () {
 	return {
 		helpers: {
-			multiplyDaysByHeight: multiplyDaysByHeight,
 			multiplyIndentByWidth: multiplyIndentByWidth
+		},
+		computed: {
+			multiplyDaysByHeight: function multiplyDaysByHeight(dayHeight) {
+				return function (days) {
+					return days * dayHeight;
+				};
+			}
 		}
 	};
 }();
@@ -424,7 +432,7 @@ function create_main_fragment$2(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed) {
+			if ('timeline' in changed || 'multiplyDaysByHeight' in changed) {
 				for (var i = 0; i < each_block_value.length; i += 1) {
 					if (each_block_iterations[i]) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
@@ -487,11 +495,12 @@ function create_each_block$1(state, each_block_value, timelineEvent, timelineEve
 }
 
 function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var div_data_title_value;
+	var div_data_title_value, div_data_days_value;
 
 	var div = createElement('div');
 	div.className = "event";
 	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+	setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
 	div.style.cssText = "height: 4px;";
 	addEventListener(div, 'mouseover', mouseover_handler);
 	addEventListener(div, 'mouseleave', mouseleave_handler);
@@ -510,6 +519,10 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
 			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
 				setAttribute(div, 'data-title', div_data_title_value);
+			}
+
+			if (div_data_days_value !== (div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1)) {
+				setAttribute(div, 'data-days', div_data_days_value);
 			}
 
 			div._svelte.each_block_value = each_block_value;
@@ -534,7 +547,7 @@ function create_if_block$1(state, each_block_value, timelineEvent, timelineEvent
 		target: null,
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
-		data: { left: template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
+		data: { left: template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: state.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
 	});
 
 	return {
@@ -548,7 +561,7 @@ function create_if_block$1(state, each_block_value, timelineEvent, timelineEvent
 			var vcenter_1_changes = {};
 
 			if ('timeline' in changed) vcenter_1_changes.left = template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
-			if ('timeline' in changed) vcenter_1_changes.point = template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart);
+			if ('multiplyDaysByHeight' in changed || 'timeline' in changed) vcenter_1_changes.point = state.multiplyDaysByHeight(timelineEvent.axisAfterStart);
 
 			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
 		},
@@ -560,12 +573,13 @@ function create_if_block$1(state, each_block_value, timelineEvent, timelineEvent
 }
 
 function create_if_block_1$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var div_style_value, div_data_title_value;
+	var div_style_value, div_data_title_value, div_data_days_value;
 
 	var div = createElement('div');
-	div.style.cssText = div_style_value = "\n\t\t\t\tposition: absolute;\n\t\t\t\ttop: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\tleft: " + template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\theight: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t";
+	div.style.cssText = div_style_value = "\n\t\t\t\tposition: absolute;\n\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\tleft: " + template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start + 1) + "px;\n\t\t\t";
 	div.className = "event";
 	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+	setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
 	addEventListener(div, 'mouseover', mouseover_handler_1);
 	addEventListener(div, 'mouseleave', mouseleave_handler_1);
 
@@ -581,12 +595,16 @@ function create_if_block_1$1(state, each_block_value, timelineEvent, timelineEve
 		},
 
 		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			if (div_style_value !== (div_style_value = "\n\t\t\t\tposition: absolute;\n\t\t\t\ttop: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\tleft: " + template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\theight: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t")) {
+			if (div_style_value !== (div_style_value = "\n\t\t\t\tposition: absolute;\n\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\tleft: " + template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start + 1) + "px;\n\t\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
 			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
 				setAttribute(div, 'data-title', div_data_title_value);
+			}
+
+			if (div_data_days_value !== (div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1)) {
+				setAttribute(div, 'data-days', div_data_days_value);
 			}
 
 			div._svelte.each_block_value = each_block_value;
@@ -639,6 +657,7 @@ function mouseleave_handler_1(event) {
 function Events(options) {
 	options = options || {};
 	this._state = options.data || {};
+	recompute$2(this._state, this._state, {}, true);
 
 	this._observers = {
 		pre: Object.create(null),
@@ -663,6 +682,7 @@ assign(Events.prototype, proto);
 Events.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign({}, oldState, newState);
+	recompute$2(this._state, newState, oldState, false);
 	dispatchObservers(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers(this, this._observers.post, newState, oldState);
@@ -735,14 +755,13 @@ var sortRange = function sortRange(ary, getRangeValues) {
 };
 
 var filterAndSort = function filterAndSort(timelineData) {
+	var minimumLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 	return sortRange(timelineData.filter(function (event) {
-		return event.amd.end > 1471937 && event.amd.start < 1488003;
+		return event.amd.end > 1471937 && event.amd.start < 1488003 && event.amd.end - event.amd.start + 1 >= minimumLength;
 	}), function (event) {
 		return [event.amd.start, event.amd.end];
 	});
 };
-
-var snipSectionsLongerThan = 100;
 
 var pipe = function pipe(input) {
 	for (var _len = arguments.length, fns = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -776,7 +795,7 @@ var getDates = function getDates(property, object) {
 };
 
 var createTimelineAxis_1 = createTimelineAxis;
-function createTimelineAxis(timelineData, snipBuffer) {
+function createTimelineAxis(timelineData, snipSectionsLongerThan, snipBuffer) {
 	var naiveAxisMarkers = flatMap(function (event) {
 		return event.amd.start === event.amd.end ? [getDates('start', event)] : [getDates('start', event), getDates('end', event)];
 	}, timelineData).sort(function (a, b) {
@@ -784,7 +803,7 @@ function createTimelineAxis(timelineData, snipBuffer) {
 	});
 
 	return pipe(naiveAxisMarkers, filterOutDuplicates, function (_) {
-		return addSnipEvents(_, snipBuffer);
+		return addSnipEvents(_, snipSectionsLongerThan, snipBuffer);
 	}, calculateAxisPoints);
 }
 
@@ -797,7 +816,7 @@ function filterOutDuplicates(dates) {
 	});
 }
 
-function addSnipEvents(dates, snipBuffer) {
+function addSnipEvents(dates, snipSectionsLongerThan, snipBuffer) {
 	var lastDay = null;
 
 	return flatMap(function (date) {
@@ -867,13 +886,20 @@ function addSnipsToTimelineData(axisPoints, timelineData) {
 }
 
 function recompute(state, newState, oldState, isInitial) {
-	if (isInitial || 'timelineData' in newState && differs(state.timelineData, oldState.timelineData)) {
-		state.relevantEvents = newState.relevantEvents = template.computed.relevantEvents(state.timelineData);
+	if (isInitial || 'dayHeight' in newState && differs(state.dayHeight, oldState.dayHeight)) {
+		state.multiplyDaysByHeight = newState.multiplyDaysByHeight = template.computed.multiplyDaysByHeight(state.dayHeight);
+	}
+
+	if (isInitial || 'timelineData' in newState && differs(state.timelineData, oldState.timelineData) || 'minimumLength' in newState && differs(state.minimumLength, oldState.minimumLength)) {
+		state.relevantEvents = newState.relevantEvents = template.computed.relevantEvents(state.timelineData, state.minimumLength);
 	}
 
 	if (isInitial || 'relevantEvents' in newState && differs(state.relevantEvents, oldState.relevantEvents)) {
-		state.axis = newState.axis = template.computed.axis(state.relevantEvents);
 		state.startDay = newState.startDay = template.computed.startDay(state.relevantEvents);
+	}
+
+	if (isInitial || 'relevantEvents' in newState && differs(state.relevantEvents, oldState.relevantEvents) || 'snipSectionsLongerThan' in newState && differs(state.snipSectionsLongerThan, oldState.snipSectionsLongerThan) || 'snipBuffer' in newState && differs(state.snipBuffer, oldState.snipBuffer)) {
+		state.axis = newState.axis = template.computed.axis(state.relevantEvents, state.snipSectionsLongerThan, state.snipBuffer);
 	}
 
 	if (isInitial || 'axis' in newState && differs(state.axis, oldState.axis) || 'relevantEvents' in newState && differs(state.relevantEvents, oldState.relevantEvents)) {
@@ -887,6 +913,10 @@ function recompute(state, newState, oldState, isInitial) {
 
 	if (isInitial || 'startDay' in newState && differs(state.startDay, oldState.startDay)) {
 		state.distanceFromStartDay = newState.distanceFromStartDay = template.computed.distanceFromStartDay(state.startDay);
+	}
+
+	if (isInitial || 'hoveredEvent' in newState && differs(state.hoveredEvent, oldState.hoveredEvent)) {
+		state.axisIsRelevant = newState.axisIsRelevant = template.computed.axisIsRelevant(state.hoveredEvent);
 	}
 }
 
@@ -915,16 +945,40 @@ var template = function () {
 		});
 	}
 
+	var zoomedIn = {
+		snipSectionsLongerThan: 300,
+		snipBuffer: 10,
+		dayHeight: 10,
+		minimumLength: 1,
+		zoomedIn: true
+	};
+	var zoomedOut = {
+		snipSectionsLongerThan: 10000,
+		snipBuffer: 50,
+		dayHeight: 0.05,
+		minimumLength: 100,
+		zoomedIn: false
+	};
+
 	return {
+		data: function data() {
+			return zoomedOut;
+		},
+
 		computed: {
-			relevantEvents: function relevantEvents(timelineData) {
-				return filterAndSort(timelineData);
-			},
-			axis: function axis(relevantEvents) {
-				return createTimelineAxis_1(relevantEvents, 50);
+			multiplyDaysByHeight: function multiplyDaysByHeight(dayHeight) {
+				return function (days) {
+					return days * dayHeight;
+				};
 			},
 			startDay: function startDay(relevantEvents) {
 				return relevantEvents[0].amd.start;
+			},
+			relevantEvents: function relevantEvents(timelineData, minimumLength) {
+				return filterAndSort(timelineData, minimumLength);
+			},
+			axis: function axis(relevantEvents, snipSectionsLongerThan, snipBuffer) {
+				return createTimelineAxis_1(relevantEvents, snipSectionsLongerThan, snipBuffer);
 			},
 			relevantEventsWithAxis: function relevantEventsWithAxis(axis, relevantEvents) {
 				return addAxisPointsToTimelineData(axis, relevantEvents);
@@ -945,10 +999,14 @@ var template = function () {
 				return function (day) {
 					return day - startDay;
 				};
+			},
+			axisIsRelevant: function axisIsRelevant(hoveredEvent) {
+				return function (amdDay) {
+					return !!hoveredEvent && (hoveredEvent.amd.start === amdDay || hoveredEvent.amd.end === amdDay);
+				};
 			}
 		},
 		helpers: {
-			multiplyDaysByHeight: multiplyDaysByHeight,
 			multiplyIndentByWidth: multiplyIndentByWidth
 		},
 		methods: {
@@ -961,6 +1019,13 @@ var template = function () {
 				this.set({
 					hoveredEvent: null
 				});
+			},
+			toggleZoom: function toggleZoom() {
+				if (this.get('zoomedIn')) {
+					this.set(zoomedOut);
+				} else {
+					this.set(zoomedIn);
+				}
 			}
 		}
 	};
@@ -968,8 +1033,8 @@ var template = function () {
 
 function add_css() {
 	var style = createElement('style');
-	style.id = "svelte-3080785206-style";
-	style.textContent = "\n[svelte-3080785206].timeline-container, [svelte-3080785206] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-3080785206].timeline-row, [svelte-3080785206] .timeline-row {\n\tposition: relative;\n}\n[svelte-3080785206].axis, [svelte-3080785206] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-3080785206].event, [svelte-3080785206] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-3080785206].event:hover, [svelte-3080785206] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-3080785206].eventhover, [svelte-3080785206] .eventhover {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n}\n";
+	style.id = "svelte-885792027-style";
+	style.textContent = "\n[svelte-885792027].timeline-container, [svelte-885792027] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-885792027].timeline-row, [svelte-885792027] .timeline-row {\n\tposition: relative;\n}\n[svelte-885792027].axis, [svelte-885792027] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-885792027].axis[data-relevant=true], [svelte-885792027] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-885792027].event, [svelte-885792027] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-885792027].event:hover, [svelte-885792027] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-885792027].eventhover, [svelte-885792027] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n[svelte-885792027]#zoombutton, [svelte-885792027] #zoombutton {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\t\n\tright: 0;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -977,8 +1042,30 @@ function create_main_fragment(state, component) {
 	var if_block = state.hoveredEvent && create_if_block(state, component);
 
 	var text = createText("\n");
+	var button = createElement('button');
+	setAttribute(button, 'svelte-885792027', '');
+	button.className = "btn-default";
+	button.id = "zoombutton";
+
+	function click_handler(event) {
+		component.toggleZoom();
+	}
+
+	addEventListener(button, 'click', click_handler);
+	appendNode(createText("Zoom "), button);
+
+	function get_block(state) {
+		if (state.zoomedIn) return create_if_block_2;
+		return create_if_block_3;
+	}
+
+	var current_block = get_block(state);
+	var if_block_2 = current_block(state, component);
+
+	if_block_2.mount(button, null);
+	var text_2 = createText("\n");
 	var div = createElement('div');
-	setAttribute(div, 'svelte-3080785206', '');
+	setAttribute(div, 'svelte-885792027', '');
 	div.className = "timeline-container";
 	var div_1 = createElement('div');
 	appendNode(div_1, div);
@@ -1002,7 +1089,10 @@ function create_main_fragment(state, component) {
 	var events = new Events({
 		target: div_2,
 		_root: component._root,
-		data: { timeline: state.times }
+		data: {
+			timeline: state.times,
+			dayHeight: state.dayHeight
+		}
 	});
 
 	events.on('startHover', function (event) {
@@ -1022,7 +1112,10 @@ function create_main_fragment(state, component) {
 	var events_1 = new Events({
 		target: div_3,
 		_root: component._root,
-		data: { timeline: state.otherEvents }
+		data: {
+			timeline: state.otherEvents,
+			dayHeight: state.dayHeight
+		}
 	});
 
 	events_1.on('startHover', function (event) {
@@ -1037,6 +1130,8 @@ function create_main_fragment(state, component) {
 		mount: function mount(target, anchor) {
 			if (if_block) if_block.mount(target, anchor);
 			insertNode(text, target, anchor);
+			insertNode(button, target, anchor);
+			insertNode(text_2, target, anchor);
 			insertNode(div, target, anchor);
 		},
 
@@ -1053,9 +1148,15 @@ function create_main_fragment(state, component) {
 				if_block = null;
 			}
 
+			if (current_block !== (current_block = get_block(state))) {
+				if_block_2.destroy(true);
+				if_block_2 = current_block(state, component);
+				if_block_2.mount(button, null);
+			}
+
 			var each_block_value = state.axis;
 
-			if ('distanceFromStartDay' in changed || 'axis' in changed) {
+			if ('multiplyDaysByHeight' in changed || 'distanceFromStartDay' in changed || 'axis' in changed || 'axisIsRelevant' in changed) {
 				for (var i = 0; i < each_block_value.length; i += 1) {
 					if (each_block_iterations[i]) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
@@ -1072,18 +1173,22 @@ function create_main_fragment(state, component) {
 			var events_changes = {};
 
 			if ('times' in changed) events_changes.timeline = state.times;
+			if ('dayHeight' in changed) events_changes.dayHeight = state.dayHeight;
 
 			if (Object.keys(events_changes).length) events.set(events_changes);
 
 			var events_1_changes = {};
 
 			if ('otherEvents' in changed) events_1_changes.timeline = state.otherEvents;
+			if ('dayHeight' in changed) events_1_changes.dayHeight = state.dayHeight;
 
 			if (Object.keys(events_1_changes).length) events_1.set(events_1_changes);
 		},
 
 		destroy: function destroy(detach) {
 			if (if_block) if_block.destroy(detach);
+			removeEventListener(button, 'click', click_handler);
+			if_block_2.destroy(false);
 
 			destroyEach(each_block_iterations, false, 0);
 
@@ -1092,27 +1197,57 @@ function create_main_fragment(state, component) {
 
 			if (detach) {
 				detachNode(text);
+				detachNode(button);
+				detachNode(text_2);
 				detachNode(div);
 			}
 		}
 	};
 }
 
+function create_if_block_1(state, component) {
+	var text_1_value;
+
+	var text = createText("(");
+	var text_1 = createText(text_1_value = state.hoveredEvent.reference);
+	var text_2 = createText(")");
+
+	return {
+		mount: function mount(target, anchor) {
+			insertNode(text, target, anchor);
+			insertNode(text_1, target, anchor);
+			insertNode(text_2, target, anchor);
+		},
+
+		update: function update(changed, state) {
+			if (text_1_value !== (text_1_value = state.hoveredEvent.reference)) {
+				text_1.data = text_1_value;
+			}
+		},
+
+		destroy: function destroy(detach) {
+			if (detach) {
+				detachNode(text);
+				detachNode(text_1);
+				detachNode(text_2);
+			}
+		}
+	};
+}
+
 function create_if_block(state, component) {
-	var text_value, text_2_value, text_4_value;
+	var text_value;
 
 	var div = createElement('div');
-	setAttribute(div, 'svelte-3080785206', '');
+	setAttribute(div, 'svelte-885792027', '');
 	div.className = "eventhover";
 	var text = createText(text_value = state.hoveredEvent.title);
 	appendNode(text, div);
-	appendNode(createText(" ("), div);
-	var text_2 = createText(text_2_value = state.hoveredEvent.hebrew.start);
-	appendNode(text_2, div);
-	appendNode(createText(" to "), div);
-	var text_4 = createText(text_4_value = state.hoveredEvent.hebrew.end);
-	appendNode(text_4, div);
-	appendNode(createText(")"), div);
+	appendNode(createText(" "), div);
+
+	var if_block_1 = state.hoveredEvent.reference && create_if_block_1(state, component);
+
+	if (if_block_1) if_block_1.mount(div, null);
 
 	return {
 		mount: function mount(target, anchor) {
@@ -1124,18 +1259,56 @@ function create_if_block(state, component) {
 				text.data = text_value;
 			}
 
-			if (text_2_value !== (text_2_value = state.hoveredEvent.hebrew.start)) {
-				text_2.data = text_2_value;
-			}
-
-			if (text_4_value !== (text_4_value = state.hoveredEvent.hebrew.end)) {
-				text_4.data = text_4_value;
+			if (state.hoveredEvent.reference) {
+				if (if_block_1) {
+					if_block_1.update(changed, state);
+				} else {
+					if_block_1 = create_if_block_1(state, component);
+					if_block_1.mount(div, null);
+				}
+			} else if (if_block_1) {
+				if_block_1.destroy(true);
+				if_block_1 = null;
 			}
 		},
 
 		destroy: function destroy(detach) {
+			if (if_block_1) if_block_1.destroy(false);
+
 			if (detach) {
 				detachNode(div);
+			}
+		}
+	};
+}
+
+function create_if_block_2(state, component) {
+	var text = createText("out");
+
+	return {
+		mount: function mount(target, anchor) {
+			insertNode(text, target, anchor);
+		},
+
+		destroy: function destroy(detach) {
+			if (detach) {
+				detachNode(text);
+			}
+		}
+	};
+}
+
+function create_if_block_3(state, component) {
+	var text = createText("in");
+
+	return {
+		mount: function mount(target, anchor) {
+			insertNode(text, target, anchor);
+		},
+
+		destroy: function destroy(detach) {
+			if (detach) {
+				detachNode(text);
 			}
 		}
 	};
@@ -1148,7 +1321,7 @@ function create_each_block(state, each_block_value, date, date_index, component)
 		target: null,
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
-		data: { point: template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
+		data: { point: state.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
 	});
 
 	return {
@@ -1161,7 +1334,7 @@ function create_each_block(state, each_block_value, date, date_index, component)
 
 			var vcenter_1_changes = {};
 
-			if ('distanceFromStartDay' in changed || 'axis' in changed) vcenter_1_changes.point = template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint));
+			if ('multiplyDaysByHeight' in changed || 'distanceFromStartDay' in changed || 'axis' in changed) vcenter_1_changes.point = state.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint));
 
 			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
 		},
@@ -1173,18 +1346,21 @@ function create_each_block(state, each_block_value, date, date_index, component)
 }
 
 function create_vcenter_yield_fragment(state, each_block_value, date, date_index, component) {
+	var div_data_relevant_value;
+
 	var div = createElement('div');
 	div.className = "axis";
+	setAttribute(div, 'data-relevant', div_data_relevant_value = state.axisIsRelevant(date.amd));
 
 	function get_block(state, each_block_value, date, date_index) {
-		if (date.type === 'snip') return create_if_block_1;
-		return create_if_block_2;
+		if (date.type === 'snip') return create_if_block_4;
+		return create_if_block_5;
 	}
 
 	var current_block = get_block(state, each_block_value, date, date_index);
-	var if_block_1 = current_block(state, each_block_value, date, date_index, component);
+	var if_block_3 = current_block(state, each_block_value, date, date_index, component);
 
-	if_block_1.mount(div, null);
+	if_block_3.mount(div, null);
 
 	return {
 		mount: function mount(target, anchor) {
@@ -1192,17 +1368,21 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 		},
 
 		update: function update(changed, state, each_block_value, date, date_index) {
-			if (current_block === (current_block = get_block(state, each_block_value, date, date_index)) && if_block_1) {
-				if_block_1.update(changed, state, each_block_value, date, date_index);
+			if (div_data_relevant_value !== (div_data_relevant_value = state.axisIsRelevant(date.amd))) {
+				setAttribute(div, 'data-relevant', div_data_relevant_value);
+			}
+
+			if (current_block === (current_block = get_block(state, each_block_value, date, date_index)) && if_block_3) {
+				if_block_3.update(changed, state, each_block_value, date, date_index);
 			} else {
-				if_block_1.destroy(true);
-				if_block_1 = current_block(state, each_block_value, date, date_index, component);
-				if_block_1.mount(div, null);
+				if_block_3.destroy(true);
+				if_block_3 = current_block(state, each_block_value, date, date_index, component);
+				if_block_3.mount(div, null);
 			}
 		},
 
 		destroy: function destroy(detach) {
-			if_block_1.destroy(false);
+			if_block_3.destroy(false);
 
 			if (detach) {
 				detachNode(div);
@@ -1211,7 +1391,7 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 	};
 }
 
-function create_if_block_1(state, each_block_value, date, date_index, component) {
+function create_if_block_4(state, each_block_value, date, date_index, component) {
 	var text_1_value;
 
 	var text = createText("...snip (");
@@ -1241,7 +1421,7 @@ function create_if_block_1(state, each_block_value, date, date_index, component)
 	};
 }
 
-function create_if_block_2(state, each_block_value, date, date_index, component) {
+function create_if_block_5(state, each_block_value, date, date_index, component) {
 	var text_value;
 
 	var text = createText(text_value = date.hebrew || date.amd);
@@ -1267,7 +1447,7 @@ function create_if_block_2(state, each_block_value, date, date_index, component)
 
 function Main(options) {
 	options = options || {};
-	this._state = options.data || {};
+	this._state = assign(template.data(), options.data);
 	recompute(this._state, this._state, {}, true);
 
 	this._observers = {
@@ -1281,7 +1461,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-3080785206-style")) add_css();
+	if (!document.getElementById("svelte-885792027-style")) add_css();
 	this._renderHooks = [];
 
 	this._fragment = create_main_fragment(this._state, this);
@@ -1481,10 +1661,16 @@ var timelineData = [{
 	},
 	"reference": "Revelation 6:9-11"
 }, {
+	"title": "Great Tribulation (Rome & Israel killing Christians)",
+	"amd": {
+		"start": 1483532,
+		"end": 1485883
+	}
+}, {
 	"title": "Sixth Seal - visible appearance of Christ in the sky",
 	"hebrew": {
 		"start": "Iyar 20 4066",
-		"end": "Iyar 20 4066"
+		"end": "Sivan 5, 4066"
 	},
 	"macedonian": {
 		"start": "377",
@@ -1492,7 +1678,7 @@ var timelineData = [{
 	},
 	"gregorian": {
 		"start": "May 2, 66",
-		"end": "May 2, 66"
+		"end": "May 18, 66"
 	},
 	"amd": {
 		"start": 1485114,
@@ -1503,20 +1689,20 @@ var timelineData = [{
 	"title": "Seventh Seal - silence in heaven",
 	"hebrew": {
 		"start": "Sivan 6, 4066",
-		"end": "Sivan 6, 4066"
+		"end": "Tishri 1, 4066"
 	},
 	"macedonian": {
 		"start": "Daisios 6, 377",
-		"end": "Daisios 6, 377"
+		"end": "Hyperberataios 1, 377"
 	},
 	"gregorian": {
 		"start": "May 18, 66",
-		"end": "May 18, 66"
+		"end": "September 8, 66"
 	},
 	"josephus war": "6.299",
 	"amd": {
 		"start": 1485129,
-		"end": 1485129
+		"end": 1485229
 	},
 	"reference": "Revelation 8:1-6; Rev 16:1"
 }, {
@@ -1705,6 +1891,12 @@ var timelineData = [{
 		"end": 1485883
 	},
 	"type": "time"
+}, {
+	"title": "Great Wrath (Rome against Israel)",
+	"amd": {
+		"start": 1485295,
+		"end": 1487959
+	}
 }, {
 	"title": "Jewish preparations for defence of temple and city start in earnest",
 	"hebrew": {

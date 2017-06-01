@@ -1,5 +1,3 @@
-const snipSectionsLongerThan = 100
-
 const pipe = (input, ...fns) => fns.reduce((last, fn) => fn(last), input)
 const flatMap = (fn, ary) => ary.reduce((acc, element) => [ ...acc, ...fn(element) ], [])
 const safeGet = (object, property, ...rest) => {
@@ -14,7 +12,7 @@ const getDates = (property, object) => ({
 })
 
 module.exports = createTimelineAxis
-function createTimelineAxis(timelineData, snipBuffer) {
+function createTimelineAxis(timelineData, snipSectionsLongerThan, snipBuffer) {
 	const naiveAxisMarkers = flatMap(event => {
 		return event.amd.start === event.amd.end
 			? [ getDates('start', event) ]
@@ -23,7 +21,7 @@ function createTimelineAxis(timelineData, snipBuffer) {
 
 	return pipe(naiveAxisMarkers,
 		filterOutDuplicates,
-		_ => addSnipEvents(_, snipBuffer),
+		_ => addSnipEvents(_, snipSectionsLongerThan, snipBuffer),
 		calculateAxisPoints
 	)
 }
@@ -37,7 +35,7 @@ function filterOutDuplicates(dates) {
 	})
 }
 
-function addSnipEvents(dates, snipBuffer) {
+function addSnipEvents(dates, snipSectionsLongerThan, snipBuffer) {
 	let lastDay = null
 
 	return flatMap(date => {

@@ -1,13 +1,14 @@
 {{#if hoveredEvent}}
 <div class="eventhover">
-	{{hoveredEvent.title}} ({{hoveredEvent.hebrew.start}} to {{hoveredEvent.hebrew.end}})
+	{{hoveredEvent.title}} {{#if hoveredEvent.reference}}({{hoveredEvent.reference}}){{/if}}
 </div>
 {{/if}}
+<button class="btn-default" id="zoombutton" on:click="toggleZoom()">Zoom {{#if zoomedIn}}out{{else}}in{{/if}}</button>
 <div class="timeline-container">
 	<div class="timeline-row" style="width: 100px; margin-right: 10px;">
 		{{#each axis as date}}
 		<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
-			<div class="axis">
+			<div class="axis" data-relevant="{{axisIsRelevant(date.amd)}}">
 				{{#if date.type === 'snip'}}
 				...snip ({{date.days}} days)
 				{{else}}
@@ -18,10 +19,20 @@
 		{{/each}}		
 	</div>
 	<div class="timeline-row" style="width: 50px">
-		<Events timeline="{{times}}" on:startHover="startHover(event)" on:endHover="endHover(event)" />
+		<Events 
+			timeline="{{times}}" 
+			on:startHover="startHover(event)" 
+			on:endHover="endHover(event)" 
+			dayHeight="{{dayHeight}}"
+		/>
 	</div>
 	<div class="timeline-row" style="width: 200px">
-		<Events timeline="{{otherEvents}}" on:startHover="startHover(event)" on:endHover="endHover(event)" />
+		<Events 
+			timeline="{{otherEvents}}" 
+			on:startHover="startHover(event)" 
+			on:endHover="endHover(event)" 
+			dayHeight="{{dayHeight}}"
+		/>
 	</div>
 </div>
 
@@ -39,6 +50,9 @@
 	width: 100px;
 	text-align: right;
 }
+.axis[data-relevant=true] {
+	color: red;
+}
 .event {
 	width: 16px;
 	-webkit-border-radius: 10px;
@@ -52,10 +66,19 @@
 }
 
 .eventhover {
+	z-index: 1;
 	position: fixed;
 	top: 0;
 	left: 0;
 	padding: 10px;
+	background-color: white;
+	background-color: rgba(255, 255, 255, 0.8);
+}
+#zoombutton {
+	z-index: 1;
+	position: fixed;
+	top: 0;	
+	right: 0;
 }
 </style>
 
@@ -76,7 +99,7 @@ import filterAndSort from '../timeline-data/filter-and-sort.js'
 import createTimelineAxis from '../timeline-data/create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
 
-import { multiplyDaysByHeight, multiplyIndentByWidth } from './spacer-functions.js'
+import { multiplyIndentByWidth } from './spacer-functions.js'
 
 function addIndentAndAxisAfterStart(events, startDay) {
 	return mapKnowingPrevious(
@@ -96,11 +119,30 @@ function addIndentAndAxisAfterStart(events, startDay) {
 	)	
 }
 
+const zoomedIn = {
+	snipSectionsLongerThan: 300,
+	snipBuffer: 10,
+	dayHeight: 10,
+	minimumLength: 1,
+	zoomedIn: true
+}
+const zoomedOut = {
+	snipSectionsLongerThan: 10000,
+	snipBuffer: 50,
+	dayHeight: 0.05,
+	minimumLength: 100,
+	zoomedIn: false
+}
+
 export default {
+	data() {
+		return zoomedOut
+	},
 	computed: {
-		relevantEvents: timelineData => filterAndSort(timelineData),
-		axis: relevantEvents => createTimelineAxis(relevantEvents, 50),
+		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
 		startDay: relevantEvents => relevantEvents[0].amd.start,
+		relevantEvents: (timelineData, minimumLength) => filterAndSort(timelineData, minimumLength),
+		axis: (relevantEvents, snipSectionsLongerThan, snipBuffer) => createTimelineAxis(relevantEvents, snipSectionsLongerThan, snipBuffer),
 		relevantEventsWithAxis: (axis, relevantEvents) => addAxisPoints(axis, relevantEvents),
 		times: (relevantEventsWithAxis, startDay) => {
 			return addIndentAndAxisAfterStart(
@@ -114,10 +156,11 @@ export default {
 				startDay
 			)
 		},
-		distanceFromStartDay: startDay => day => day - startDay
+		distanceFromStartDay: startDay => day => day - startDay,
+		axisIsRelevant: hoveredEvent => amdDay => !!hoveredEvent 
+			&& (hoveredEvent.amd.start === amdDay || hoveredEvent.amd.end === amdDay)
 	},
 	helpers: {
-		multiplyDaysByHeight,
 		multiplyIndentByWidth,
 	},
 	methods: {
@@ -130,6 +173,13 @@ export default {
 			this.set({
 				hoveredEvent: null
 			})
+		},
+		toggleZoom() {
+			if (this.get('zoomedIn')) {
+				this.set(zoomedOut)
+			} else {
+				this.set(zoomedIn)				
+			}
 		}
 	},
 	components: {
