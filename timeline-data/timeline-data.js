@@ -272,7 +272,8 @@ module.exports = [
 		"amd": {
 			"start": 1485238,
 			"end": 1485298
-		}
+		},
+		"type": "time"
 	},
 	{
 		"title": "First Trumpet",
@@ -359,8 +360,8 @@ module.exports = [
 	{
 		"title": "Fifth Trumpet - Nero orders Vespasian and Titus to invade Israel",
 		"hebrew": {
-			"start": "Heshvan 24, 4070",
-			"end": "Heshvan 24, 4070"
+			"start": "Heshvan 24, 4066",
+			"end": "Heshvan 24, 4066"
 		},
 		"macedonian": {
 			"start": "Dius 24, 377",
@@ -410,7 +411,8 @@ module.exports = [
 		"amd": {
 			"start": 1485295,
 			"end": 1485883
-		}
+		},
+		"type": "time"
 	},
 	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",
@@ -545,7 +547,8 @@ module.exports = [
 		"amd": {
 			"start": 1486555,
 			"end": 1486696
-		}
+		},
+		"type": "time"
 	},
 	{
 		"title": "Third wall of Jerusalem breached by Titus' battering rams",
@@ -841,7 +844,8 @@ module.exports = [
 		"amd": {
 			"start": 1486668,
 			"end": 1487928
-		}
+		},
+		"type": "time"
 	},
 	{
 		"title": "Second three and a half years of the war of Titus the prince",
@@ -877,7 +881,8 @@ module.exports = [
 		"amd": {
 			"start": 1486668,
 			"end": 1487959
-		}
+		},
+		"type": "time"
 	},
 	{
 		"title": "Titus orders earthworks against Upper City",
@@ -992,6 +997,7 @@ module.exports = [
 		"amd": {
 			"start": 1488003,
 			"end": 1488003
-		}
+		},
+		"type": "time"
 	}
 ]

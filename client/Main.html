@@ -4,58 +4,39 @@
 </div>
 {{/if}}
 <div class="timeline-container">
-	{{#each axis as date}}
-	<VCenter left="-110" point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
-		<span class="axis">
-			{{#if date.type === 'snip'}}
-			...snip ({{date.days}} days)
-			{{else}}
-			{{date.hebrew || date.amd}}
-			{{/if}}			
-		</span>
-	</VCenter>
-	{{/each}}
-	{{#each relevantTimelineData as timelineEvent}}
-		{{#if timelineEvent.axis.end === timelineEvent.axis.start}}
-			<VCenter
-				left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
-				point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
-			>
-				<div 
-					class="event" 
-					data-title="{{timelineEvent.title}}"
-					style="height: 4px;"
-					on:mouseover="startHover(timelineEvent)"
-					on:mouseleave="endHover(timelineEvent)"
-				>
-					&nbsp;
-				</div>
-			</VCenter>
-		{{else}}
-			<div 
-				style="
-					position: absolute;
-					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
-					left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
-					height: {{multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start)}}px;
-				"
-				class="event" 
-				data-title="{{timelineEvent.title}}"
-				on:mouseover="startHover(timelineEvent)"
-				on:mouseleave="endHover(timelineEvent)"
-			/>
-		{{/if}}
-	{{/each}}	
+	<div class="timeline-row" style="width: 100px; margin-right: 10px;">
+		{{#each axis as date}}
+		<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
+			<div class="axis">
+				{{#if date.type === 'snip'}}
+				...snip ({{date.days}} days)
+				{{else}}
+				{{date.hebrew || date.amd}}
+				{{/if}}			
+			</div>
+		</VCenter>
+		{{/each}}		
+	</div>
+	<div class="timeline-row" style="width: 50px">
+		<Events timeline="{{times}}" on:startHover="startHover(event)" on:endHover="endHover(event)" />
+	</div>
+	<div class="timeline-row" style="width: 200px">
+		<Events timeline="{{otherEvents}}" on:startHover="startHover(event)" on:endHover="endHover(event)" />
+	</div>
 </div>
 
 <style>
 .timeline-container {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+}
+.timeline-row {
 	position: relative;
 }
 .axis {
 	font-size: 10px;
 	width: 100px;
-	float: right;
 	text-align: right;
 }
 .event {
@@ -89,10 +70,31 @@ function mapKnowingPrevious(ary, fn) {
 }
 
 import VCenter from './VerticallyCentered.html'
+import Events from './Events.html'
 
 import filterAndSort from '../timeline-data/filter-and-sort.js'
 import createTimelineAxis from '../timeline-data/create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
+
+import { multiplyDaysByHeight, multiplyIndentByWidth } from './spacer-functions.js'
+
+function addIndentAndAxisAfterStart(events, startDay) {
+	return mapKnowingPrevious(
+		events,
+		(event, previous) => {
+			const calculatedIndentLevel = () => previous.amd.end >= event.amd.start 
+				? previous.indentLevel + 1 
+				: previous.indentLevel
+
+			const indentLevel = previous ? calculatedIndentLevel() : 0
+
+			return Object.assign({
+				indentLevel,
+				axisAfterStart: event.axis.start - startDay
+			}, event)
+		}
+	)	
+}
 
 export default {
 	computed: {
@@ -100,32 +102,23 @@ export default {
 		axis: relevantEvents => createTimelineAxis(relevantEvents, 50),
 		startDay: relevantEvents => relevantEvents[0].amd.start,
 		relevantEventsWithAxis: (axis, relevantEvents) => addAxisPoints(axis, relevantEvents),
-		relevantTimelineData: (relevantEventsWithAxis, startDay) => {
-			return mapKnowingPrevious(
-				relevantEventsWithAxis,
-				(event, previous) => {
-					const calculatedIndentLevel = () => previous.amd.end >= event.amd.start 
-						? previous.indentLevel + 1 
-						: previous.indentLevel
-
-					const indentLevel = previous ? calculatedIndentLevel() : 0
-
-					return Object.assign({
-						indentLevel,
-						axisAfterStart: event.axis.start - startDay
-					}, event)
-				}
+		times: (relevantEventsWithAxis, startDay) => {
+			return addIndentAndAxisAfterStart(
+				relevantEventsWithAxis.filter(({ type }) => type === 'time'),
+				startDay
+			)
+		},
+		otherEvents: (relevantEventsWithAxis, startDay) => {
+			return addIndentAndAxisAfterStart(
+				relevantEventsWithAxis.filter(({ type }) => !type),
+				startDay
 			)
 		},
 		distanceFromStartDay: startDay => day => day - startDay
 	},
 	helpers: {
-		multiplyDaysByHeight(days) {
-			return (days + 1) * 3
-		},
-		multiplyIndentByWidth(indentLevel) {
-			return indentLevel * 20
-		}
+		multiplyDaysByHeight,
+		multiplyIndentByWidth,
 	},
 	methods: {
 		startHover(event) {
@@ -140,7 +133,8 @@ export default {
 		}
 	},
 	components: {
-		VCenter
+		VCenter,
+		Events
 	}
 }
 </script>

@@ -20,13 +20,13 @@ const longPropertyNames = {
 
 
 async function get() {
-	// const markdown = await readFile('./demo-input.md', { encoding: 'utf8' })
-	const { body: markdown } = await got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
+	const markdown = await readFile('./demo-input.md', { encoding: 'utf8' })
+	// const { body: markdown } = await got('https://content.kaysercommentary.com/Sermons/New%20Testament/Revelation/Revelation%20timeline.md')
 
 	return markdown
 }
 
-const keepPropertyNames = [ 'title', 'josephus war', 'r' ]
+const keepPropertyNames = [ 'title', 'josephus war', 'r', 'type' ]
 const datePropertyNames = [ 'h', 's', 'g', 'amd' ]
 const integerDatePropertyNames = [ 'amd' ]
 

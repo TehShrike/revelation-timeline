@@ -1,0 +1,44 @@
+{{#each timeline as timelineEvent}}
+	{{#if timelineEvent.axis.end === timelineEvent.axis.start}}
+		<VCenter
+			left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
+			point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
+		>
+			<div 
+				class="event" 
+				data-title="{{timelineEvent.title}}"
+				style="height: 4px;"
+				on:mouseover="fire('startHover', timelineEvent)"
+				on:mouseleave="fire('endHover', timelineEvent)"
+			/>
+		</VCenter>
+	{{else}}
+		<div 
+			style="
+				position: absolute;
+				top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
+				left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
+				height: {{multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start)}}px;
+			"
+			class="event" 
+			data-title="{{timelineEvent.title}}"
+			on:mouseover="fire('startHover', timelineEvent)"
+			on:mouseleave="fire('endHover', timelineEvent)"
+		/>
+	{{/if}}
+{{/each}}	
+
+<script>
+import { multiplyDaysByHeight, multiplyIndentByWidth } from './spacer-functions.js'
+import VCenter from './VerticallyCentered.html'
+
+export default {
+	helpers: {
+		multiplyDaysByHeight,
+		multiplyIndentByWidth,
+	},
+	components: {
+		VCenter
+	}
+}
+</script>

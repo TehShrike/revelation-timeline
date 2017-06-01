@@ -1,0 +1,354 @@
+---
+passage: "Revelation 1-22"
+published: true
+categories: SCIENCE ART & Math/chronology
+document: chart
+location: Dominion Covenant Church
+date: "2016-09-08"
+author: Phillip G. Kayser
+title: "Timeline of Revelation Events"
+---
+
+- Burning of temple by Nebuchadnezzar
+	- H: Ab 9, 3413
+	- S: NA
+	- G: August 1, 588 BC
+	- Josephus War: 6.250
+	- AMD: 1246702
+- Crucifixion
+	- H: Ab 14, 4030
+	- S: Xanthicus 14, 341
+	- G: April 4, 30
+	- Josephus War:
+	- AMD: 1471937
+	- R:
+- Resurrection
+	- H: Ab 16, 4030
+	- S: Xanthicus 16, 341
+	- G: April 6, 30
+	- Josephus War:
+	- AMD: 1471939
+	- R:
+- Ascension
+	- H: Iyar 24, 4030
+	- S: Xanthicus 24, 341
+	- G: May 14, 30
+	- Josephus War:
+	- AMD: 1471977
+	- R: Revelation 4-5
+- First Seal - Tiberius
+	- H: 4030-4037
+	- S: 341-348
+	- G: April 22, 30 - March 16, 37
+	- Josephus War:
+	- AMD: 1471955 - 1474475
+	- R: Revelation 6:1-2
+- Second Seal - Caligula
+	- H: 4037 - 4040
+	- S: 348-351
+	- G: March 16, 37 - January 24, 41
+	- Josephus War:
+	- AMD: 1474475 - 1475885
+	- R: Revelation 6:3-4
+- Third Seal - Claudius
+	- H: 4040-4054
+	- S: 351-365
+	- G: January 24, 41 - October 13, 54
+	- Josephus War:
+	- AMD: 1475885-1480895
+	- R: Revelation 6:5-6
+- Fourth Seal - Nero early years
+	- H: 4054-4061
+	- S: 365-372
+	- G: October 13, 54 - early 66
+	- Josephus War:
+	- AMD: 1480895-[1483532-1483647]
+			Second amd date
+	- R: Revelation 6:7-8
+
+	The end of the fourth seal seems to represent the turning point in Nero's life when he married the Jewish woman, Poppaea, poisoned his advisor Burrus, and forced Seneca to retire. This is when the Jews took advantage of Nero and used Poppaea to make a covenant with the Jews to persecute Christians. I can't find the precise dates for this, with histories only saying that he married her in early 62. but since Poppaea gave birth to a girl on January 21, 63, counting back nine months gives a general estimate of the possible time. Since that is April 28 (AMD 1483647) I am arbitrarily giving that as the date for their marriage.
+		Seven year covenant of Rome with Jews against Israel was supposed to be 62-70, but it was "cut short" (cf. Matt. 24:22)
+			Jewish persecution from 62-66
+			Roman persecution from July 18, 64 - June 9, 68
+
+- Fifth Seal
+	- H: 4061-4066
+	- S: 372-377
+	- G: 62-66
+	- Josephus War:
+	- AMD: [1483532-1483647] - 1485114
+	- R: Revelation 6:9-11
+- Sixth Seal - visible appearance of Christ in the sky
+	- H: Iyar 20 4066
+	- S: 377
+	- G: May 2, 66
+	- Josephus War:
+	- AMD: 1485114 - 1485129
+	- R: Revelation 6:1-2; Rev 12:7-12
+- Seventh Seal - silence in heaven
+	- H: Sivan 6, 4066
+	- S: Daisios 6, 377
+	- G: May 18, 66
+	- Josephus War: 6.299
+	- AMD: 1485129
+	- R: Revelation 8:1-6; Rev 16:1
+- Ending sacrifice to Caesar and any foreigners?????
+	- H: Tammuz 17, 4066
+	- S: Panemos 17, 377
+	- G: June 27, 66
+	- Josephus War: 2.408-410
+	- AMD: 1485170
+- Romans evacuated from Jerusalem
+	- H: Ellul 6
+	- S: Gorpiaios 6, 377
+	- G: August 26, 66
+	- Josephus War: 2.449-456
+	- AMD: 1485229
+- First Trumpet
+	- H: Tishri 1, 4066
+	- S: Hyperberataios 1, 377
+	- G: September 8, 66
+	- Josephus War:
+	- AMD: 1485242
+	- R: Revelation 8:7
+- Second Trumpet
+	- H: Tishri 15, 4066
+	- S: Hyperberataios 15, 377
+	- G: Sept 22, 66
+	- Josephus War: 2:515
+	- AMD: 1485256
+	- R: Revelation 8:8-9
+- Third Trumpet
+	- H: Tishri 22, 4066
+	- S: Hyperberataios 22, 377
+	- G: September 28, 66
+	- Josephus War:
+	- AMD: 1485263
+	- R: Revelation 8:10-11
+- Fourth Trumpet - Cestius defeated
+	- H: Heshvan 9, 4066
+	- S: Dios 9, 377
+	- G: October 15, 66
+	- Josephus War: 2:555
+	- AMD: 1485280
+	- R: Revelation 8:12-13
+- Fifth Trumpet - Nero orders Vespasian and Titus to invade Israel
+	- H: Heshvan 24, 4066
+	- S: Dius 24, 377
+	- G: October 31, 66
+	- Josephus War:
+	- AMD: 1485295
+	- R: Revelation 9:1
+- Five months lull in killing
+	- H: Heshvan 24, 4066 - Vedar 25, 4067
+	- S: Dius 24, 377 - Dystos II 25, 377
+	- G: October 31, 66 - March 28, 67
+	- Josephus War:
+	- AMD: 1485295 - 1485444
+	- R: Revelation 9:5, Rev 9:10
+- Jewish preparations for defence of temple and city start in earnest
+	- H: Adar 19, 4067
+	- S: Dystos 19, 378
+	- G: February 20, 67
+	- Josephus War:
+	- AMD: 1485408
+- Nero dies - Rome dies with him
+	- H: Sivan 22, 4068
+	- S: Daisios 22, 379
+	- G: June 9, 68
+	- Josephus War:
+	- AMD: 1485883
+	- R: REvelation 13:3
+- Vespasian proclaimed emperor by armies of Egypt and Judea
+	- H: Tammuz 24, 4069
+	- S: Panemos 24, 380
+	- G: July 1, 69
+	- Josephus War:
+	- AMD: 1486269
+	- R: Revelation 17:8-10
+- Vespasian crowned emperor - beast comes back to life
+	- H: Tebeth 20, 4069
+	- S: Audynios 20, 380
+	- G: December 21, 69
+	- Josephus War:
+	- AMD: 1486443
+	- R: Revelation 13:3
+- Jerusalem surrounded by Titus/Vespasian armies
+	- H: Ab 14, 4070
+	- S: Xanthicus 14, 381
+	- G: April 12, 70
+	- Josephus War: 5:99
+	- AMD: 1486555
+- First three and a half years of the war of Titus the prince
+	- H: Adar 19, 4067 - Ab 9, 4070
+	- S: Dystos 19, 378 - Loos 9, 381 SE
+	- G: February 20, 67 - August 3, 70
+	- Josephus War:
+	- AMD: 1485408-1486668
+	- R: Revelation 11:1, Rev 11:3-14
+- Second three and a half years of the war of Titus the prince
+	- H: Ab 9, 4070 - Tebeth 29, 4073
+	- S: Loos 9, 381 SE - Audynios 29, 384
+	- G: August 3, 70 - January 15, 74
+	- Josephus War:
+	- AMD: 1486668 - 1487929
+	- R: Revelation 11:2; Rev 18:1-24
+- Third wall of Jerusalem breached by Titus' battering rams
+	- H: Iyar 7, 4070
+	- S: Artemisios 7, 381
+	- G: May 5, 70
+	- Josephus War: 5.300-302
+	- AMD: 1486577
+- Second wall of Jerusalem breached by Titus' battering rams, but Romans ambushed, barely escaping. Many soldiers wounded.
+	- H: Iyar 12, 4070
+	- S: Artemisios 12, 381
+	- G: May 10, 70
+	- Josephus War: 5.331-347
+	- AMD: 1486582
+- Titus builds earthworks against Antonia Fortress & in northern city
+	- H: Iyar 20, 4070
+	- S: Artemisios 20, 381
+	- G: May 18, 70
+	- Josephus War: 5.347-348
+	- AMD: 1486591
+- John undermines Antonia earthworks built by Titus and burns them
+	- H: Iyar 29, 4070
+	- S: Artemisios 29, 381
+	- G: May 27, 70
+	- Josephus War: 5.466-490; 5.522-526
+	- AMD: 1486599
+- Titus finally finishes Antonia earthworks
+	- H: Tammuz 1, 4070
+	- S: Panemos 1, 381
+	- G: June 27, 70
+	- Josephus War: 6.1-22
+	- AMD: 1486631
+- Antonia Fortress taken by Romans, but they are repulsed from temple
+	- H: Tammuz 5, 4070
+	- S: Panemos 5, 381
+	- G: July 1, 70
+	- Josephus War: 6.54-67
+	- AMD: 1486634
+- Even the unlawful sacrifices now end in temple
+	- H: Tammuz 17, 4070
+	- S: Panemus 17, 381
+	- G: July 13, 70
+	- Josephus War: 6.94
+	- AMD: 1486646
+- Antonia disconnected from temple by rebels; major setback for Romans
+	- H: Tammuz 24, 4070
+	- S: Panemos 24, 381
+	- G: July 20
+	- Josephus War: 6.166; 6:311
+	- AMD: 1486653
+	- R:
+- Romans burned alive by rebels in west portico ambush
+	- H: Tammuz 27, 4070
+	- S: Panemos 27, 381
+	- G: July 23, 70
+	- Josephus War: 6.170-190
+	- AMD: 1486656
+	- R:
+- Prophets are killed
+	- H: Ab 5, 4070
+	- S: Loos 5, 381
+	- G: July 31
+	- Josephus War:
+	- AMD: 1486664
+	- R: Revelation 11:7-11
+- Roman battering rams utterly unable to penetrate western wall of Temple. Romans suffer heavy losses seeking to scale walls
+	- H: Ab 8, 4070
+	- S: Loos 8, 381
+	- G: August 2
+	- Josephus War: 6.220-228
+	- AMD: 1486667
+	- R: Revelation 11:7-11
+- Romans scale wall in dead of night and capture temple
+	- H: Ab 8, 4070
+	- S: Loos 8, 381
+	- G: August 2, 70
+	- Josephus War:
+	- AMD: 1486667
+- Temple burned
+	- H: Ab 9, 4070
+	- S: Loos 9, 381
+	- G: August 3, 70
+	- Josephus War: 6:250; 6.233-237; 6.265, 271ff, 281-288
+	- AMD: 1486668
+	- R:
+Josephus's War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
+- Resurrection and events of Rev. 11:11-19
+	- H: Ab 9, 4070
+	- S: Loos 9, 381
+	- G: August 3, 70
+	- Josephus War:
+	- AMD: 1486668
+	- R: Rev. 11:11-19
+- Titus orders earthworks against Upper City
+	- H: Ab 19, 4070
+	- S: Loos 19, 381
+	- G: August 14, 70
+	- Josephus War: 6.374
+	- AMD: 1486678
+- Jerusalem completely defeated
+	- H: Elul 8, 4070
+	- S: Gorpiaios 8, 381
+	- G: September 1, 70
+	- Josephus War: 6:407
+	- AMD: 1486696
+- Romans stamp out all resistance in Israel (other than Masada)
+	- H: Tebeth 29, 4074
+	- S: Audynios 29, 385
+	- G: January 15, 74
+	- Josephus War: Book 7
+	- AMD: 1487928
+- Romans finish their atrocities against Jews throughout empire
+	- H: Shebat 30, 4074
+	- S: Peritios 30, 385
+	- G: February 15, 74
+	- Josephus War:
+	- AMD: 1487959
+- Masada fell
+	- H: Nisan 15, 4074
+	- S: Xanthicus 15, 385
+	- G: March 30, 74
+	- Josephus War:
+	- AMD: 1488003
+	- R: Daniel 12:12
+- Forty months
+	- R: Revelation 11:2
+	- H: Ab 9, 4070 to Tebeth 29, AD 4074
+	- G: August 3, 70 to January 15, AD 74
+	- AMD: 1486668-1487928
+	- type: time
+- The "time" portion of "time, times, and half a time"
+	- R: Revelation 12:14
+	- H: Elul 26, 4066 to Heshvan 27, 4066
+	- G: September 4, 66 to November 4, 66
+	- AMD: 1485238-1485298
+	- type: time
+- The "times" portion of "time, times, and half a time"
+	- R: Revelation 12:14
+	- H: Heshvan 24, 4066 to Sivan 22, 4068
+	- G: October 31, 66 to June 9, 68
+	- Josephus War:
+	- AMD: 1485295-1485883
+	- type: time
+- The "half a time" portion of "time, times, and half a time"
+	- R: Revelation 12:14
+	- H: Ab 14, 4070 to Elul 8, 4070
+	- G: April 12, 70 September 1, 70
+	- AMD: 1486555-1486696
+	- type: time
+- 1290 days
+	- R: Daniel 12:11
+	- H: Ab 9, 4070 to Shebat 30, 4074
+	- G: August 3, 70 to February 14, 74
+	- AMD: 1486668-1487959
+	- type: time
+- 1335 days
+	- R: Daniel 12:12
+	- H: Ab 9, 4070 to Nisan 15, 4074
+	- G: August 3, 70 to March 31, 74
+	- AMD: 1488003-1488003
+	- type: time

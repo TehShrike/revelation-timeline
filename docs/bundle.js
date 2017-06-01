@@ -384,6 +384,301 @@ VerticallyCentered.prototype.teardown = VerticallyCentered.prototype.destroy = f
 	this._torndown = true;
 };
 
+function multiplyDaysByHeight(days) {
+	return (days + 1) * 3;
+}
+
+function multiplyIndentByWidth(indentLevel) {
+	return indentLevel * 20;
+}
+
+var template$2 = function () {
+	return {
+		helpers: {
+			multiplyDaysByHeight: multiplyDaysByHeight,
+			multiplyIndentByWidth: multiplyIndentByWidth
+		}
+	};
+}();
+
+function create_main_fragment$2(state, component) {
+	var each_block_value = state.timeline;
+
+	var each_block_iterations = [];
+
+	for (var i = 0; i < each_block_value.length; i += 1) {
+		each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+	}
+
+	var each_block_anchor = createComment();
+
+	return {
+		mount: function mount(target, anchor) {
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].mount(target, null);
+			}
+
+			insertNode(each_block_anchor, target, anchor);
+		},
+
+		update: function update(changed, state) {
+			var each_block_value = state.timeline;
+
+			if ('timeline' in changed) {
+				for (var i = 0; i < each_block_value.length; i += 1) {
+					if (each_block_iterations[i]) {
+						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+					} else {
+						each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+						each_block_iterations[i].mount(each_block_anchor.parentNode, each_block_anchor);
+					}
+				}
+
+				destroyEach(each_block_iterations, true, each_block_value.length);
+				each_block_iterations.length = each_block_value.length;
+			}
+		},
+
+		destroy: function destroy(detach) {
+			destroyEach(each_block_iterations, detach, 0);
+
+			if (detach) {
+				detachNode(each_block_anchor);
+			}
+		}
+	};
+}
+
+function create_each_block$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	function get_block(state, each_block_value, timelineEvent, timelineEvent_index) {
+		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block$1;
+		return create_if_block_1$1;
+	}
+
+	var current_block = get_block(state, each_block_value, timelineEvent, timelineEvent_index);
+	var if_block = current_block(state, each_block_value, timelineEvent, timelineEvent_index, component);
+
+	var if_block_anchor = createComment();
+
+	return {
+		mount: function mount(target, anchor) {
+			if_block.mount(target, anchor);
+			insertNode(if_block_anchor, target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
+			if (current_block === (current_block = get_block(state, each_block_value, timelineEvent, timelineEvent_index)) && if_block) {
+				if_block.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+			} else {
+				if_block.destroy(true);
+				if_block = current_block(state, each_block_value, timelineEvent, timelineEvent_index, component);
+				if_block.mount(if_block_anchor.parentNode, if_block_anchor);
+			}
+		},
+
+		destroy: function destroy(detach) {
+			if_block.destroy(detach);
+
+			if (detach) {
+				detachNode(if_block_anchor);
+			}
+		}
+	};
+}
+
+function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	var div_data_title_value;
+
+	var div = createElement('div');
+	div.className = "event";
+	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+	div.style.cssText = "height: 4px;";
+	addEventListener(div, 'mouseover', mouseover_handler);
+	addEventListener(div, 'mouseleave', mouseleave_handler);
+
+	div._svelte = {
+		component: component,
+		each_block_value: each_block_value,
+		timelineEvent_index: timelineEvent_index
+	};
+
+	return {
+		mount: function mount(target, anchor) {
+			insertNode(div, target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
+			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
+				setAttribute(div, 'data-title', div_data_title_value);
+			}
+
+			div._svelte.each_block_value = each_block_value;
+			div._svelte.timelineEvent_index = timelineEvent_index;
+		},
+
+		destroy: function destroy(detach) {
+			removeEventListener(div, 'mouseover', mouseover_handler);
+			removeEventListener(div, 'mouseleave', mouseleave_handler);
+
+			if (detach) {
+				detachNode(div);
+			}
+		}
+	};
+}
+
+function create_if_block$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	var vcenter_1_yield_fragment = create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component);
+
+	var vcenter_1 = new VerticallyCentered({
+		target: null,
+		_root: component._root,
+		_yield: vcenter_1_yield_fragment,
+		data: { left: template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
+	});
+
+	return {
+		mount: function mount(target, anchor) {
+			vcenter_1._fragment.mount(target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
+			vcenter_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+
+			var vcenter_1_changes = {};
+
+			if ('timeline' in changed) vcenter_1_changes.left = template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
+			if ('timeline' in changed) vcenter_1_changes.point = template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart);
+
+			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
+		},
+
+		destroy: function destroy(detach) {
+			vcenter_1.destroy(detach);
+		}
+	};
+}
+
+function create_if_block_1$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	var div_style_value, div_data_title_value;
+
+	var div = createElement('div');
+	div.style.cssText = div_style_value = "\n\t\t\t\tposition: absolute;\n\t\t\t\ttop: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\tleft: " + template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\theight: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t";
+	div.className = "event";
+	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+	addEventListener(div, 'mouseover', mouseover_handler_1);
+	addEventListener(div, 'mouseleave', mouseleave_handler_1);
+
+	div._svelte = {
+		component: component,
+		each_block_value: each_block_value,
+		timelineEvent_index: timelineEvent_index
+	};
+
+	return {
+		mount: function mount(target, anchor) {
+			insertNode(div, target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
+			if (div_style_value !== (div_style_value = "\n\t\t\t\tposition: absolute;\n\t\t\t\ttop: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\tleft: " + template$2.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\theight: " + template$2.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t")) {
+				div.style.cssText = div_style_value;
+			}
+
+			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
+				setAttribute(div, 'data-title', div_data_title_value);
+			}
+
+			div._svelte.each_block_value = each_block_value;
+			div._svelte.timelineEvent_index = timelineEvent_index;
+		},
+
+		destroy: function destroy(detach) {
+			removeEventListener(div, 'mouseover', mouseover_handler_1);
+			removeEventListener(div, 'mouseleave', mouseleave_handler_1);
+
+			if (detach) {
+				detachNode(div);
+			}
+		}
+	};
+}
+
+function mouseover_handler(event) {
+	var component = this._svelte.component;
+	var each_block_value = this._svelte.each_block_value,
+	    timelineEvent_index = this._svelte.timelineEvent_index,
+	    timelineEvent = each_block_value[timelineEvent_index];
+	component.fire('startHover', timelineEvent);
+}
+
+function mouseleave_handler(event) {
+	var component = this._svelte.component;
+	var each_block_value = this._svelte.each_block_value,
+	    timelineEvent_index = this._svelte.timelineEvent_index,
+	    timelineEvent = each_block_value[timelineEvent_index];
+	component.fire('endHover', timelineEvent);
+}
+
+function mouseover_handler_1(event) {
+	var component = this._svelte.component;
+	var each_block_value = this._svelte.each_block_value,
+	    timelineEvent_index = this._svelte.timelineEvent_index,
+	    timelineEvent = each_block_value[timelineEvent_index];
+	component.fire('startHover', timelineEvent);
+}
+
+function mouseleave_handler_1(event) {
+	var component = this._svelte.component;
+	var each_block_value = this._svelte.each_block_value,
+	    timelineEvent_index = this._svelte.timelineEvent_index,
+	    timelineEvent = each_block_value[timelineEvent_index];
+	component.fire('endHover', timelineEvent);
+}
+
+function Events(options) {
+	options = options || {};
+	this._state = options.data || {};
+
+	this._observers = {
+		pre: Object.create(null),
+		post: Object.create(null)
+	};
+
+	this._handlers = Object.create(null);
+
+	this._root = options._root || this;
+	this._yield = options._yield;
+
+	this._torndown = false;
+	this._renderHooks = [];
+
+	this._fragment = create_main_fragment$2(this._state, this);
+	if (options.target) this._fragment.mount(options.target, null);
+	this._flush();
+}
+
+assign(Events.prototype, proto);
+
+Events.prototype._set = function _set(newState) {
+	var oldState = this._state;
+	this._state = assign({}, oldState, newState);
+	dispatchObservers(this, this._observers.pre, newState, oldState);
+	this._fragment.update(newState, this._state);
+	dispatchObservers(this, this._observers.post, newState, oldState);
+	this._flush();
+};
+
+Events.prototype.teardown = Events.prototype.destroy = function destroy(detach) {
+	this.fire('destroy');
+
+	this._fragment.destroy(detach !== false);
+	this._fragment = null;
+
+	this._state = {};
+	this._torndown = true;
+};
+
 var LESS_THAN = -1;
 var WITHIN = 0;
 var GREATER_THAN = 1;
@@ -586,7 +881,8 @@ function recompute(state, newState, oldState, isInitial) {
 	}
 
 	if (isInitial || 'relevantEventsWithAxis' in newState && differs(state.relevantEventsWithAxis, oldState.relevantEventsWithAxis) || 'startDay' in newState && differs(state.startDay, oldState.startDay)) {
-		state.relevantTimelineData = newState.relevantTimelineData = template.computed.relevantTimelineData(state.relevantEventsWithAxis, state.startDay);
+		state.times = newState.times = template.computed.times(state.relevantEventsWithAxis, state.startDay);
+		state.otherEvents = newState.otherEvents = template.computed.otherEvents(state.relevantEventsWithAxis, state.startDay);
 	}
 
 	if (isInitial || 'startDay' in newState && differs(state.startDay, oldState.startDay)) {
@@ -604,6 +900,21 @@ var template = function () {
 		});
 	}
 
+	function addIndentAndAxisAfterStart(events, startDay) {
+		return mapKnowingPrevious(events, function (event, previous) {
+			var calculatedIndentLevel = function calculatedIndentLevel() {
+				return previous.amd.end >= event.amd.start ? previous.indentLevel + 1 : previous.indentLevel;
+			};
+
+			var indentLevel = previous ? calculatedIndentLevel() : 0;
+
+			return Object.assign({
+				indentLevel: indentLevel,
+				axisAfterStart: event.axis.start - startDay
+			}, event);
+		});
+	}
+
 	return {
 		computed: {
 			relevantEvents: function relevantEvents(timelineData) {
@@ -618,19 +929,17 @@ var template = function () {
 			relevantEventsWithAxis: function relevantEventsWithAxis(axis, relevantEvents) {
 				return addAxisPointsToTimelineData(axis, relevantEvents);
 			},
-			relevantTimelineData: function relevantTimelineData(relevantEventsWithAxis, startDay) {
-				return mapKnowingPrevious(relevantEventsWithAxis, function (event, previous) {
-					var calculatedIndentLevel = function calculatedIndentLevel() {
-						return previous.amd.end >= event.amd.start ? previous.indentLevel + 1 : previous.indentLevel;
-					};
-
-					var indentLevel = previous ? calculatedIndentLevel() : 0;
-
-					return Object.assign({
-						indentLevel: indentLevel,
-						axisAfterStart: event.axis.start - startDay
-					}, event);
-				});
+			times: function times(relevantEventsWithAxis, startDay) {
+				return addIndentAndAxisAfterStart(relevantEventsWithAxis.filter(function (_ref) {
+					var type = _ref.type;
+					return type === 'time';
+				}), startDay);
+			},
+			otherEvents: function otherEvents(relevantEventsWithAxis, startDay) {
+				return addIndentAndAxisAfterStart(relevantEventsWithAxis.filter(function (_ref2) {
+					var type = _ref2.type;
+					return !type;
+				}), startDay);
 			},
 			distanceFromStartDay: function distanceFromStartDay(startDay) {
 				return function (day) {
@@ -639,12 +948,8 @@ var template = function () {
 			}
 		},
 		helpers: {
-			multiplyDaysByHeight: function multiplyDaysByHeight(days) {
-				return (days + 1) * 3;
-			},
-			multiplyIndentByWidth: function multiplyIndentByWidth(indentLevel) {
-				return indentLevel * 20;
-			}
+			multiplyDaysByHeight: multiplyDaysByHeight,
+			multiplyIndentByWidth: multiplyIndentByWidth
 		},
 		methods: {
 			startHover: function startHover(event) {
@@ -663,8 +968,8 @@ var template = function () {
 
 function add_css() {
 	var style = createElement('style');
-	style.id = "svelte-766923707-style";
-	style.textContent = "\n[svelte-766923707].timeline-container, [svelte-766923707] .timeline-container {\n\tposition: relative;\n}\n[svelte-766923707].axis, [svelte-766923707] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\tfloat: right;\n\ttext-align: right;\n}\n[svelte-766923707].event, [svelte-766923707] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-766923707].event:hover, [svelte-766923707] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-766923707].eventhover, [svelte-766923707] .eventhover {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n}\n";
+	style.id = "svelte-3080785206-style";
+	style.textContent = "\n[svelte-3080785206].timeline-container, [svelte-3080785206] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-3080785206].timeline-row, [svelte-3080785206] .timeline-row {\n\tposition: relative;\n}\n[svelte-3080785206].axis, [svelte-3080785206] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-3080785206].event, [svelte-3080785206] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-3080785206].event:hover, [svelte-3080785206] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-3080785206].eventhover, [svelte-3080785206] .eventhover {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -673,27 +978,60 @@ function create_main_fragment(state, component) {
 
 	var text = createText("\n");
 	var div = createElement('div');
-	setAttribute(div, 'svelte-766923707', '');
+	setAttribute(div, 'svelte-3080785206', '');
 	div.className = "timeline-container";
+	var div_1 = createElement('div');
+	appendNode(div_1, div);
+	div_1.className = "timeline-row";
+	div_1.style.cssText = "width: 100px; margin-right: 10px;";
 	var each_block_value = state.axis;
 
 	var each_block_iterations = [];
 
 	for (var i = 0; i < each_block_value.length; i += 1) {
 		each_block_iterations[i] = create_each_block(state, each_block_value, each_block_value[i], i, component);
-		each_block_iterations[i].mount(div, null);
+		each_block_iterations[i].mount(div_1, null);
 	}
 
-	var text_1 = createText("\n\t");
-	appendNode(text_1, div);
-	var each_block_value_1 = state.relevantTimelineData;
+	appendNode(createText("\n\t"), div);
+	var div_2 = createElement('div');
+	appendNode(div_2, div);
+	div_2.className = "timeline-row";
+	div_2.style.cssText = "width: 50px";
 
-	var each_block_1_iterations = [];
+	var events = new Events({
+		target: div_2,
+		_root: component._root,
+		data: { timeline: state.times }
+	});
 
-	for (var i = 0; i < each_block_value_1.length; i += 1) {
-		each_block_1_iterations[i] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component);
-		each_block_1_iterations[i].mount(div, null);
-	}
+	events.on('startHover', function (event) {
+		component.startHover(event);
+	});
+
+	events.on('endHover', function (event) {
+		component.endHover(event);
+	});
+
+	appendNode(createText("\n\t"), div);
+	var div_3 = createElement('div');
+	appendNode(div_3, div);
+	div_3.className = "timeline-row";
+	div_3.style.cssText = "width: 200px";
+
+	var events_1 = new Events({
+		target: div_3,
+		_root: component._root,
+		data: { timeline: state.otherEvents }
+	});
+
+	events_1.on('startHover', function (event) {
+		component.startHover(event);
+	});
+
+	events_1.on('endHover', function (event) {
+		component.endHover(event);
+	});
 
 	return {
 		mount: function mount(target, anchor) {
@@ -723,7 +1061,7 @@ function create_main_fragment(state, component) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
 					} else {
 						each_block_iterations[i] = create_each_block(state, each_block_value, each_block_value[i], i, component);
-						each_block_iterations[i].mount(div, text_1);
+						each_block_iterations[i].mount(div_1, null);
 					}
 				}
 
@@ -731,21 +1069,17 @@ function create_main_fragment(state, component) {
 				each_block_iterations.length = each_block_value.length;
 			}
 
-			var each_block_value_1 = state.relevantTimelineData;
+			var events_changes = {};
 
-			if ('relevantTimelineData' in changed) {
-				for (var i = 0; i < each_block_value_1.length; i += 1) {
-					if (each_block_1_iterations[i]) {
-						each_block_1_iterations[i].update(changed, state, each_block_value_1, each_block_value_1[i], i);
-					} else {
-						each_block_1_iterations[i] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component);
-						each_block_1_iterations[i].mount(div, null);
-					}
-				}
+			if ('times' in changed) events_changes.timeline = state.times;
 
-				destroyEach(each_block_1_iterations, true, each_block_value_1.length);
-				each_block_1_iterations.length = each_block_value_1.length;
-			}
+			if (Object.keys(events_changes).length) events.set(events_changes);
+
+			var events_1_changes = {};
+
+			if ('otherEvents' in changed) events_1_changes.timeline = state.otherEvents;
+
+			if (Object.keys(events_1_changes).length) events_1.set(events_1_changes);
 		},
 
 		destroy: function destroy(detach) {
@@ -753,7 +1087,8 @@ function create_main_fragment(state, component) {
 
 			destroyEach(each_block_iterations, false, 0);
 
-			destroyEach(each_block_1_iterations, false, 0);
+			events.destroy(false);
+			events_1.destroy(false);
 
 			if (detach) {
 				detachNode(text);
@@ -767,7 +1102,7 @@ function create_if_block(state, component) {
 	var text_value, text_2_value, text_4_value;
 
 	var div = createElement('div');
-	setAttribute(div, 'svelte-766923707', '');
+	setAttribute(div, 'svelte-3080785206', '');
 	div.className = "eventhover";
 	var text = createText(text_value = state.hoveredEvent.title);
 	appendNode(text, div);
@@ -813,7 +1148,7 @@ function create_each_block(state, each_block_value, date, date_index, component)
 		target: null,
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
-		data: { left: -110, point: template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
+		data: { point: template.helpers.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
 	});
 
 	return {
@@ -838,8 +1173,8 @@ function create_each_block(state, each_block_value, date, date_index, component)
 }
 
 function create_vcenter_yield_fragment(state, each_block_value, date, date_index, component) {
-	var span = createElement('span');
-	span.className = "axis";
+	var div = createElement('div');
+	div.className = "axis";
 
 	function get_block(state, each_block_value, date, date_index) {
 		if (date.type === 'snip') return create_if_block_1;
@@ -849,11 +1184,11 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 	var current_block = get_block(state, each_block_value, date, date_index);
 	var if_block_1 = current_block(state, each_block_value, date, date_index, component);
 
-	if_block_1.mount(span, null);
+	if_block_1.mount(div, null);
 
 	return {
 		mount: function mount(target, anchor) {
-			insertNode(span, target, anchor);
+			insertNode(div, target, anchor);
 		},
 
 		update: function update(changed, state, each_block_value, date, date_index) {
@@ -862,7 +1197,7 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 			} else {
 				if_block_1.destroy(true);
 				if_block_1 = current_block(state, each_block_value, date, date_index, component);
-				if_block_1.mount(span, null);
+				if_block_1.mount(div, null);
 			}
 		},
 
@@ -870,7 +1205,7 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 			if_block_1.destroy(false);
 
 			if (detach) {
-				detachNode(span);
+				detachNode(div);
 			}
 		}
 	};
@@ -930,195 +1265,6 @@ function create_if_block_2(state, each_block_value, date, date_index, component)
 	};
 }
 
-function create_each_block_1(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
-	function get_block(state, each_block_value_1, timelineEvent, timelineEvent_index) {
-		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block_3;
-		return create_if_block_4;
-	}
-
-	var current_block = get_block(state, each_block_value_1, timelineEvent, timelineEvent_index);
-	var if_block_2 = current_block(state, each_block_value_1, timelineEvent, timelineEvent_index, component);
-
-	var if_block_2_anchor = createComment();
-
-	return {
-		mount: function mount(target, anchor) {
-			if_block_2.mount(target, anchor);
-			insertNode(if_block_2_anchor, target, anchor);
-		},
-
-		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
-			if (current_block === (current_block = get_block(state, each_block_value_1, timelineEvent, timelineEvent_index)) && if_block_2) {
-				if_block_2.update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index);
-			} else {
-				if_block_2.destroy(true);
-				if_block_2 = current_block(state, each_block_value_1, timelineEvent, timelineEvent_index, component);
-				if_block_2.mount(if_block_2_anchor.parentNode, if_block_2_anchor);
-			}
-		},
-
-		destroy: function destroy(detach) {
-			if_block_2.destroy(detach);
-
-			if (detach) {
-				detachNode(if_block_2_anchor);
-			}
-		}
-	};
-}
-
-function create_vcenter_yield_fragment_1(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
-	var div_data_title_value;
-
-	var div = createElement('div');
-	div.className = "event";
-	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
-	div.style.cssText = "height: 4px;";
-	addEventListener(div, 'mouseover', mouseover_handler);
-	addEventListener(div, 'mouseleave', mouseleave_handler);
-
-	div._svelte = {
-		component: component,
-		each_block_value_1: each_block_value_1,
-		timelineEvent_index: timelineEvent_index
-	};
-
-	appendNode(createText(" "), div);
-
-	return {
-		mount: function mount(target, anchor) {
-			insertNode(div, target, anchor);
-		},
-
-		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
-			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
-				setAttribute(div, 'data-title', div_data_title_value);
-			}
-
-			div._svelte.each_block_value_1 = each_block_value_1;
-			div._svelte.timelineEvent_index = timelineEvent_index;
-		},
-
-		destroy: function destroy(detach) {
-			removeEventListener(div, 'mouseover', mouseover_handler);
-			removeEventListener(div, 'mouseleave', mouseleave_handler);
-
-			if (detach) {
-				detachNode(div);
-			}
-		}
-	};
-}
-
-function create_if_block_3(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
-	var vcenter_1_yield_fragment = create_vcenter_yield_fragment_1(state, each_block_value_1, timelineEvent, timelineEvent_index, component);
-
-	var vcenter_1 = new VerticallyCentered({
-		target: null,
-		_root: component._root,
-		_yield: vcenter_1_yield_fragment,
-		data: { left: template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
-	});
-
-	return {
-		mount: function mount(target, anchor) {
-			vcenter_1._fragment.mount(target, anchor);
-		},
-
-		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
-			vcenter_1_yield_fragment.update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index);
-
-			var vcenter_1_changes = {};
-
-			if ('relevantTimelineData' in changed) vcenter_1_changes.left = template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
-			if ('relevantTimelineData' in changed) vcenter_1_changes.point = template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart);
-
-			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
-		},
-
-		destroy: function destroy(detach) {
-			vcenter_1.destroy(detach);
-		}
-	};
-}
-
-function create_if_block_4(state, each_block_value_1, timelineEvent, timelineEvent_index, component) {
-	var div_style_value, div_data_title_value;
-
-	var div = createElement('div');
-	div.style.cssText = div_style_value = "\n\t\t\t\t\tposition: absolute;\n\t\t\t\t\ttop: " + template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\t\tleft: " + template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\theight: " + template.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t\t";
-	div.className = "event";
-	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
-	addEventListener(div, 'mouseover', mouseover_handler_1);
-	addEventListener(div, 'mouseleave', mouseleave_handler_1);
-
-	div._svelte = {
-		component: component,
-		each_block_value_1: each_block_value_1,
-		timelineEvent_index: timelineEvent_index
-	};
-
-	return {
-		mount: function mount(target, anchor) {
-			insertNode(div, target, anchor);
-		},
-
-		update: function update(changed, state, each_block_value_1, timelineEvent, timelineEvent_index) {
-			if (div_style_value !== (div_style_value = "\n\t\t\t\t\tposition: absolute;\n\t\t\t\t\ttop: " + template.helpers.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px; \n\t\t\t\t\tleft: " + template.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\theight: " + template.helpers.multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start) + "px;\n\t\t\t\t")) {
-				div.style.cssText = div_style_value;
-			}
-
-			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
-				setAttribute(div, 'data-title', div_data_title_value);
-			}
-
-			div._svelte.each_block_value_1 = each_block_value_1;
-			div._svelte.timelineEvent_index = timelineEvent_index;
-		},
-
-		destroy: function destroy(detach) {
-			removeEventListener(div, 'mouseover', mouseover_handler_1);
-			removeEventListener(div, 'mouseleave', mouseleave_handler_1);
-
-			if (detach) {
-				detachNode(div);
-			}
-		}
-	};
-}
-
-function mouseover_handler(event) {
-	var component = this._svelte.component;
-	var each_block_value_1 = this._svelte.each_block_value_1,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value_1[timelineEvent_index];
-	component.startHover(timelineEvent);
-}
-
-function mouseleave_handler(event) {
-	var component = this._svelte.component;
-	var each_block_value_1 = this._svelte.each_block_value_1,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value_1[timelineEvent_index];
-	component.endHover(timelineEvent);
-}
-
-function mouseover_handler_1(event) {
-	var component = this._svelte.component;
-	var each_block_value_1 = this._svelte.each_block_value_1,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value_1[timelineEvent_index];
-	component.startHover(timelineEvent);
-}
-
-function mouseleave_handler_1(event) {
-	var component = this._svelte.component;
-	var each_block_value_1 = this._svelte.each_block_value_1,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value_1[timelineEvent_index];
-	component.endHover(timelineEvent);
-}
-
 function Main(options) {
 	options = options || {};
 	this._state = options.data || {};
@@ -1135,7 +1281,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-766923707-style")) add_css();
+	if (!document.getElementById("svelte-3080785206-style")) add_css();
 	this._renderHooks = [];
 
 	this._fragment = create_main_fragment(this._state, this);
