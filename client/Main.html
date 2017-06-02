@@ -134,6 +134,10 @@ const zoomedOut = {
 	zoomedIn: false
 }
 
+const now = (performance && performance.now) 
+	? () => performance.now() 
+	: Date.now
+
 export default {
 	data() {
 		return zoomedOut
@@ -176,10 +180,51 @@ export default {
 		},
 		toggleZoom() {
 			if (this.get('zoomedIn')) {
-				this.set(zoomedOut)
+					this.set({
+						minimumLength: zoomedOut.minimumLength
+					})
+				this.transitionTo(zoomedOut, 2000).then(() => {
+				})
 			} else {
-				this.set(zoomedIn)				
+				this.set({
+					minimumLength: zoomedIn.minimumLength
+				})
+				this.transitionTo(zoomedIn, 2000)				
 			}
+		},
+		transitionTo(destination, totalMs) {
+			return new Promise(resolve => {
+				const start = now()
+				const transitionKeys = Object.keys(destination).filter(key => typeof destination[key] === 'number')
+				const startData = this.get()
+
+				const differences = transitionKeys
+					.reduce((map, key) => {
+						map[key] = destination[key] - startData[key]
+						return map
+					}, {})
+
+				const tick = () => {
+					const elapsedMs = now() - start
+					if (elapsedMs >= totalMs) {
+						// console.log('arrived at', destination)
+						this.set(destination)
+						resolve()
+					} else {
+						const ratioElapsed = elapsedMs / totalMs
+						// console.log('ratio elapsed', ratioElapsed)
+						const stepData = transitionKeys.reduce((acc, key) => {
+							acc[key] = startData[key] + (differences[key] * ratioElapsed)
+							return acc
+						}, {})
+						// console.log('stepping to', stepData)
+						this.set(stepData)
+						window.requestAnimationFrame(tick)
+					}
+				}
+
+				window.requestAnimationFrame(tick)
+			})
 		}
 	},
 	components: {

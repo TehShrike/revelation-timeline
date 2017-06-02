@@ -960,6 +960,10 @@ var template = function () {
 		zoomedIn: false
 	};
 
+	var now = performance && performance.now ? function () {
+		return performance.now();
+	} : Date.now;
+
 	return {
 		data: function data() {
 			return zoomedOut;
@@ -1022,10 +1026,53 @@ var template = function () {
 			},
 			toggleZoom: function toggleZoom() {
 				if (this.get('zoomedIn')) {
-					this.set(zoomedOut);
+					this.set({
+						minimumLength: zoomedOut.minimumLength
+					});
+					this.transitionTo(zoomedOut, 2000).then(function () {});
 				} else {
-					this.set(zoomedIn);
+					this.set({
+						minimumLength: zoomedIn.minimumLength
+					});
+					this.transitionTo(zoomedIn, 2000);
 				}
+			},
+			transitionTo: function transitionTo(destination, totalMs) {
+				var _this = this;
+
+				return new Promise(function (resolve) {
+					var start = now();
+					var transitionKeys = Object.keys(destination).filter(function (key) {
+						return typeof destination[key] === 'number';
+					});
+					var startData = _this.get();
+
+					var differences = transitionKeys.reduce(function (map, key) {
+						map[key] = destination[key] - startData[key];
+						return map;
+					}, {});
+
+					var tick = function tick() {
+						var elapsedMs = now() - start;
+						if (elapsedMs >= totalMs) {
+							// console.log('arrived at', destination)
+							_this.set(destination);
+							resolve();
+						} else {
+							var ratioElapsed = elapsedMs / totalMs;
+							// console.log('ratio elapsed', ratioElapsed)
+							var stepData = transitionKeys.reduce(function (acc, key) {
+								acc[key] = startData[key] + differences[key] * ratioElapsed;
+								return acc;
+							}, {});
+							// console.log('stepping to', stepData)
+							_this.set(stepData);
+							window.requestAnimationFrame(tick);
+						}
+					};
+
+					window.requestAnimationFrame(tick);
+				});
 			}
 		}
 	};
@@ -1033,8 +1080,8 @@ var template = function () {
 
 function add_css() {
 	var style = createElement('style');
-	style.id = "svelte-885792027-style";
-	style.textContent = "\n[svelte-885792027].timeline-container, [svelte-885792027] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-885792027].timeline-row, [svelte-885792027] .timeline-row {\n\tposition: relative;\n}\n[svelte-885792027].axis, [svelte-885792027] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-885792027].axis[data-relevant=true], [svelte-885792027] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-885792027].event, [svelte-885792027] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-885792027].event:hover, [svelte-885792027] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-885792027].eventhover, [svelte-885792027] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n[svelte-885792027]#zoombutton, [svelte-885792027] #zoombutton {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\t\n\tright: 0;\n}\n";
+	style.id = "svelte-693097736-style";
+	style.textContent = "\n[svelte-693097736].timeline-container, [svelte-693097736] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-693097736].timeline-row, [svelte-693097736] .timeline-row {\n\tposition: relative;\n}\n[svelte-693097736].axis, [svelte-693097736] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-693097736].axis[data-relevant=true], [svelte-693097736] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-693097736].event, [svelte-693097736] .event {\n\twidth: 16px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n\n\tbackground-color: green;\n}\n[svelte-693097736].event:hover, [svelte-693097736] .event:hover {\n\tbackground-color: red;\n}\n\n[svelte-693097736].eventhover, [svelte-693097736] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n[svelte-693097736]#zoombutton, [svelte-693097736] #zoombutton {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\t\n\tright: 0;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -1043,7 +1090,7 @@ function create_main_fragment(state, component) {
 
 	var text = createText("\n");
 	var button = createElement('button');
-	setAttribute(button, 'svelte-885792027', '');
+	setAttribute(button, 'svelte-693097736', '');
 	button.className = "btn-default";
 	button.id = "zoombutton";
 
@@ -1065,7 +1112,7 @@ function create_main_fragment(state, component) {
 	if_block_2.mount(button, null);
 	var text_2 = createText("\n");
 	var div = createElement('div');
-	setAttribute(div, 'svelte-885792027', '');
+	setAttribute(div, 'svelte-693097736', '');
 	div.className = "timeline-container";
 	var div_1 = createElement('div');
 	appendNode(div_1, div);
@@ -1239,7 +1286,7 @@ function create_if_block(state, component) {
 	var text_value;
 
 	var div = createElement('div');
-	setAttribute(div, 'svelte-885792027', '');
+	setAttribute(div, 'svelte-693097736', '');
 	div.className = "eventhover";
 	var text = createText(text_value = state.hoveredEvent.title);
 	appendNode(text, div);
@@ -1461,7 +1508,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-885792027-style")) add_css();
+	if (!document.getElementById("svelte-693097736-style")) add_css();
 	this._renderHooks = [];
 
 	this._fragment = create_main_fragment(this._state, this);
