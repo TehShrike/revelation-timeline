@@ -121,15 +121,15 @@ function addIndentAndAxisAfterStart(events, startDay) {
 
 const zoomedIn = {
 	snipSectionsLongerThan: 300,
-	snipBuffer: 10,
+	snipBuffer: 50,
 	dayHeight: 10,
 	minimumLength: 1,
 	zoomedIn: true
 }
 const zoomedOut = {
-	snipSectionsLongerThan: 10000,
+	snipSectionsLongerThan: 300,
 	snipBuffer: 50,
-	dayHeight: 0.05,
+	dayHeight: 0.5,
 	minimumLength: 100,
 	zoomedIn: false
 }
@@ -180,10 +180,10 @@ export default {
 		},
 		toggleZoom() {
 			if (this.get('zoomedIn')) {
+				this.transitionTo(zoomedOut, 2000).then(() => {
 					this.set({
 						minimumLength: zoomedOut.minimumLength
 					})
-				this.transitionTo(zoomedOut, 2000).then(() => {
 				})
 			} else {
 				this.set({
@@ -195,7 +195,12 @@ export default {
 		transitionTo(destination, totalMs) {
 			return new Promise(resolve => {
 				const start = now()
-				const transitionKeys = Object.keys(destination).filter(key => typeof destination[key] === 'number')
+				const transitionKeys = [
+					'snipSectionsLongerThan',
+					'snipBuffer',
+					'dayHeight',
+				]
+
 				const startData = this.get()
 
 				const differences = transitionKeys
