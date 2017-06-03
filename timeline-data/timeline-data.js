@@ -58,6 +58,26 @@ module.exports = [
 		}
 	},
 	{
+		"title": "Seven seals",
+		"hebrew": {
+			"start": "Ab 16, 4030",
+			"end": "Tishri 1, 4066"
+		},
+		"macedonian": {
+			"start": "Xanthicus 16, 341",
+			"end": "Hyperberataios 1, 377"
+		},
+		"gregorian": {
+			"start": "April 6, 30",
+			"end": "September 8, 66"
+		},
+		"amd": {
+			"start": 1471939,
+			"end": 1485229
+		},
+		"type": "top"
+	},
+	{
 		"title": "First Seal - Tiberius",
 		"hebrew": {
 			"start": "4030",
@@ -182,7 +202,8 @@ module.exports = [
 		"amd": {
 			"start": 1483532,
 			"end": 1485883
-		}
+		},
+		"type": "top"
 	},
 	{
 		"title": "Sixth Seal - visible appearance of Christ in the sky",
@@ -202,7 +223,7 @@ module.exports = [
 			"start": 1485114,
 			"end": 1485129
 		},
-		"reference": "Revelation 6:1-2; Rev 12:7-12"
+		"reference": "Revelation 6:12; Rev 12:7-12"
 	},
 	{
 		"title": "Seventh Seal - silence in heaven",
@@ -426,7 +447,8 @@ module.exports = [
 		"amd": {
 			"start": 1485295,
 			"end": 1487959
-		}
+		},
+		"type": "top"
 	},
 	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",
@@ -485,7 +507,7 @@ module.exports = [
 			"start": 1485883,
 			"end": 1485883
 		},
-		"reference": "REvelation 13:3"
+		"reference": "Revelation 13:3"
 	},
 	{
 		"title": "Vespasian proclaimed emperor by armies of Egypt and Judea",

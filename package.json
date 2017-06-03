@@ -8,7 +8,9 @@
     "build:client": "rollup -c",
     "watch:client": "rollup -c -w --dev --sourcemap",
     "build:data": "pushd timeline-data && node ./transform-timeline-to-json.js && popd",
-    "build": "npm run build:data && npm run build:client"
+    "build:table": "rollup -c -i ./table-client/index.js -o ./docs/table-bundle.js",
+    "watch:table": "rollup -c -w --dev --sourcemap -i ./table-client/index.js -o ./docs/table-bundle.js",
+    "build": "npm run build:data && npm run build:client && npm run build:table"
   },
   "repository": {
     "type": "git",
@@ -26,10 +28,12 @@
   "dependencies": {
     "babel-plugin-external-helpers": "6.22.0",
     "babel-preset-es2015": "6.24.1",
+    "better-match": "1.0.2",
     "binary-search-range": "~1.0.1",
     "got": "6.7.1",
     "multi-part-range-compare": "~1.0.3",
     "regex-fun": "~2.0.1",
+    "right-pad": "1.0.1",
     "rollup": "0.41.6",
     "rollup-plugin-babel": "2.7.1",
     "rollup-plugin-commonjs": "8.0.2",
@@ -37,7 +41,9 @@
     "rollup-plugin-svelte": "1.8.1",
     "rollup-watch": "3.2.2",
     "svelte": "1.20.2",
-    "then-denodeify": "~1.0.1"
+    "svelte-querystring-router": "1.0.0",
+    "then-denodeify": "~1.0.1",
+    "verse-reference-regex": "1.0.1"
   },
   "false": {}
 }

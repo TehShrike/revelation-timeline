@@ -84,7 +84,7 @@ title: "Timeline of Revelation Events"
 	- G: May 2, 66 to May 18, 66
 	- Josephus War:
 	- AMD: 1485114 - 1485129
-	- R: Revelation 6:1-2; Rev 12:7-12
+	- R: Revelation 6:12; Rev 12:7-12
 - Seventh Seal - silence in heaven
 	- H: Sivan 6, 4066 to Tishri 1, 4066
 	- S: Daisios 6, 377 to Hyperberataios 1, 377
@@ -158,7 +158,7 @@ title: "Timeline of Revelation Events"
 	- G: June 9, 68
 	- Josephus War:
 	- AMD: 1485883
-	- R: REvelation 13:3
+	- R: Revelation 13:3
 - Vespasian proclaimed emperor by armies of Egypt and Judea
 	- H: Tammuz 24, 4069
 	- S: Panemos 24, 380
@@ -317,12 +317,14 @@ Josephus's War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
 	- R: Daniel 12:12
 - Great Tribulation (Rome & Israel killing Christians)
 	+ AMD: [1483532-1483647] - 1485883
+	+ type: top
 
 AMD is fuzzy for start
 From fifth seal to death of Nero
 
 - Great Wrath (Rome against Israel)
 	+ AMD: 1485295- [1487928-1487959]
+	+ type: top
 - Forty months
 	- R: Revelation 11:2
 	- H: Ab 9, 4070 to Tebeth 29, AD 4074
@@ -360,3 +362,9 @@ From fifth seal to death of Nero
 	- G: August 3, 70 to March 31, 74
 	- AMD: 1488003-1488003
 	- type: time
+- Seven seals
+	- H: Ab 16, 4030 to Tishri 1, 4066
+	- S: Xanthicus 16, 341 to Hyperberataios 1, 377
+	- G: April 6, 30 to September 8, 66
+	- AMD: 1471939-1485229
+	- type: top
