@@ -10,29 +10,71 @@ const getDates = (property, object) => ({
 	gregorian: safeGet(object, 'gregorian', property),
 	amd: safeGet(object, 'amd', property),
 })
+const amdSort = (a, b) => a.amd - b.amd
 
 module.exports = createTimelineAxis
 function createTimelineAxis(timelineData, snipSectionsLongerThan, snipBuffer) {
+	// console.log(timelineData)
 	const naiveAxisMarkers = flatMap(event => {
 		return event.amd.start === event.amd.end
 			? [ getDates('start', event) ]
 			: [ getDates('start', event), getDates('end', event) ]
-	}, timelineData).sort((a, b) => a.amd - b.amd)
+	}, timelineData).sort(amdSort)
 
 	return pipe(naiveAxisMarkers,
-		filterOutDuplicates,
+		mergeDuplicates,
 		_ => addSnipEvents(_, snipSectionsLongerThan, snipBuffer),
 		calculateAxisPoints
 	)
 }
 
-function filterOutDuplicates(dates) {
-	let last = null
-	return dates.filter(date => {
-		const keep = last !== date.amd
-		last = date.amd
-		return keep
-	})
+
+const mergeProperties = (target, object, pickValueToKeep = (a, b) => a === undefined ? b : a) => {
+	Object.keys(object)
+		.forEach(key => target[key] = pickValueToKeep(target[key], object[key]))
+	return target
+}
+
+const both = (a, b, type) => typeof a === type && typeof b === type
+const returnLargest = (a, b) => {
+	if (a === undefined) {
+		return b
+	} else if (b === undefined) {
+		return a
+	} else if (both(a, b, 'number')) {
+		return a > b ? a : b
+	} else if (both(a, b, 'string')) {
+		return a.length > b.length ? a : b
+	} else if (typeof a === 'string') {
+		return a
+	} else if (typeof b === 'string') {
+		return b
+	}
+
+	return a
+}
+const mergeLongerProperties = (a, b) => {
+	if (!b) {
+		return a
+	}
+	if (!a) {
+		return b
+	}
+
+	return mergeProperties(mergeProperties({}, a), b, returnLargest)
+}
+
+function mergeDuplicates(dates) {
+	// console.log(dates)
+	const map = dates.reduce((map, date) => {
+		// if (map[date.amd]) {
+		// 	console.log('merging', date, 'onto', map[date.amd], 'to get', mergeLongerProperties(date, map[date.amd]))
+		// }
+		map[date.amd] = mergeLongerProperties(date, map[date.amd])
+		return map
+	}, {})
+
+	return Object.keys(map).map(amd => map[amd]).sort(amdSort)
 }
 
 function addSnipEvents(dates, snipSectionsLongerThan, snipBuffer) {
