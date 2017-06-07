@@ -54,12 +54,22 @@ async function main() {
 	const sorted = sortRange(structure, event => [ event.amd.start, event.amd.end ])
 	// const withNicestDates = addLongestAvailableDates(sorted)
 
-	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(sorted)}`)
+	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(addSlugs(sorted))}`)
 }
 
 main().catch(err => {
 	console.error(err)
 })
+
+function addSlugs(events) {
+	return events.map(event => Object.assign(event, {
+		slug: event.title
+			.toLowerCase()
+			.replace(/\s+/g, () => '-')
+			.replace(/[^\w\d-]/g, () => '')
+			.replace(/-{2,}/g, () => '-')
+	}))
+}
 
 function addLongestAvailableDates(events) {
 	const safeGet = (object, property, ...rest) => {

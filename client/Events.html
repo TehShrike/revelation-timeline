@@ -8,43 +8,71 @@
 				class="event" 
 				data-title="{{timelineEvent.title}}"
 				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
-				style="height: 4px;"
+				style="height: {{singleDayHeight}}px;"
 				on:mouseover="fire('startHover', timelineEvent)"
 				on:mouseleave="fire('endHover', timelineEvent)"
+				on:click="click(timelineEvent)"
 			/>
 		</VCenter>
 	{{else}}
-		<div 
-			style="
-				position: absolute;
-				top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
-				left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
-				height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
-			"
-			data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
-			data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
-			class="event" 
-			data-title="{{timelineEvent.title}}"
-			data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
-			on:mouseover="fire('startHover', timelineEvent)"
-			on:mouseleave="fire('endHover', timelineEvent)"
-		/>
+		<Link 
+			parameters="{{ clickable ? { zoom: timelineEvent.slug } : null }}"
+		>
+			<div 
+				id="{{timelineEvent.slug}}"
+				style="
+					position: absolute;
+					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
+					left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
+					height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
+				"
+				data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
+				data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
+				class="event" 
+				data-title="{{timelineEvent.title}}"
+				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
+				on:mouseover="fire('startHover', timelineEvent)"
+				on:mouseleave="fire('endHover', timelineEvent)"
+				on:click="click(timelineEvent)"
+			/>
+		</Link>
 	{{/if}}
 {{/each}}	
+
+<style>
+[data-clickable=true] {
+	cursor: pointer;
+}
+</style>
 
 <script>
 import { multiplyIndentByWidth } from './spacer-functions.js'
 import VCenter from './VerticallyCentered.html'
+import svelteQuerystringRouter from 'svelte-querystring-router'
 
 export default {
+	data() {
+		return {
+			clickable: false
+		}
+	},
 	helpers: {
 		multiplyIndentByWidth,
 	},
 	computed: {
-		multiplyDaysByHeight: dayHeight => days => days * dayHeight
+		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
+		singleDayHeight: dayHeight => Math.min(dayHeight, 4)
 	},
 	components: {
-		VCenter
+		VCenter,
+		Link: svelteQuerystringRouter.Link
+	},
+	methods: {
+		click(timelineEvent) {
+			if (this.get('clickable')) {
+				this.fire('eventClick', timelineEvent)
+			}
+		}
 	}
 }
 </script>

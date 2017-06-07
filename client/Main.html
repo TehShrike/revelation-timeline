@@ -3,7 +3,6 @@
 	{{hoveredEvent.title}} {{#if hoveredEvent.reference}}({{hoveredEvent.reference}}){{/if}}
 </div>
 {{/if}}
-<!--<button class="btn-default" id="zoombutton" on:click="toggleZoom()">Zoom {{#if zoomedIn}}out{{else}}in{{/if}}</button>-->
 <div class="timeline-container">
 	<div class="timeline-row" style="width: 100px; margin-right: 10px;">
 		{{#each axis as date}}
@@ -13,21 +12,21 @@
 				...snip ({{date.days}} days)
 				{{else}}
 				{{date.hebrew || date.amd}}
-				{{/if}}			
+				{{/if}}
 			</div>
 		</VCenter>
-		{{/each}}		
+		{{/each}}
 	</div>
 	<div class="timeline-row" style="width: 250px">
-		<Events 
-			timeline="{{relevantEventsWithAxis}}" 
-			on:startHover="startHover(event)" 
-			on:endHover="endHover(event)" 
+		<Events
+			timeline="{{relevantEventsWithAxis}}"
+			on:startHover="startHover(event)"
+			on:endHover="endHover(event)"
 			dayHeight="{{currentZoom.dayHeight}}"
+			clickable="{{true}}"
 		/>
 	</div>
 </div>
-
 <style>
 .timeline-container {
 	display: flex;
@@ -46,17 +45,15 @@
 	color: red;
 }
 .event {
-	width: 16px;
+	width: 48px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-
 	background-color: green;
 }
 .event:hover {
 	background-color: red;
 }
-
 .eventhover {
 	z-index: 1;
 	position: fixed;
@@ -69,23 +66,18 @@
 #zoombutton {
 	z-index: 1;
 	position: fixed;
-	top: 0;	
+	top: 0;
 	right: 0;
 }
 </style>
-
 <script>
 import VCenter from './VerticallyCentered.html'
 import Events from './Events.html'
-
 import createTimelineAxis from './create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
-
 import { multiplyIndentByWidth } from './spacer-functions.js'
-
 function createIndentLevelCalculator() {
 	const indentLevels = []
-
 	return event => {
 		const eventDate = event.amd
 		const replaceIndent = indentLevels.findIndex(previousDate => previousDate.end < eventDate.start)
@@ -98,55 +90,54 @@ function createIndentLevelCalculator() {
 		}
 	}
 }
-
 function addIndentAndAxisAfterStart(events, startDay, endDay) {
 	const getIndentLevel = createIndentLevelCalculator()
-
 	return events.map(event => {
 		const axisAfterStart = Math.max(event.axis.start - startDay, 0)
 		const eventDays = event.axis.end - event.axis.start + 1
 		const daysBeforeStart = Math.max(startDay - event.axis.start, 0)
 		const daysAfterEnd = Math.max(event.axis.end - endDay, 0)
-
 		const visibleDays = eventDays - daysBeforeStart - daysAfterEnd
-
 		return Object.assign({
 			indentLevel: getIndentLevel(event),
 			axisAfterStart,
 			visibleDays
-		}, event)		
+		}, event)
 	})
 }
 
-const zooms = {
-	top: {
-		dayHeight: 0.1,
-		start: 1471937,
-		end: 1488003,
-		snipSectionsLongerThan: 10000,
-		snipBuffer: 1500,
-		type: 'top',
-	},
-	default: {
-		dayHeight: 10,
-		type: null
-	}
+const topZoom = {
+	dayHeight: 0.1,
+	start: 1471937,
+	end: 1488003,
+	snipSectionsLongerThan: 10000,
+	snipBuffer: 1500,
+	type: 'top',
 }
 
 export default {
-	data() {
-		return zooms.top
-	},
 	computed: {
+		zooms: timelineData => timelineData.reduce((map, event) => {
+			map[event.slug] = {
+				start: event.amd.start,
+				end: event.amd.end,
+				dayHeight: 5,
+				snipSectionsLongerThan: 300,
+				snipBuffer: 50
+			}
+			return map
+		}, {
+			top: topZoom
+		}),
 		multiplyDaysByHeight: currentZoom => days => days * currentZoom.dayHeight,
 		relevantEvents: (timelineData, currentZoom) => timelineData
-			.filter(event => 
+			.filter(event =>
 				(event.amd.end >= currentZoom.start || event.amd.start <= currentZoom.end)
 				&& (!currentZoom.type || currentZoom.type === event.type)
 			)
 			.sort((a, b) => a.amd - b.amd),
 		axis: (relevantEvents, currentZoom) => createTimelineAxis({
-			timelineData: relevantEvents, 
+			timelineData: relevantEvents,
 			snipSectionsLongerThan: currentZoom.snipSectionsLongerThan,
 			snipBuffer: currentZoom.snipBuffer,
 			start: currentZoom.start,
@@ -156,13 +147,12 @@ export default {
 			addAxisPoints(axis, relevantEvents), currentZoom.start, currentZoom.end
 		),
 		distanceFromStartDay: currentZoom => day => day - currentZoom.start,
-		axisIsRelevant: hoveredEvent => amdDay => !!hoveredEvent 
+		axisIsRelevant: hoveredEvent => amdDay => !!hoveredEvent
 			&& (hoveredEvent.amd.start === amdDay || hoveredEvent.amd.end === amdDay),
-		currentZoomName: querystringParameters => 
+		currentZoom: (querystringParameters, zooms) =>
 			(querystringParameters.zoom && zooms[querystringParameters.zoom])
-				? querystringParameters.zoom
-				: 'top',
-		currentZoom: currentZoomName => zooms[currentZoomName]
+				? zooms[querystringParameters.zoom]
+				: topZoom
 	},
 	helpers: {
 		multiplyIndentByWidth,
@@ -178,15 +168,6 @@ export default {
 				hoveredEvent: null
 			})
 		},
-		zoomTo(event) {
-			const { type, amd } = event || 'default'
-			const { start, end } = amd
-			const zoomSettings = zooms[type] || zooms.default
-			this.set(Object.assign({
-				start,
-				end
-			}, zoomSettings))
-		}
 	},
 	components: {
 		VCenter,

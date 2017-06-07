@@ -17,7 +17,8 @@ module.exports = [
 		"amd": {
 			"start": 1246702,
 			"end": 1246702
-		}
+		},
+		"slug": "burning-of-temple-by-nebuchadnezzar"
 	},
 	{
 		"title": "Crucifixion",
@@ -36,7 +37,8 @@ module.exports = [
 		"amd": {
 			"start": 1471937,
 			"end": 1471937
-		}
+		},
+		"slug": "crucifixion"
 	},
 	{
 		"title": "Resurrection",
@@ -55,7 +57,8 @@ module.exports = [
 		"amd": {
 			"start": 1471939,
 			"end": 1471939
-		}
+		},
+		"slug": "resurrection"
 	},
 	{
 		"title": "Seven seals",
@@ -75,7 +78,8 @@ module.exports = [
 			"start": 1471939,
 			"end": 1485229
 		},
-		"type": "top"
+		"type": "top",
+		"slug": "seven-seals"
 	},
 	{
 		"title": "First Seal - Tiberius",
@@ -95,7 +99,8 @@ module.exports = [
 			"start": 1471955,
 			"end": 1474475
 		},
-		"reference": "Revelation 6:1-2"
+		"reference": "Revelation 6:1-2",
+		"slug": "first-seal-tiberius"
 	},
 	{
 		"title": "Ascension",
@@ -115,7 +120,8 @@ module.exports = [
 			"start": 1471977,
 			"end": 1471977
 		},
-		"reference": "Revelation 4-5"
+		"reference": "Revelation 4-5",
+		"slug": "ascension"
 	},
 	{
 		"title": "Second Seal - Caligula",
@@ -135,7 +141,8 @@ module.exports = [
 			"start": 1474475,
 			"end": 1475885
 		},
-		"reference": "Revelation 6:3-4"
+		"reference": "Revelation 6:3-4",
+		"slug": "second-seal-caligula"
 	},
 	{
 		"title": "Third Seal - Claudius",
@@ -155,7 +162,8 @@ module.exports = [
 			"start": 1475885,
 			"end": 1480895
 		},
-		"reference": "Revelation 6:5-6"
+		"reference": "Revelation 6:5-6",
+		"slug": "third-seal-claudius"
 	},
 	{
 		"title": "Fourth Seal - Nero early years",
@@ -175,7 +183,8 @@ module.exports = [
 			"start": 1480895,
 			"end": 1483647
 		},
-		"reference": "Revelation 6:7-8"
+		"reference": "Revelation 6:7-8",
+		"slug": "fourth-seal-nero-early-years"
 	},
 	{
 		"title": "Fifth Seal",
@@ -195,7 +204,8 @@ module.exports = [
 			"start": 1483532,
 			"end": 1485114
 		},
-		"reference": "Revelation 6:9-11"
+		"reference": "Revelation 6:9-11",
+		"slug": "fifth-seal"
 	},
 	{
 		"title": "Great Tribulation (Rome & Israel killing Christians)",
@@ -207,7 +217,8 @@ module.exports = [
 			"start": 1483532,
 			"end": 1485883
 		},
-		"type": "top"
+		"type": "top",
+		"slug": "great-tribulation-rome-israel-killing-christians"
 	},
 	{
 		"title": "Sixth Seal - visible appearance of Christ in the sky",
@@ -227,7 +238,8 @@ module.exports = [
 			"start": 1485114,
 			"end": 1485129
 		},
-		"reference": "Revelation 6:12; Rev 12:7-12"
+		"reference": "Revelation 6:12; Rev 12:7-12",
+		"slug": "sixth-seal-visible-appearance-of-christ-in-the-sky"
 	},
 	{
 		"title": "Seventh Seal - silence in heaven",
@@ -248,7 +260,8 @@ module.exports = [
 			"start": 1485129,
 			"end": 1485229
 		},
-		"reference": "Revelation 8:1-6; Rev 16:1"
+		"reference": "Revelation 8:1-6; Rev 16:1",
+		"slug": "seventh-seal-silence-in-heaven"
 	},
 	{
 		"title": "Ending sacrifice to Caesar and any foreigners?????",
@@ -268,7 +281,8 @@ module.exports = [
 		"amd": {
 			"start": 1485170,
 			"end": 1485170
-		}
+		},
+		"slug": "ending-sacrifice-to-caesar-and-any-foreigners"
 	},
 	{
 		"title": "Romans evacuated from Jerusalem",
@@ -288,7 +302,8 @@ module.exports = [
 		"amd": {
 			"start": 1485229,
 			"end": 1485229
-		}
+		},
+		"slug": "romans-evacuated-from-jerusalem"
 	},
 	{
 		"title": "The \"time\" portion of \"time, times, and half a time\"",
@@ -305,7 +320,8 @@ module.exports = [
 			"start": 1485238,
 			"end": 1485298
 		},
-		"type": "time"
+		"type": "time",
+		"slug": "the-time-portion-of-time-times-and-half-a-time"
 	},
 	{
 		"title": "First Trumpet",
@@ -325,7 +341,8 @@ module.exports = [
 			"start": 1485242,
 			"end": 1485242
 		},
-		"reference": "Revelation 8:7"
+		"reference": "Revelation 8:7",
+		"slug": "first-trumpet"
 	},
 	{
 		"title": "Seven trumpets",
@@ -345,7 +362,8 @@ module.exports = [
 			"start": 1485242,
 			"end": 1486668
 		},
-		"type": "top"
+		"type": "top",
+		"slug": "seven-trumpets"
 	},
 	{
 		"title": "Second Trumpet",
@@ -366,7 +384,8 @@ module.exports = [
 			"start": 1485256,
 			"end": 1485256
 		},
-		"reference": "Revelation 8:8-9"
+		"reference": "Revelation 8:8-9",
+		"slug": "second-trumpet"
 	},
 	{
 		"title": "Third Trumpet",
@@ -386,7 +405,8 @@ module.exports = [
 			"start": 1485263,
 			"end": 1485263
 		},
-		"reference": "Revelation 8:10-11"
+		"reference": "Revelation 8:10-11",
+		"slug": "third-trumpet"
 	},
 	{
 		"title": "Fourth Trumpet - Cestius defeated",
@@ -407,7 +427,8 @@ module.exports = [
 			"start": 1485280,
 			"end": 1485280
 		},
-		"reference": "Revelation 8:12-13"
+		"reference": "Revelation 8:12-13",
+		"slug": "fourth-trumpet-cestius-defeated"
 	},
 	{
 		"title": "Fifth Trumpet - Nero orders Vespasian and Titus to invade Israel",
@@ -427,7 +448,8 @@ module.exports = [
 			"start": 1485295,
 			"end": 1485295
 		},
-		"reference": "Revelation 9:1"
+		"reference": "Revelation 9:1",
+		"slug": "fifth-trumpet-nero-orders-vespasian-and-titus-to-invade-israel"
 	},
 	{
 		"title": "Five months lull in killing",
@@ -447,7 +469,8 @@ module.exports = [
 			"start": 1485295,
 			"end": 1485444
 		},
-		"reference": "Revelation 9:5, Rev 9:10"
+		"reference": "Revelation 9:5, Rev 9:10",
+		"slug": "five-months-lull-in-killing"
 	},
 	{
 		"title": "The \"times\" portion of \"time, times, and half a time\"",
@@ -464,7 +487,8 @@ module.exports = [
 			"start": 1485295,
 			"end": 1485883
 		},
-		"type": "time"
+		"type": "time",
+		"slug": "the-times-portion-of-time-times-and-half-a-time"
 	},
 	{
 		"title": "Great Wrath (Rome against Israel)",
@@ -476,7 +500,8 @@ module.exports = [
 			"start": 1485295,
 			"end": 1487959
 		},
-		"type": "top"
+		"type": "top",
+		"slug": "great-wrath-rome-against-israel"
 	},
 	{
 		"title": "Jewish preparations for defence of temple and city start in earnest",
@@ -495,7 +520,8 @@ module.exports = [
 		"amd": {
 			"start": 1485408,
 			"end": 1485408
-		}
+		},
+		"slug": "jewish-preparations-for-defence-of-temple-and-city-start-in-earnest"
 	},
 	{
 		"title": "First three and a half years of the war of Titus the prince",
@@ -515,7 +541,8 @@ module.exports = [
 			"start": 1485408,
 			"end": 1486668
 		},
-		"reference": "Revelation 11:1, Rev 11:3-14"
+		"reference": "Revelation 11:1, Rev 11:3-14",
+		"slug": "first-three-and-a-half-years-of-the-war-of-titus-the-prince"
 	},
 	{
 		"title": "Nero dies - Rome dies with him",
@@ -535,7 +562,8 @@ module.exports = [
 			"start": 1485883,
 			"end": 1485883
 		},
-		"reference": "Revelation 13:3"
+		"reference": "Revelation 13:3",
+		"slug": "nero-dies-rome-dies-with-him"
 	},
 	{
 		"title": "Vespasian proclaimed emperor by armies of Egypt and Judea",
@@ -555,7 +583,8 @@ module.exports = [
 			"start": 1486269,
 			"end": 1486269
 		},
-		"reference": "Revelation 17:8-10"
+		"reference": "Revelation 17:8-10",
+		"slug": "vespasian-proclaimed-emperor-by-armies-of-egypt-and-judea"
 	},
 	{
 		"title": "Vespasian crowned emperor - beast comes back to life",
@@ -575,7 +604,8 @@ module.exports = [
 			"start": 1486443,
 			"end": 1486443
 		},
-		"reference": "Revelation 13:3"
+		"reference": "Revelation 13:3",
+		"slug": "vespasian-crowned-emperor-beast-comes-back-to-life"
 	},
 	{
 		"title": "Jerusalem surrounded by Titus/Vespasian armies",
@@ -595,7 +625,8 @@ module.exports = [
 		"amd": {
 			"start": 1486555,
 			"end": 1486555
-		}
+		},
+		"slug": "jerusalem-surrounded-by-titusvespasian-armies"
 	},
 	{
 		"title": "The \"half a time\" portion of \"time, times, and half a time\"",
@@ -612,7 +643,8 @@ module.exports = [
 			"start": 1486555,
 			"end": 1486696
 		},
-		"type": "time"
+		"type": "time",
+		"slug": "the-half-a-time-portion-of-time-times-and-half-a-time"
 	},
 	{
 		"title": "Third wall of Jerusalem breached by Titus' battering rams",
@@ -632,7 +664,8 @@ module.exports = [
 		"amd": {
 			"start": 1486577,
 			"end": 1486577
-		}
+		},
+		"slug": "third-wall-of-jerusalem-breached-by-titus-battering-rams"
 	},
 	{
 		"title": "Second wall of Jerusalem breached by Titus' battering rams, but Romans ambushed, barely escaping. Many soldiers wounded.",
@@ -652,7 +685,8 @@ module.exports = [
 		"amd": {
 			"start": 1486582,
 			"end": 1486582
-		}
+		},
+		"slug": "second-wall-of-jerusalem-breached-by-titus-battering-rams-but-romans-ambushed-barely-escaping-many-soldiers-wounded"
 	},
 	{
 		"title": "Titus builds earthworks against Antonia Fortress & in northern city",
@@ -672,7 +706,8 @@ module.exports = [
 		"amd": {
 			"start": 1486591,
 			"end": 1486591
-		}
+		},
+		"slug": "titus-builds-earthworks-against-antonia-fortress-in-northern-city"
 	},
 	{
 		"title": "John undermines Antonia earthworks built by Titus and burns them",
@@ -692,7 +727,8 @@ module.exports = [
 		"amd": {
 			"start": 1486599,
 			"end": 1486599
-		}
+		},
+		"slug": "john-undermines-antonia-earthworks-built-by-titus-and-burns-them"
 	},
 	{
 		"title": "Titus finally finishes Antonia earthworks",
@@ -712,7 +748,8 @@ module.exports = [
 		"amd": {
 			"start": 1486631,
 			"end": 1486631
-		}
+		},
+		"slug": "titus-finally-finishes-antonia-earthworks"
 	},
 	{
 		"title": "Antonia Fortress taken by Romans, but they are repulsed from temple",
@@ -732,7 +769,8 @@ module.exports = [
 		"amd": {
 			"start": 1486634,
 			"end": 1486634
-		}
+		},
+		"slug": "antonia-fortress-taken-by-romans-but-they-are-repulsed-from-temple"
 	},
 	{
 		"title": "Even the unlawful sacrifices now end in temple",
@@ -752,7 +790,8 @@ module.exports = [
 		"amd": {
 			"start": 1486646,
 			"end": 1486646
-		}
+		},
+		"slug": "even-the-unlawful-sacrifices-now-end-in-temple"
 	},
 	{
 		"title": "Antonia disconnected from temple by rebels; major setback for Romans",
@@ -772,7 +811,8 @@ module.exports = [
 		"amd": {
 			"start": 1486653,
 			"end": 1486653
-		}
+		},
+		"slug": "antonia-disconnected-from-temple-by-rebels-major-setback-for-romans"
 	},
 	{
 		"title": "Romans burned alive by rebels in west portico ambush",
@@ -792,7 +832,8 @@ module.exports = [
 		"amd": {
 			"start": 1486656,
 			"end": 1486656
-		}
+		},
+		"slug": "romans-burned-alive-by-rebels-in-west-portico-ambush"
 	},
 	{
 		"title": "Prophets are killed",
@@ -812,7 +853,8 @@ module.exports = [
 			"start": 1486664,
 			"end": 1486664
 		},
-		"reference": "Revelation 11:7-11"
+		"reference": "Revelation 11:7-11",
+		"slug": "prophets-are-killed"
 	},
 	{
 		"title": "Roman battering rams utterly unable to penetrate western wall of Temple. Romans suffer heavy losses seeking to scale walls",
@@ -833,7 +875,8 @@ module.exports = [
 			"start": 1486667,
 			"end": 1486667
 		},
-		"reference": "Revelation 11:7-11"
+		"reference": "Revelation 11:7-11",
+		"slug": "roman-battering-rams-utterly-unable-to-penetrate-western-wall-of-temple-romans-suffer-heavy-losses-seeking-to-scale-walls"
 	},
 	{
 		"title": "Romans scale wall in dead of night and capture temple",
@@ -852,7 +895,8 @@ module.exports = [
 		"amd": {
 			"start": 1486667,
 			"end": 1486667
-		}
+		},
+		"slug": "romans-scale-wall-in-dead-of-night-and-capture-temple"
 	},
 	{
 		"title": "Resurrection and events of Rev. 11:11-19",
@@ -872,7 +916,8 @@ module.exports = [
 			"start": 1486668,
 			"end": 1486668
 		},
-		"reference": "Rev. 11:11-19"
+		"reference": "Rev. 11:11-19",
+		"slug": "resurrection-and-events-of-rev-1111-19"
 	},
 	{
 		"title": "Temple burned",
@@ -892,7 +937,8 @@ module.exports = [
 		"amd": {
 			"start": 1486668,
 			"end": 1486668
-		}
+		},
+		"slug": "temple-burned"
 	},
 	{
 		"title": "Forty months",
@@ -909,7 +955,8 @@ module.exports = [
 			"start": 1486668,
 			"end": 1487928
 		},
-		"type": "time"
+		"type": "time",
+		"slug": "forty-months"
 	},
 	{
 		"title": "Second three and a half years of the war of Titus the prince",
@@ -929,7 +976,8 @@ module.exports = [
 			"start": 1486668,
 			"end": 1487929
 		},
-		"reference": "Revelation 11:2; Rev 18:1-24"
+		"reference": "Revelation 11:2; Rev 18:1-24",
+		"slug": "second-three-and-a-half-years-of-the-war-of-titus-the-prince"
 	},
 	{
 		"title": "1290 days",
@@ -946,7 +994,8 @@ module.exports = [
 			"start": 1486668,
 			"end": 1487959
 		},
-		"type": "time"
+		"type": "time",
+		"slug": "1290-days"
 	},
 	{
 		"title": "Titus orders earthworks against Upper City",
@@ -966,7 +1015,8 @@ module.exports = [
 		"amd": {
 			"start": 1486678,
 			"end": 1486678
-		}
+		},
+		"slug": "titus-orders-earthworks-against-upper-city"
 	},
 	{
 		"title": "Jerusalem completely defeated",
@@ -986,7 +1036,8 @@ module.exports = [
 		"amd": {
 			"start": 1486696,
 			"end": 1486696
-		}
+		},
+		"slug": "jerusalem-completely-defeated"
 	},
 	{
 		"title": "Romans stamp out all resistance in Israel (other than Masada)",
@@ -1006,7 +1057,8 @@ module.exports = [
 		"amd": {
 			"start": 1487928,
 			"end": 1487928
-		}
+		},
+		"slug": "romans-stamp-out-all-resistance-in-israel-other-than-masada"
 	},
 	{
 		"title": "Romans finish their atrocities against Jews throughout empire",
@@ -1025,7 +1077,8 @@ module.exports = [
 		"amd": {
 			"start": 1487959,
 			"end": 1487959
-		}
+		},
+		"slug": "romans-finish-their-atrocities-against-jews-throughout-empire"
 	},
 	{
 		"title": "1335 days",
@@ -1042,7 +1095,8 @@ module.exports = [
 			"start": 1488003,
 			"end": 1488003
 		},
-		"type": "time"
+		"type": "time",
+		"slug": "1335-days"
 	},
 	{
 		"title": "Masada fell",
@@ -1062,6 +1116,7 @@ module.exports = [
 			"start": 1488003,
 			"end": 1488003
 		},
-		"reference": "Daniel 12:12"
+		"reference": "Daniel 12:12",
+		"slug": "masada-fell"
 	}
 ]

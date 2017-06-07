@@ -1,3 +1,3 @@
 export function multiplyIndentByWidth(indentLevel) {
-	return indentLevel * 20
+	return indentLevel * 60
 }
