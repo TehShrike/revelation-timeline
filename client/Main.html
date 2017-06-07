@@ -3,7 +3,7 @@
 	{{hoveredEvent.title}} {{#if hoveredEvent.reference}}({{hoveredEvent.reference}}){{/if}}
 </div>
 {{/if}}
-<button class="btn-default" id="zoombutton" on:click="toggleZoom()">Zoom {{#if zoomedIn}}out{{else}}in{{/if}}</button>
+<!--<button class="btn-default" id="zoombutton" on:click="toggleZoom()">Zoom {{#if zoomedIn}}out{{else}}in{{/if}}</button>-->
 <div class="timeline-container">
 	<div class="timeline-row" style="width: 100px; margin-right: 10px;">
 		{{#each axis as date}}
@@ -18,17 +18,9 @@
 		</VCenter>
 		{{/each}}		
 	</div>
-	<div class="timeline-row" style="width: 50px">
+	<div class="timeline-row" style="width: 250px">
 		<Events 
-			timeline="{{times}}" 
-			on:startHover="startHover(event)" 
-			on:endHover="endHover(event)" 
-			dayHeight="{{dayHeight}}"
-		/>
-	</div>
-	<div class="timeline-row" style="width: 200px">
-		<Events 
-			timeline="{{otherEvents}}" 
+			timeline="{{relevantEventsWithAxis}}" 
 			on:startHover="startHover(event)" 
 			on:endHover="endHover(event)" 
 			dayHeight="{{dayHeight}}"
@@ -83,84 +75,88 @@
 </style>
 
 <script>
-function mapKnowingPrevious(ary, fn) {
-	let last = null
-	return ary.map(current => {
-		const transformed = fn(current, last)
-		last = transformed
-		return transformed
-	})
-}
-
 import VCenter from './VerticallyCentered.html'
 import Events from './Events.html'
 
-import filterAndSort from '../timeline-data/filter-and-sort.js'
-import createTimelineAxis from '../timeline-data/create-timeline-axis.js'
+import createTimelineAxis from './create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
 
 import { multiplyIndentByWidth } from './spacer-functions.js'
 
-function addIndentAndAxisAfterStart(events, startDay) {
-	return mapKnowingPrevious(
-		events,
-		(event, previous) => {
-			const calculatedIndentLevel = () => previous.amd.end >= event.amd.start 
-				? previous.indentLevel + 1 
-				: previous.indentLevel
+function createIndentLevelCalculator() {
+	const indentLevels = []
 
-			const indentLevel = previous ? calculatedIndentLevel() : 0
-
-			return Object.assign({
-				indentLevel,
-				axisAfterStart: event.axis.start - startDay
-			}, event)
+	return event => {
+		const eventDate = event.amd
+		const replaceIndent = indentLevels.findIndex(previousDate => previousDate.end < eventDate.start)
+		if (replaceIndent === -1) {
+			indentLevels.push(eventDate)
+			return indentLevels.length - 1
+		} else {
+			indentLevels[replaceIndent] = eventDate
+			return replaceIndent
 		}
-	)	
+	}
 }
 
-const zoomedIn = {
-	snipSectionsLongerThan: 300,
-	snipBuffer: 50,
-	dayHeight: 10,
-	minimumLength: 1,
-	zoomedIn: true
-}
-const zoomedOut = {
-	snipSectionsLongerThan: 300,
-	snipBuffer: 50,
-	dayHeight: 0.5,
-	minimumLength: 100,
-	zoomedIn: false
+function addIndentAndAxisAfterStart(events, startDay, endDay) {
+	const getIndentLevel = createIndentLevelCalculator()
+
+	return events.map(event => {
+		const axisAfterStart = Math.max(event.axis.start - startDay, 0)
+		const eventDays = event.axis.end - event.axis.start + 1
+		const daysBeforeStart = Math.max(startDay - event.axis.start, 0)
+		const daysAfterEnd = Math.max(event.axis.end - endDay, 0)
+
+		const visibleDays = eventDays - daysBeforeStart - daysAfterEnd
+
+		return Object.assign({
+			indentLevel: getIndentLevel(event),
+			axisAfterStart,
+			visibleDays
+		}, event)		
+	})
 }
 
-const now = (performance && performance.now) 
-	? () => performance.now() 
-	: Date.now
+const zooms = {
+	top: {
+		dayHeight: 0.5,
+		start: 1471937,
+		end: 1488003,
+		type: 'top',
+	},
+	default: {
+		dayHeight: 10,
+		type: null
+	}
+}
 
 export default {
 	data() {
-		return zoomedOut
+		return Object.assign({
+			snipSectionsLongerThan: 300,
+			snipBuffer: 50,
+		}, zooms.top)
 	},
 	computed: {
 		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
-		startDay: relevantEvents => relevantEvents[0].amd.start,
-		relevantEvents: (timelineData, minimumLength) => filterAndSort(timelineData, minimumLength),
-		axis: (relevantEvents, snipSectionsLongerThan, snipBuffer) => createTimelineAxis(relevantEvents, snipSectionsLongerThan, snipBuffer),
-		relevantEventsWithAxis: (axis, relevantEvents) => addAxisPoints(axis, relevantEvents),
-		times: (relevantEventsWithAxis, startDay) => {
-			return addIndentAndAxisAfterStart(
-				relevantEventsWithAxis.filter(({ type }) => type === 'time'),
-				startDay
+		relevantEvents: (timelineData, start, end, type) => timelineData
+			.filter(event => 
+				(event.amd.end >= start || event.amd.start <= end)
+				&& (!type || type === event.type)
 			)
-		},
-		otherEvents: (relevantEventsWithAxis, startDay) => {
-			return addIndentAndAxisAfterStart(
-				relevantEventsWithAxis.filter(({ type }) => !type),
-				startDay
-			)
-		},
-		distanceFromStartDay: startDay => day => day - startDay,
+			.sort((a, b) => a.amd - b.amd),
+		axis: (relevantEvents, snipSectionsLongerThan, snipBuffer, start, end) => createTimelineAxis({
+			timelineData: relevantEvents, 
+			snipSectionsLongerThan,
+			snipBuffer,
+			start,
+			end
+		}),
+		relevantEventsWithAxis: (axis, relevantEvents, start, end) => addIndentAndAxisAfterStart(
+			addAxisPoints(axis, relevantEvents), start, end
+		),
+		distanceFromStartDay: start => day => day - start,
 		axisIsRelevant: hoveredEvent => amdDay => !!hoveredEvent 
 			&& (hoveredEvent.amd.start === amdDay || hoveredEvent.amd.end === amdDay)
 	},
@@ -178,58 +174,14 @@ export default {
 				hoveredEvent: null
 			})
 		},
-		toggleZoom() {
-			if (this.get('zoomedIn')) {
-				this.transitionTo(zoomedOut, 2000).then(() => {
-					this.set({
-						minimumLength: zoomedOut.minimumLength
-					})
-				})
-			} else {
-				this.set({
-					minimumLength: zoomedIn.minimumLength
-				})
-				this.transitionTo(zoomedIn, 2000)				
-			}
-		},
-		transitionTo(destination, totalMs) {
-			return new Promise(resolve => {
-				const start = now()
-				const transitionKeys = [
-					'snipSectionsLongerThan',
-					'snipBuffer',
-					'dayHeight',
-				]
-
-				const startData = this.get()
-
-				const differences = transitionKeys
-					.reduce((map, key) => {
-						map[key] = destination[key] - startData[key]
-						return map
-					}, {})
-
-				const tick = () => {
-					const elapsedMs = now() - start
-					if (elapsedMs >= totalMs) {
-						// console.log('arrived at', destination)
-						this.set(destination)
-						resolve()
-					} else {
-						const ratioElapsed = elapsedMs / totalMs
-						// console.log('ratio elapsed', ratioElapsed)
-						const stepData = transitionKeys.reduce((acc, key) => {
-							acc[key] = startData[key] + (differences[key] * ratioElapsed)
-							return acc
-						}, {})
-						// console.log('stepping to', stepData)
-						this.set(stepData)
-						window.requestAnimationFrame(tick)
-					}
-				}
-
-				window.requestAnimationFrame(tick)
-			})
+		zoomTo(event) {
+			const { type, amd } = event || 'default'
+			const { start, end } = amd
+			const zoomSettings = zooms[type] || zooms.default
+			this.set(Object.assign({
+				start,
+				end
+			}, zoomSettings))
 		}
 	},
 	components: {

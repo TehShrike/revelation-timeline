@@ -368,3 +368,9 @@ From fifth seal to death of Nero
 	- G: April 6, 30 to September 8, 66
 	- AMD: 1471939-1485229
 	- type: top
+- Seven trumpets
+	- H: Tishri 1, 4066 to Ab 9, 4070
+	- S: Hyperberataios 1, 377 to Loos 9, 381
+	- G: September 8, 66 to August 3, 70
+	- AMD: 1485242-1486668
+	- type: top

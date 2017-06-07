@@ -324,6 +324,26 @@ module.exports = [
 		"reference": "Revelation 8:7"
 	},
 	{
+		"title": "Seven trumpets",
+		"hebrew": {
+			"start": "Tishri 1, 4066",
+			"end": "Ab 9, 4070"
+		},
+		"macedonian": {
+			"start": "Hyperberataios 1, 377",
+			"end": "Loos 9, 381"
+		},
+		"gregorian": {
+			"start": "September 8, 66",
+			"end": "August 3, 70"
+		},
+		"amd": {
+			"start": 1485242,
+			"end": 1486668
+		},
+		"type": "top"
+	},
+	{
 		"title": "Second Trumpet",
 		"hebrew": {
 			"start": "Tishri 15, 4066",
@@ -787,25 +807,6 @@ module.exports = [
 		"reference": "Revelation 11:7-11"
 	},
 	{
-		"title": "Romans scale wall in dead of night and capture temple",
-		"hebrew": {
-			"start": "Ab 8, 4070",
-			"end": "Ab 8, 4070"
-		},
-		"macedonian": {
-			"start": "Loos 8, 381",
-			"end": "Loos 8, 381"
-		},
-		"gregorian": {
-			"start": "August 2, 70",
-			"end": "August 2, 70"
-		},
-		"amd": {
-			"start": 1486667,
-			"end": 1486667
-		}
-	},
-	{
 		"title": "Roman battering rams utterly unable to penetrate western wall of Temple. Romans suffer heavy losses seeking to scale walls",
 		"hebrew": {
 			"start": "Ab 8, 4070",
@@ -825,6 +826,25 @@ module.exports = [
 			"end": 1486667
 		},
 		"reference": "Revelation 11:7-11"
+	},
+	{
+		"title": "Romans scale wall in dead of night and capture temple",
+		"hebrew": {
+			"start": "Ab 8, 4070",
+			"end": "Ab 8, 4070"
+		},
+		"macedonian": {
+			"start": "Loos 8, 381",
+			"end": "Loos 8, 381"
+		},
+		"gregorian": {
+			"start": "August 2, 70",
+			"end": "August 2, 70"
+		},
+		"amd": {
+			"start": 1486667,
+			"end": 1486667
+		}
 	},
 	{
 		"title": "Resurrection and events of Rev. 11:11-19",
@@ -1000,6 +1020,23 @@ module.exports = [
 		}
 	},
 	{
+		"title": "1335 days",
+		"reference": "Daniel 12:12",
+		"hebrew": {
+			"start": "Ab 9, 4070",
+			"end": "Nisan 15, 4074"
+		},
+		"gregorian": {
+			"start": "August 3, 70",
+			"end": "March 31, 74"
+		},
+		"amd": {
+			"start": 1488003,
+			"end": 1488003
+		},
+		"type": "time"
+	},
+	{
 		"title": "Masada fell",
 		"hebrew": {
 			"start": "Nisan 15, 4074",
@@ -1018,22 +1055,5 @@ module.exports = [
 			"end": 1488003
 		},
 		"reference": "Daniel 12:12"
-	},
-	{
-		"title": "1335 days",
-		"reference": "Daniel 12:12",
-		"hebrew": {
-			"start": "Ab 9, 4070",
-			"end": "Nisan 15, 4074"
-		},
-		"gregorian": {
-			"start": "August 3, 70",
-			"end": "March 31, 74"
-		},
-		"amd": {
-			"start": 1488003,
-			"end": 1488003
-		},
-		"type": "time"
 	}
 ]
