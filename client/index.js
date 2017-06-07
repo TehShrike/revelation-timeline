@@ -2,10 +2,9 @@ import Main from './Main.html'
 
 import timelineData from '../timeline-data/timeline-data.js'
 
-
-new Main({
+const component = new Main({
 	target: document.querySelector('#timeline'),
 	data: {
-		timelineData
+		timelineData // no need to re-sort, is pre-sorted by transform-timeline-to-json.js
 	}
 })

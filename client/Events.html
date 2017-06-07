@@ -19,8 +19,10 @@
 				position: absolute;
 				top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
 				left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
-				height: {{multiplyDaysByHeight(timelineEvent.axis.end - timelineEvent.axis.start + 1)}}px;
+				height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
 			"
+			data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
+			data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 			class="event" 
 			data-title="{{timelineEvent.title}}"
 			data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"

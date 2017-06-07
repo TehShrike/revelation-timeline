@@ -13,13 +13,15 @@ const getDates = (property, object) => ({
 const amdSort = (a, b) => a.amd - b.amd
 
 module.exports = createTimelineAxis
-function createTimelineAxis(timelineData, snipSectionsLongerThan, snipBuffer) {
+function createTimelineAxis({ timelineData, snipSectionsLongerThan, snipBuffer, start, end }) {
 	// console.log(timelineData)
 	const naiveAxisMarkers = flatMap(event => {
 		return event.amd.start === event.amd.end
 			? [ getDates('start', event) ]
 			: [ getDates('start', event), getDates('end', event) ]
-	}, timelineData).sort(amdSort)
+	}, timelineData)
+	.filter(point => point.amd >= start && point.amd <= end)
+	.sort(amdSort)
 
 	return pipe(naiveAxisMarkers,
 		mergeDuplicates,
