@@ -6,10 +6,10 @@
   "scripts": {
     "test": "tape **/*-test.js",
     "build:client": "rollup -c",
-    "watch:client": "rollup -c -w --dev --sourcemap",
+    "watch:client": "rollup -c -w --dev",
     "build:data": "pushd timeline-data && node ./transform-timeline-to-json.js && popd",
     "build:table": "rollup -c -i ./table-client/index.js -o ./docs/table-bundle.js",
-    "watch:table": "rollup -c -w --dev --sourcemap -i ./table-client/index.js -o ./docs/table-bundle.js",
+    "watch:table": "rollup -c -w --dev -i ./table-client/index.js -o ./docs/table-bundle.js",
     "build": "npm run build:data && npm run build:client && npm run build:table"
   },
   "repository": {

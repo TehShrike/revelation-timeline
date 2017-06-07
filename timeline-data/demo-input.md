@@ -316,6 +316,7 @@ Josephus's War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
 	- AMD: 1488003
 	- R: Daniel 12:12
 - Great Tribulation (Rome & Israel killing Christians)
+	+ H: 4061-Sivan 22, 4068
 	+ AMD: [1483532-1483647] - 1485883
 	+ type: top
 
@@ -323,6 +324,7 @@ AMD is fuzzy for start
 From fifth seal to death of Nero
 
 - Great Wrath (Rome against Israel)
+	+ H: Heshvan 24, 4066-4074
 	+ AMD: 1485295- [1487928-1487959]
 	+ type: top
 - Forty months

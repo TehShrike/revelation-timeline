@@ -52,13 +52,63 @@ async function main() {
 	})
 
 	const sorted = sortRange(structure, event => [ event.amd.start, event.amd.end ])
+	// const withNicestDates = addLongestAvailableDates(sorted)
 
 	fs.writeFileSync('./timeline-data.js', `module.exports = ${formattedJson(sorted)}`)
 }
 
-main()
+main().catch(err => {
+	console.error(err)
+})
 
+function addLongestAvailableDates(events) {
+	const safeGet = (object, property, ...rest) => {
+		const nextObject = object && object[property]
+		return rest.length > 0 ? safeGet(nextObject, ...rest) : nextObject
+	}
+	const dateKeys = [ 'hebrew', 'macedonian', 'gregorian' ]
+	const both = (a, b, type) => typeof a === type && typeof b === type
+	const returnLargest = (a, b) => {
+		if (a === undefined) {
+			return b
+		} else if (b === undefined) {
+			return a
+		} else if (both(a, b, 'number')) {
+			return a > b ? a : b
+		} else if (both(a, b, 'string')) {
+			return a.length > b.length ? a : b
+		} else if (typeof a === 'string') {
+			return a
+		} else if (typeof b === 'string') {
+			return b
+		}
 
+		return a
+	}
+
+	const amdDateToOtherDates = events.reduce((map, event) => {
+		map[event.amd.start] = map[event.amd.start] || {}
+		map[event.amd.end] = map[event.amd.end] || {}
+
+		dateKeys.filter(key => event[key]).forEach(key => {
+			map[event.amd.start][key] = returnLargest(map[event.amd.start][key], event[key].start)
+			map[event.amd.end][key] = returnLargest(map[event.amd.end][key], event[key].end)
+		})
+
+		return map
+	}, Object.create(null))
+
+	const getNiceDateRange = (event, calendar) => ({
+		start: amdDateToOtherDates[event.amd.start][calendar],
+		end: amdDateToOtherDates[event.amd.end][calendar],
+	})
+
+	return events.map(event => Object.assign(event, {
+		hebrew: getNiceDateRange(event, 'hebrew'),
+		macedonian: getNiceDateRange(event, 'macedonian'),
+		gregorian: getNiceDateRange(event, 'gregorian'),
+	}))
+}
 
 
 function formattedJson(structure) {

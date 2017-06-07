@@ -67,11 +67,7 @@ const mergeLongerProperties = (a, b) => {
 }
 
 function mergeDuplicates(dates) {
-	// console.log(dates)
 	const map = dates.reduce((map, date) => {
-		// if (map[date.amd]) {
-		// 	console.log('merging', date, 'onto', map[date.amd], 'to get', mergeLongerProperties(date, map[date.amd]))
-		// }
 		map[date.amd] = mergeLongerProperties(date, map[date.amd])
 		return map
 	}, {})
@@ -80,6 +76,9 @@ function mergeDuplicates(dates) {
 }
 
 function addSnipEvents(dates, snipSectionsLongerThan, snipBuffer) {
+	if (!snipSectionsLongerThan) {
+		return dates
+	}
 	let lastDay = null
 
 	return flatMap(date => {

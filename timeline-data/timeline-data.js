@@ -199,6 +199,10 @@ module.exports = [
 	},
 	{
 		"title": "Great Tribulation (Rome & Israel killing Christians)",
+		"hebrew": {
+			"start": "4061",
+			"end": "Sivan 22, 4068"
+		},
 		"amd": {
 			"start": 1483532,
 			"end": 1485883
@@ -464,6 +468,10 @@ module.exports = [
 	},
 	{
 		"title": "Great Wrath (Rome against Israel)",
+		"hebrew": {
+			"start": "Heshvan 24, 4066",
+			"end": "4074"
+		},
 		"amd": {
 			"start": 1485295,
 			"end": 1487959

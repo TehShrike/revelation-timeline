@@ -23,7 +23,7 @@
 			timeline="{{relevantEventsWithAxis}}" 
 			on:startHover="startHover(event)" 
 			on:endHover="endHover(event)" 
-			dayHeight="{{dayHeight}}"
+			dayHeight="{{currentZoom.dayHeight}}"
 		/>
 	</div>
 </div>
@@ -120,9 +120,11 @@ function addIndentAndAxisAfterStart(events, startDay, endDay) {
 
 const zooms = {
 	top: {
-		dayHeight: 0.5,
+		dayHeight: 0.1,
 		start: 1471937,
 		end: 1488003,
+		snipSectionsLongerThan: 10000,
+		snipBuffer: 1500,
 		type: 'top',
 	},
 	default: {
@@ -133,32 +135,34 @@ const zooms = {
 
 export default {
 	data() {
-		return Object.assign({
-			snipSectionsLongerThan: 300,
-			snipBuffer: 50,
-		}, zooms.top)
+		return zooms.top
 	},
 	computed: {
-		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
-		relevantEvents: (timelineData, start, end, type) => timelineData
+		multiplyDaysByHeight: currentZoom => days => days * currentZoom.dayHeight,
+		relevantEvents: (timelineData, currentZoom) => timelineData
 			.filter(event => 
-				(event.amd.end >= start || event.amd.start <= end)
-				&& (!type || type === event.type)
+				(event.amd.end >= currentZoom.start || event.amd.start <= currentZoom.end)
+				&& (!currentZoom.type || currentZoom.type === event.type)
 			)
 			.sort((a, b) => a.amd - b.amd),
-		axis: (relevantEvents, snipSectionsLongerThan, snipBuffer, start, end) => createTimelineAxis({
+		axis: (relevantEvents, currentZoom) => createTimelineAxis({
 			timelineData: relevantEvents, 
-			snipSectionsLongerThan,
-			snipBuffer,
-			start,
-			end
+			snipSectionsLongerThan: currentZoom.snipSectionsLongerThan,
+			snipBuffer: currentZoom.snipBuffer,
+			start: currentZoom.start,
+			end: currentZoom.end,
 		}),
-		relevantEventsWithAxis: (axis, relevantEvents, start, end) => addIndentAndAxisAfterStart(
-			addAxisPoints(axis, relevantEvents), start, end
+		relevantEventsWithAxis: (axis, relevantEvents, currentZoom) => addIndentAndAxisAfterStart(
+			addAxisPoints(axis, relevantEvents), currentZoom.start, currentZoom.end
 		),
-		distanceFromStartDay: start => day => day - start,
+		distanceFromStartDay: currentZoom => day => day - currentZoom.start,
 		axisIsRelevant: hoveredEvent => amdDay => !!hoveredEvent 
-			&& (hoveredEvent.amd.start === amdDay || hoveredEvent.amd.end === amdDay)
+			&& (hoveredEvent.amd.start === amdDay || hoveredEvent.amd.end === amdDay),
+		currentZoomName: querystringParameters => 
+			(querystringParameters.zoom && zooms[querystringParameters.zoom])
+				? querystringParameters.zoom
+				: 'top',
+		currentZoom: currentZoomName => zooms[currentZoomName]
 	},
 	helpers: {
 		multiplyIndentByWidth,

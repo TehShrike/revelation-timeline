@@ -7,12 +7,13 @@ export default {
 	format: 'iife',
 	entry: 'client/index.js',
 	dest: './docs/bundle.js',
+	sourceMap: true,
 	plugins: [
 		svelte(),
+		commonjs(),
 		resolve({
 			browser: true
 		}),
-		commonjs(),
 		babel({
 			// exclude: 'node_modules/**',
 			babelrc: false,
