@@ -121,3 +121,112 @@ tape(`add axis points to timeline data`, t => {
 
 	t.end()
 })
+
+tape(`Add axis points when some events start before or after the current range`, t => {
+	const axisData = [{
+		"axisPoint": 1483532,
+		"amd": 1483532
+	}, {
+		"axisPoint": 1483647,
+		"amd": 1483647
+	}, {
+		"axisPoint": 1483697,
+		"type": "snip",
+		"days": 1367,
+		"start": 1483697,
+		"end": 1485064
+	}, {
+		"axisPoint": 1483747,
+		"amd": 1485114
+	}, {
+		"axisPoint": 1483762,
+		"amd": 1485129
+	}, {
+		"axisPoint": 1483803,
+		"amd": 1485170
+	}, {
+		"axisPoint": 1483862,
+		"amd": 1485229
+	}, {
+		"axisPoint": 1483871,
+		"amd": 1485238
+	}, {
+		"axisPoint": 1483875,
+		"amd": 1485242
+	}, {
+		"axisPoint": 1483889,
+		"amd": 1485256
+	}, {
+		"axisPoint": 1483896,
+		"amd": 1485263
+	}, {
+		"axisPoint": 1483913,
+		"amd": 1485280
+	}, {
+		"axisPoint": 1483928,
+		"amd": 1485295
+	}, {
+		"axisPoint": 1483931,
+		"amd": 1485298
+	}, {
+		"axisPoint": 1484041,
+		"amd": 1485408
+	}, {
+		"axisPoint": 1484077,
+		"amd": 1485444
+	}, {
+		"axisPoint": 1484127,
+		"type": "snip",
+		"days": 339,
+		"start": 1485494,
+		"end": 1485833
+	}, {
+		"axisPoint": 1484177,
+		"amd": 1485883
+	}]
+
+	const timelineData = [{
+		"title": "Seven seals",
+		"amd": { "start": 1471939, "end": 1485229 },
+	}, {
+		"title": "Fifth Seal",
+		"amd": { "start": 1483532, "end": 1485114 },
+	}, {
+		"title": "Jewish preparations for defence of temple and city start in earnest",
+		"amd": { "start": 1485408, "end": 1485408 },
+	}, {
+		"title": "First three and a half years of the war of Titus the prince",
+		"amd": { "start": 1485408, "end": 1486668 },
+	}, {
+		"title": "Seven trumpets",
+		"amd": { "start": 1485242, "end": 1486668 },
+	}]
+
+	const expected = [{
+		"title": "Seven seals",
+		"amd": { "start": 1471939, "end": 1485229 },
+		"axis": { "start": 1483532, "end": 1483862 },
+	}, {
+		"title": "Fifth Seal",
+		"amd": { "start": 1483532, "end": 1485114 },
+		"axis": { "start": 1483532, "end": 1483747 },
+	}, {
+		"title": "Jewish preparations for defence of temple and city start in earnest",
+		"amd": { "start": 1485408, "end": 1485408 },
+		"axis": { "start": 1484041, "end": 1484041 },
+	}, {
+		"title": "First three and a half years of the war of Titus the prince",
+		"amd": { "start": 1485408, "end": 1486668 },
+		"axis": { "start": 1484041, "end": 1484177 },
+	}, {
+		"title": "Seven trumpets",
+		"amd": { "start": 1485242, "end": 1486668 },
+		"axis": { "start": 1483875, "end": 1484177 },
+	}]
+
+	const actual = addAxisPoints(axisData, timelineData)
+
+	t.deepEqual(actual, expected)
+
+	t.end()
+})

@@ -14,7 +14,6 @@ const amdSort = (a, b) => a.amd - b.amd
 
 module.exports = createTimelineAxis
 function createTimelineAxis({ timelineData, snipSectionsLongerThan, snipBuffer, start, end }) {
-	// console.log(timelineData)
 	const naiveAxisMarkers = flatMap(event => {
 		return event.amd.start === event.amd.end
 			? [ getDates('start', event) ]

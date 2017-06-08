@@ -14,3 +14,4 @@ const component = new Main({
 })
 
 attachQuerystringData(component)
+

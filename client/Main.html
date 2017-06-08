@@ -87,6 +87,10 @@ function createIndentLevelCalculator() {
 function addIndentAndAxisAfterStart(events, startDay, endDay) {
 	const getIndentLevel = createIndentLevelCalculator()
 	return events.map(event => {
+		if (event.axis.start === undefined || event.axis.end === undefined) {
+			console.error(event)
+			throw new Error(`No axis values for ${event.title}`)
+		}
 		const axisAfterStart = Math.max(event.axis.start - startDay, 0)
 		const eventDays = event.axis.end - event.axis.start + 1
 		const daysBeforeStart = Math.max(startDay - event.axis.start, 0)
@@ -109,13 +113,21 @@ const topZoom = {
 	type: 'top',
 }
 
+function eventOverlapsRange(eventRange, zoomRange) {
+	const solidlyInside = eventRange.start >= zoomRange.start && eventRange.end <= zoomRange.end
+	const overlapsBeginning = eventRange.end >= zoomRange.start && eventRange.start < zoomRange.start
+	const overlapsEnd = eventRange.start <= zoomRange.end && eventRange.end > zoomRange.end
+	
+	return solidlyInside || overlapsBeginning || overlapsEnd
+}
+
 export default {
 	computed: {
 		zooms: timelineData => timelineData.reduce((map, event) => {
 			map[event.slug] = {
 				start: event.amd.start,
 				end: event.amd.end,
-				dayHeight: 5,
+				dayHeight: Math.floor((event.amd.end - event.amd.start) / 300),
 				snipSectionsLongerThan: 300,
 				snipBuffer: 50
 			}
@@ -126,7 +138,7 @@ export default {
 		multiplyDaysByHeight: currentZoom => days => days * currentZoom.dayHeight,
 		relevantEvents: (timelineData, currentZoom) => timelineData
 			.filter(event =>
-				(event.amd.end >= currentZoom.start || event.amd.start <= currentZoom.end)
+				eventOverlapsRange(event.amd, currentZoom)
 				&& (!currentZoom.type || currentZoom.type === event.type)
 			)
 			.sort((a, b) => a.amd - b.amd),

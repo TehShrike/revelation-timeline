@@ -4,44 +4,57 @@
 			left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 			point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 		>
-			<div 
-				class="event" 
+			<div
+				class="event"
 				data-title="{{timelineEvent.title}}"
 				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
 				style="height: {{singleDayHeight}}px;"
 				on:mouseover="fire('startHover', timelineEvent)"
 				on:mouseleave="fire('endHover', timelineEvent)"
-				on:click="click(timelineEvent)"
 			/>
 		</VCenter>
 	{{else}}
-		<Link 
+		<Link
 			parameters="{{ clickable ? { zoom: timelineEvent.slug } : null }}"
 		>
-			<div 
+			<div
 				id="{{timelineEvent.slug}}"
 				style="
-					position: absolute;
-					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px; 
+					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px;
 					left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
 					height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
 				"
 				data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 				data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
-				class="event" 
+				class="event"
 				data-title="{{timelineEvent.title}}"
 				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
 				on:mouseover="fire('startHover', timelineEvent)"
 				on:mouseleave="fire('endHover', timelineEvent)"
-				on:click="click(timelineEvent)"
-			/>
+			>
+				<span class="event-title">
+					{{timelineEvent.title}}
+				</span>
+			</div>
 		</Link>
 	{{/if}}
-{{/each}}	
+{{/each}}
 
 <style>
 [data-clickable=true] {
 	cursor: pointer;
+}
+.event {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+}
+.event-title {
+	padding: 10px 0;
+	-webkit-writing-mode: vertical-rl;
+	writing-mode: vertical-rl;
+	text-shadow: 0 0 3px black;
+	color: white;
 }
 </style>
 
@@ -67,12 +80,5 @@ export default {
 		VCenter,
 		Link: svelteQuerystringRouter.Link
 	},
-	methods: {
-		click(timelineEvent) {
-			if (this.get('clickable')) {
-				this.fire('eventClick', timelineEvent)
-			}
-		}
-	}
 }
 </script>
