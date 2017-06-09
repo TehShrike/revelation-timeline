@@ -1,6 +1,6 @@
-module.exports = addSnipsToTimelineData
+module.exports = addAxisPointsToTimelineData
 
-function addSnipsToTimelineData(axisPoints, timelineData) {
+function addAxisPointsToTimelineData(axisPoints, timelineData) {
 	let minAxisPoint = null
 	let maxAxisPoint = null
 
