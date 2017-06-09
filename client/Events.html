@@ -31,11 +31,7 @@
 				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
 				on:mouseover="fire('startHover', timelineEvent)"
 				on:mouseleave="fire('endHover', timelineEvent)"
-			>
-				<span class="event-title">
-					{{timelineEvent.title}}
-				</span>
-			</div>
+			/>
 		</Link>
 	{{/if}}
 {{/each}}
@@ -46,15 +42,6 @@
 }
 .event {
 	position: absolute;
-	display: flex;
-	justify-content: center;
-}
-.event-title {
-	padding: 10px 0;
-	-webkit-writing-mode: vertical-rl;
-	writing-mode: vertical-rl;
-	text-shadow: 0 0 3px black;
-	color: white;
 }
 </style>
 
