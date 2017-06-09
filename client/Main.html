@@ -127,7 +127,7 @@ export default {
 			map[event.slug] = {
 				start: event.amd.start,
 				end: event.amd.end,
-				dayHeight: Math.floor((event.amd.end - event.amd.start) / 300),
+				dayHeight: 15000 / Math.floor((event.amd.end - event.amd.start)),
 				snipSectionsLongerThan: 300,
 				snipBuffer: 50
 			}
