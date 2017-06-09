@@ -16,14 +16,14 @@ function addSnipsToTimelineData(axisPoints, timelineData) {
 		return map
 	}, Object.create(null))
 
-
-
 	return timelineData.map(data => {
 		if (data.amd) {
 			return Object.assign({
 				axis: {
 					start: amdToAxisPoint[data.amd.start] || minAxisPoint,
 					end: amdToAxisPoint[data.amd.end] || maxAxisPoint,
+					cutOffAtStart: !amdToAxisPoint[data.amd.start],
+					cutOffAtEnd: !amdToAxisPoint[data.amd.end],
 				}
 			}, data)
 		} else {

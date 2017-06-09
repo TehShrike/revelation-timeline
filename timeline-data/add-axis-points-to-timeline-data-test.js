@@ -87,7 +87,7 @@ tape(`add axis points to timeline data`, t => {
 			macedonian: { start: 'Xanthicus 16, 341', end: 'Xanthicus 16, 341' },
 			gregorian: { start: 'April 6, 30', end: 'April 6, 30' },
 			amd: { start: 1471939, end: 1471939 },
-			axis: { start: 1471939, end: 1471939 }
+			axis: { start: 1471939, end: 1471939, cutOffAtStart: false, cutOffAtEnd: false }
 		}, {
 			title: 'First Seal - Tiberius',
 			hebrew: { start: '4030', end: '4037' },
@@ -95,7 +95,7 @@ tape(`add axis points to timeline data`, t => {
 			gregorian: { start: 'April 22, 30', end: 'March 16, 37' },
 			amd: { start: 1471955, end: 1474475 },
 			reference: 'Revelation 6:1-2',
-			axis: { start: 1471955, end: 1471987 }
+			axis: { start: 1471955, end: 1471987, cutOffAtStart: false, cutOffAtEnd: false }
 		}, {
 			title: 'Ascension',
 			hebrew: { start: 'Iyar 24, 4030', end: 'Iyar 24, 4030' },
@@ -103,7 +103,7 @@ tape(`add axis points to timeline data`, t => {
 			gregorian: { start: 'May 14, 30', end: 'May 14, 30' },
 			amd: { start: 1471977, end: 1471977 },
 			reference: 'Revelation 4-5',
-			axis: { start: 1471977, end: 1471977 }
+			axis: { start: 1471977, end: 1471977, cutOffAtStart: false, cutOffAtEnd: false }
 		}, {
 			title: 'Second Seal - Caligula',
 			hebrew: { start: '4037', end: '4040' },
@@ -111,7 +111,7 @@ tape(`add axis points to timeline data`, t => {
 			gregorian: { start: 'March 16, 37', end: 'January 24, 41' },
 			amd: { start: 1474475, end: 1475885 },
 			reference: 'Revelation 6:3-4',
-			axis: { start: 1471987, end: 1471997 }
+			axis: { start: 1471987, end: 1471997, cutOffAtStart: false, cutOffAtEnd: false }
 		}
 	]
 
@@ -205,23 +205,23 @@ tape(`Add axis points when some events start before or after the current range`,
 	const expected = [{
 		"title": "Seven seals",
 		"amd": { "start": 1471939, "end": 1485229 },
-		"axis": { "start": 1483532, "end": 1483862 },
+		"axis": { "start": 1483532, "end": 1483862, cutOffAtEnd: false, cutOffAtStart: true },
 	}, {
 		"title": "Fifth Seal",
 		"amd": { "start": 1483532, "end": 1485114 },
-		"axis": { "start": 1483532, "end": 1483747 },
+		"axis": { "start": 1483532, "end": 1483747, cutOffAtEnd: false, cutOffAtStart: false },
 	}, {
 		"title": "Jewish preparations for defence of temple and city start in earnest",
 		"amd": { "start": 1485408, "end": 1485408 },
-		"axis": { "start": 1484041, "end": 1484041 },
+		"axis": { "start": 1484041, "end": 1484041, cutOffAtEnd: false, cutOffAtStart: false },
 	}, {
 		"title": "First three and a half years of the war of Titus the prince",
 		"amd": { "start": 1485408, "end": 1486668 },
-		"axis": { "start": 1484041, "end": 1484177 },
+		"axis": { "start": 1484041, "end": 1484177, cutOffAtEnd: true, cutOffAtStart: false },
 	}, {
 		"title": "Seven trumpets",
 		"amd": { "start": 1485242, "end": 1486668 },
-		"axis": { "start": 1483875, "end": 1484177 },
+		"axis": { "start": 1483875, "end": 1484177, cutOffAtEnd: true, cutOffAtStart: false },
 	}]
 
 	const actual = addAxisPoints(axisData, timelineData)
