@@ -74,7 +74,7 @@ export default {
 	},
 	computed: {
 		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
-		singleDayHeight: dayHeight => Math.min(dayHeight, 4)
+		singleDayHeight: dayHeight => Math.max(dayHeight, 4)
 	},
 	components: {
 		VCenter,
