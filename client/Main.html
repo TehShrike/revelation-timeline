@@ -60,6 +60,8 @@ import Events from './Events.html'
 import createTimelineAxis from './create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
 import { multiplyIndentByWidth } from './spacer-functions.js'
+import sortRange from '../timeline-data/sort-range.js'
+
 function createIndentLevelCalculator() {
 	const indentLevels = []
 	return event => {
@@ -111,6 +113,14 @@ function eventOverlapsRange(eventRange, zoomRange) {
 	return solidlyInside || overlapsBeginning || overlapsEnd
 }
 
+function daysThatOverlapRange(eventRange, zoomRange) {
+	const eventDays = eventRange.end - eventRange.start
+	const lostAtStart = Math.max(zoomRange.start - eventRange.start, 0)
+	const lostAtEnd = Math.max(eventRange.end - zoomRange.end, 0)
+
+	return eventDays - lostAtStart - lostAtEnd
+}
+
 export default {
 	computed: {
 		zooms: timelineData => timelineData.reduce((map, event) => {
@@ -126,12 +136,14 @@ export default {
 			top: topZoom
 		}),
 		multiplyDaysByHeight: currentZoom => days => days * currentZoom.dayHeight,
-		relevantEvents: (timelineData, currentZoom) => timelineData
-			.filter(event =>
-				eventOverlapsRange(event.amd, currentZoom)
-				&& (!currentZoom.type || currentZoom.type === event.type)
-			)
-			.sort((a, b) => a.amd - b.amd),
+		relevantEvents: (timelineData, currentZoom) => sortRange(
+			timelineData.filter(
+				event => eventOverlapsRange(event.amd, currentZoom) 
+					&& (!currentZoom.type || currentZoom.type === event.type)
+			), event => event.type === 'top' 
+				? [ 0, -daysThatOverlapRange(event.amd, currentZoom), 0 ]
+				: [ 1, event.amd.start, -daysThatOverlapRange(event.amd, currentZoom) ]
+			),
 		axis: (relevantEvents, currentZoom) => createTimelineAxis({
 			timelineData: relevantEvents,
 			snipSectionsLongerThan: currentZoom.snipSectionsLongerThan,
@@ -168,6 +180,6 @@ export default {
 	components: {
 		VCenter,
 		Events
-	}
+	},
 }
 </script>
