@@ -61,6 +61,9 @@ import createTimelineAxis from './create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
 import { multiplyIndentByWidth } from './spacer-functions.js'
 import sortRange from '../timeline-data/sort-range.js'
+import pipe from './pipe.js'
+
+import chromatism from 'chromatism'
 
 function createIndentLevelCalculator() {
 	const indentLevels = []
@@ -121,6 +124,37 @@ function daysThatOverlapRange(eventRange, zoomRange) {
 	return eventDays - lostAtStart - lostAtEnd
 }
 
+// const startingColor = '#2900ff'
+// const startingColor = '#00cdd4'
+// const endingColor = '#00ccd4'
+const startingColor = '#0074D9'
+const endingColor = '#2ECC40'
+// const eventColors = chromatism.adjacent(20, 5, startingColor).hex
+const eventColors = chromatism.fade(4, startingColor, endingColor).hex
+const hoverColors = eventColors.map(color => chromatism.contrast(3, color).hex)
+console.log(eventColors)
+function addColorToEvents(events) {
+	return events.map((event, i) => Object.assign({
+		color: eventColors[event.indentLevel % eventColors.length],
+		hoverColor: hoverColors[event.indentLevel % eventColors.length]
+	}, event))
+}
+
+function filterToRelevantEvents(timelineData, currentZoom) {
+	return timelineData.filter(
+		event => eventOverlapsRange(event.amd, currentZoom) 
+			&& (!currentZoom.type || currentZoom.type === event.type)
+	)
+}
+
+function sortEventsForDisplay(timelineData, currentZoom) {
+	return sortRange(timelineData,
+		event => event.type === 'top' 
+			? [ 0, -daysThatOverlapRange(event.amd, currentZoom), 0 ]
+			: [ 1, event.amd.start, -daysThatOverlapRange(event.amd, currentZoom) ]
+	)
+}
+
 export default {
 	computed: {
 		zooms: timelineData => timelineData.reduce((map, event) => {
@@ -136,14 +170,10 @@ export default {
 			top: topZoom
 		}),
 		multiplyDaysByHeight: currentZoom => days => days * currentZoom.dayHeight,
-		relevantEvents: (timelineData, currentZoom) => sortRange(
-			timelineData.filter(
-				event => eventOverlapsRange(event.amd, currentZoom) 
-					&& (!currentZoom.type || currentZoom.type === event.type)
-			), event => event.type === 'top' 
-				? [ 0, -daysThatOverlapRange(event.amd, currentZoom), 0 ]
-				: [ 1, event.amd.start, -daysThatOverlapRange(event.amd, currentZoom) ]
-			),
+		relevantEvents: (timelineData, currentZoom) => pipe(timelineData,
+			timelineData => filterToRelevantEvents(timelineData, currentZoom),
+			timelineData => sortEventsForDisplay(timelineData, currentZoom)
+		),
 		axis: (relevantEvents, currentZoom) => createTimelineAxis({
 			timelineData: relevantEvents,
 			snipSectionsLongerThan: currentZoom.snipSectionsLongerThan,
@@ -151,8 +181,10 @@ export default {
 			start: currentZoom.start,
 			end: currentZoom.end,
 		}),
-		relevantEventsWithAxis: (axis, relevantEvents, currentZoom) => addIndentAndAxisAfterStart(
-			addAxisPoints(axis, relevantEvents), currentZoom.start, currentZoom.end
+		relevantEventsWithAxis: (axis, relevantEvents, currentZoom) => pipe(relevantEvents,
+			_ => addAxisPoints(axis, _),
+			_ => addIndentAndAxisAfterStart(_, currentZoom.start, currentZoom.end),
+			addColorToEvents
 		),
 		distanceFromStartDay: currentZoom => day => day - currentZoom.start,
 		axisIsRelevant: hoveredEvent => amdDay => !!hoveredEvent

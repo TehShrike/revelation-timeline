@@ -8,7 +8,10 @@
 				class="event"
 				data-title="{{timelineEvent.title}}"
 				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
-				style="height: {{singleDayHeight}}px;"
+				style="
+					height: {{singleDayHeight}}px;
+					background-color: {{timelineEvent.color}};
+				"
 				on:mouseover="fire('startHover', timelineEvent)"
 				on:mouseleave="fire('endHover', timelineEvent)"
 			/>
@@ -23,6 +26,7 @@
 					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px;
 					left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
 					height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
+					background-color: {{timelineEvent.color}};
 				"
 				data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 				data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
@@ -49,7 +53,6 @@
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	background-color: green;
 }
 .event[data-cut-off-at-start=true] {
 	-webkit-border-top-right-radius: 0;

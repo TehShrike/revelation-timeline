@@ -1,4 +1,4 @@
-const pipe = (input, ...fns) => fns.reduce((last, fn) => fn(last), input)
+const pipe = require('./pipe.js')
 const flatMap = (fn, ary) => ary.reduce((acc, element) => [ ...acc, ...fn(element) ], [])
 const safeGet = (object, property, ...rest) => {
 	const nextObject = object && object[property]
