@@ -31,6 +31,7 @@
     "better-match": "1.0.2",
     "binary-search-range": "~1.0.1",
     "chromatism": "2.6.0",
+    "eventemitter3": "2.0.3",
     "got": "6.7.1",
     "multi-part-range-compare": "~1.0.3",
     "regex-fun": "~2.0.1",
@@ -41,8 +42,8 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-svelte": "1.8.1",
     "rollup-watch": "3.2.2",
-    "svelte": "1.20.2",
-    "svelte-querystring-router": "1.0.0",
+    "svelte": "1.23.4",
+    "svelte-querystring-router": "1.0.1",
     "then-denodeify": "~1.0.1",
     "verse-reference-regex": "1.0.1"
   },

@@ -1,0 +1,31 @@
+{{#each timeline as timelineEvent, i}}
+	<div 
+		class="event-description"
+		style="
+			border-color: {{timelineEvent.color}};
+			top: {{buffer + (descriptionHeight * i) + (buffer * i)}}px;
+		"
+	>
+		{{timelineEvent.title}}
+	</div>
+{{/each}}
+
+<style>
+.event-description {
+	position: fixed;
+	border-width: 2px;
+	border-style: solid;
+	padding: 4px 8px;
+}
+</style>
+
+<script>
+export default {
+	data() {
+		return {
+			descriptionHeight: 40,
+			buffer: 4
+		}
+	}
+}
+</script>

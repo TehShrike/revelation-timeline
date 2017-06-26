@@ -1,7 +1,7 @@
 (function () {
 'use strict';
 
-var index$3 = function index(str) {
+var index$4 = function index(str) {
 	return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
 		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 	});
@@ -70,7 +70,7 @@ function shouldUseNative() {
 	}
 }
 
-var index$5 = shouldUseNative() ? Object.assign : function (target, source) {
+var index$6 = shouldUseNative() ? Object.assign : function (target, source) {
 	var from;
 	var to = toObject(target);
 	var symbols;
@@ -236,7 +236,7 @@ function parserForArrayFormat(opts) {
 
 function encode(value, opts) {
 	if (opts.encode) {
-		return opts.strict ? index$3(value) : encodeURIComponent(value);
+		return opts.strict ? index$4(value) : encodeURIComponent(value);
 	}
 
 	return value;
@@ -261,7 +261,7 @@ var extract = function extract(str) {
 };
 
 var parse = function parse(str, opts) {
-	opts = index$5({ arrayFormat: 'none' }, opts);
+	opts = index$6({ arrayFormat: 'none' }, opts);
 
 	var formatter = parserForArrayFormat(opts);
 
@@ -313,7 +313,7 @@ var stringify = function stringify(obj, opts) {
 		arrayFormat: 'none'
 	};
 
-	opts = index$5(defaults$$1, opts);
+	opts = index$6(defaults$$1, opts);
 
 	var formatter = encoderForArrayFormat(opts);
 
@@ -348,7 +348,7 @@ var stringify = function stringify(obj, opts) {
 	}).join('&') : '';
 };
 
-var index$1 = {
+var index$2 = {
 	extract: extract,
 	parse: parse,
 	stringify: stringify
@@ -358,7 +358,7 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var index$7 = createCommonjsModule(function (module) {
+var index$8 = createCommonjsModule(function (module) {
   'use strict';
 
   var has = Object.prototype.hasOwnProperty,
@@ -679,7 +679,6 @@ var template = function () {
 				style: ''
 			};
 		},
-
 		computed: {
 			querystring: function querystring(parametersToQuerystring, parameters) {
 				return parametersToQuerystring(parameters);
@@ -719,17 +718,23 @@ function create_main_fragment(state, component) {
 			if (current_block === (current_block = get_block(state)) && if_block) {
 				if_block.update(changed, state);
 			} else {
-				if_block.destroy(true);
+				{
+					if_block.unmount();
+					if_block.destroy();
+				}
 				if_block = current_block(state, component);
 				if_block.mount(if_block_anchor.parentNode, if_block_anchor);
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if_block.destroy(detach);
+		unmount: function unmount() {
+			detachNode(if_block_anchor);
+		},
 
-			if (detach) {
-				detachNode(if_block_anchor);
+		destroy: function destroy() {
+			{
+				if_block.unmount();
+				if_block.destroy();
 			}
 		}
 	};
@@ -747,7 +752,7 @@ function create_if_block(state, component) {
 		component.navigate(event);
 	}
 
-	addEventListener(a, 'click', click_handler);
+	addListener(a, 'click', click_handler);
 	component.refs.link = a;
 	if (component._yield) component._yield.mount(a, null);
 
@@ -770,14 +775,14 @@ function create_if_block(state, component) {
 			}
 		},
 
-		destroy: function destroy(detach) {
-			removeEventListener(a, 'click', click_handler);
-			if (component.refs.link === a) component.refs.link = null;
-			if (component._yield) component._yield.destroy(detach);
+		unmount: function unmount() {
+			detachNode(a);
+			if (component._yield) component._yield.unmount();
+		},
 
-			if (detach) {
-				detachNode(a);
-			}
+		destroy: function destroy() {
+			removeListener(a, 'click', click_handler);
+			if (component.refs.link === a) component.refs.link = null;
 		}
 	};
 }
@@ -805,13 +810,12 @@ function create_if_block_1(state, component) {
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if (component._yield) component._yield.destroy(detach);
+		unmount: function unmount() {
+			detachNode(a);
+			if (component._yield) component._yield.unmount();
+		},
 
-			if (detach) {
-				detachNode(a);
-			}
-		}
+		destroy: noop
 	};
 }
 
@@ -858,7 +862,8 @@ Link.prototype._set = function _set(newState) {
 Link.prototype.teardown = Link.prototype.destroy = function destroy(detach) {
 	this.fire('destroy');
 
-	this._fragment.destroy(detach !== false);
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
 	this._fragment = null;
 
 	this._state = {};
@@ -877,11 +882,11 @@ function detachNode(node) {
 	node.parentNode.removeChild(node);
 }
 
-function addEventListener(node, event, handler) {
+function addListener(node, event, handler) {
 	node.addEventListener(event, handler, false);
 }
 
-function removeEventListener(node, event, handler) {
+function removeListener(node, event, handler) {
 	node.removeEventListener(event, handler, false);
 }
 
@@ -894,9 +899,13 @@ function differs(a, b) {
 }
 
 function assign(target) {
-	for (var i = 1; i < arguments.length; i += 1) {
-		var source = arguments[i];
-		for (var k in source) {
+	var k,
+	    source,
+	    i = 1,
+	    len = arguments.length;
+	for (; i < len; i++) {
+		source = arguments[i];
+		for (k in source) {
 			target[k] = source[k];
 		}
 	}
@@ -926,6 +935,8 @@ function dispatchObservers(component, group, newState, oldState) {
 		}
 	}
 }
+
+function noop() {}
 
 function get$1(key) {
 	return key ? this._state[key] : this._state;
@@ -997,7 +1008,7 @@ function defaultCurrentQuerystring() {
 
 	return {
 		querystring: querystring,
-		parameters: index$1.parse(querystring)
+		parameters: index$2.parse(querystring)
 	};
 }
 
@@ -1006,7 +1017,7 @@ function defaultOnPopState(listener) {
 }
 
 function parametersToQuerystring(parameters) {
-	return '?' + index$1.stringify(parameters);
+	return '?' + index$2.stringify(parameters);
 }
 
 function optionsWithAugmentedData(options) {
@@ -1027,7 +1038,7 @@ var createInstance = function createRouterInstance() {
 	    currentQuerystring = _Object$assign.currentQuerystring,
 	    onPopState = _Object$assign.onPopState;
 
-	var emitter = new index$7();
+	var emitter = new index$8();
 	var current = currentQuerystring();
 
 	onPopState(function () {
@@ -1120,12 +1131,18 @@ var createInstance = function createRouterInstance() {
 	};
 };
 
-var index = createInstance();
+var index$1 = createInstance();
+
+function noop$1() {}
 
 function assign$1(target) {
-	for (var i = 1; i < arguments.length; i += 1) {
-		var source = arguments[i];
-		for (var k in source) {
+	var k,
+	    source,
+	    i = 1,
+	    len = arguments.length;
+	for (; i < len; i++) {
+		source = arguments[i];
+		for (k in source) {
 			target[k] = source[k];
 		}
 	}
@@ -1145,6 +1162,7 @@ function detachNode$1(node) {
 	node.parentNode.removeChild(node);
 }
 
+// TODO this is out of date
 function destroyEach(iterations, detach, start) {
 	for (var i = start; i < iterations.length; i += 1) {
 		if (iterations[i]) iterations[i].destroy(detach);
@@ -1163,61 +1181,17 @@ function createComment$1() {
 	return document.createComment('');
 }
 
-function addEventListener$1(node, event, handler) {
+function addListener$1(node, event, handler) {
 	node.addEventListener(event, handler, false);
 }
 
-function removeEventListener$1(node, event, handler) {
+function removeListener$1(node, event, handler) {
 	node.removeEventListener(event, handler, false);
 }
 
 function setAttribute(node, attribute, value) {
 	node.setAttribute(attribute, value);
 }
-
-var transitionManager = {
-	running: false,
-	transitions: [],
-
-	add: function add(transition) {
-		transitionManager.transitions.push(transition);
-
-		if (!this.running) {
-			this.running = true;
-			this.next();
-		}
-	},
-
-	next: function next() {
-		transitionManager.running = false;
-
-		var now = window.performance.now();
-		var i = transitionManager.transitions.length;
-
-		while (i--) {
-			var transition = transitionManager.transitions[i];
-
-			if (transition.program && now >= transition.program.end) {
-				transition.done();
-			}
-
-			if (transition.pending && now >= transition.pending.start) {
-				transition.start(transition.pending);
-			}
-
-			if (transition.running) {
-				transition.update(now);
-				transitionManager.running = true;
-			} else if (!transition.pending) {
-				transitionManager.transitions.splice(i, 1);
-			}
-		}
-
-		if (transitionManager.running) {
-			requestAnimationFrame(transitionManager.next);
-		}
-	}
-};
 
 function differs$1(a, b) {
 	return a !== b || a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object' || typeof a === 'function';
@@ -1354,18 +1328,24 @@ function add_css$1() {
 }
 
 function create_main_fragment$2(state, component) {
-	var div_style_value;
-
-	var div = createElement$1('div');
-	setAttribute(div, 'svelte-629105964', '');
-	div.style.cssText = div_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
-	div.className = "vcentered";
-	component.refs.container = div;
-	if (component._yield) component._yield.mount(div, null);
+	var div, div_style_value;
 
 	return {
+		create: function create() {
+			div = createElement$1('div');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'svelte-629105964', '');
+			div.style.cssText = div_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
+			div.className = "vcentered";
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(div, target, anchor);
+			component.refs.container = div;
+			if (component._yield) component._yield.mount(div, null);
 		},
 
 		update: function update(changed, state) {
@@ -1374,14 +1354,13 @@ function create_main_fragment$2(state, component) {
 			}
 		},
 
-		destroy: function destroy(detach) {
+		unmount: function unmount() {
+			detachNode$1(div);
 			if (component.refs.container === div) component.refs.container = null;
-			if (component._yield) component._yield.destroy(detach);
+			if (component._yield) component._yield.unmount();
+		},
 
-			if (detach) {
-				detachNode$1(div);
-			}
-		}
+		destroy: noop$1
 	};
 }
 
@@ -1405,7 +1384,11 @@ function VerticallyCentered(options) {
 	if (!document.getElementById("svelte-629105964-style")) add_css$1();
 
 	this._fragment = create_main_fragment$2(this._state, this);
-	if (options.target) this._fragment.mount(options.target, null);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
 
 	if (options._root) {
 		options._root._renderHooks.push(template$2.oncreate.bind(this));
@@ -1428,7 +1411,448 @@ VerticallyCentered.prototype._set = function _set(newState) {
 VerticallyCentered.prototype.teardown = VerticallyCentered.prototype.destroy = function destroy(detach) {
 	this.fire('destroy');
 
-	this._fragment.destroy(detach !== false);
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
+	this._fragment = null;
+
+	this._state = {};
+	this._torndown = true;
+};
+
+var index$10 = createCommonjsModule(function (module) {
+  'use strict';
+
+  var has = Object.prototype.hasOwnProperty,
+      prefix = '~';
+
+  /**
+   * Constructor to create a storage for our `EE` objects.
+   * An `Events` instance is a plain object whose properties are event names.
+   *
+   * @constructor
+   * @api private
+   */
+  function Events() {}
+
+  //
+  // We try to not inherit from `Object.prototype`. In some engines creating an
+  // instance in this way is faster than calling `Object.create(null)` directly.
+  // If `Object.create(null)` is not supported we prefix the event names with a
+  // character to make sure that the built-in object properties are not
+  // overridden or used as an attack vector.
+  //
+  if (Object.create) {
+    Events.prototype = Object.create(null);
+
+    //
+    // This hack is needed because the `__proto__` property is still inherited in
+    // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+    //
+    if (!new Events().__proto__) prefix = false;
+  }
+
+  /**
+   * Representation of a single event listener.
+   *
+   * @param {Function} fn The listener function.
+   * @param {Mixed} context The context to invoke the listener with.
+   * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+   * @constructor
+   * @api private
+   */
+  function EE(fn, context, once) {
+    this.fn = fn;
+    this.context = context;
+    this.once = once || false;
+  }
+
+  /**
+   * Minimal `EventEmitter` interface that is molded against the Node.js
+   * `EventEmitter` interface.
+   *
+   * @constructor
+   * @api public
+   */
+  function EventEmitter() {
+    this._events = new Events();
+    this._eventsCount = 0;
+  }
+
+  /**
+   * Return an array listing the events for which the emitter has registered
+   * listeners.
+   *
+   * @returns {Array}
+   * @api public
+   */
+  EventEmitter.prototype.eventNames = function eventNames() {
+    var names = [],
+        events,
+        name;
+
+    if (this._eventsCount === 0) return names;
+
+    for (name in events = this._events) {
+      if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+    }
+
+    if (Object.getOwnPropertySymbols) {
+      return names.concat(Object.getOwnPropertySymbols(events));
+    }
+
+    return names;
+  };
+
+  /**
+   * Return the listeners registered for a given event.
+   *
+   * @param {String|Symbol} event The event name.
+   * @param {Boolean} exists Only check if there are listeners.
+   * @returns {Array|Boolean}
+   * @api public
+   */
+  EventEmitter.prototype.listeners = function listeners(event, exists) {
+    var evt = prefix ? prefix + event : event,
+        available = this._events[evt];
+
+    if (exists) return !!available;
+    if (!available) return [];
+    if (available.fn) return [available.fn];
+
+    for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
+      ee[i] = available[i].fn;
+    }
+
+    return ee;
+  };
+
+  /**
+   * Calls each of the listeners registered for a given event.
+   *
+   * @param {String|Symbol} event The event name.
+   * @returns {Boolean} `true` if the event had listeners, else `false`.
+   * @api public
+   */
+  EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+    var evt = prefix ? prefix + event : event;
+
+    if (!this._events[evt]) return false;
+
+    var listeners = this._events[evt],
+        len = arguments.length,
+        args,
+        i;
+
+    if (listeners.fn) {
+      if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+      switch (len) {
+        case 1:
+          return listeners.fn.call(listeners.context), true;
+        case 2:
+          return listeners.fn.call(listeners.context, a1), true;
+        case 3:
+          return listeners.fn.call(listeners.context, a1, a2), true;
+        case 4:
+          return listeners.fn.call(listeners.context, a1, a2, a3), true;
+        case 5:
+          return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+        case 6:
+          return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+      }
+
+      for (i = 1, args = new Array(len - 1); i < len; i++) {
+        args[i - 1] = arguments[i];
+      }
+
+      listeners.fn.apply(listeners.context, args);
+    } else {
+      var length = listeners.length,
+          j;
+
+      for (i = 0; i < length; i++) {
+        if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+        switch (len) {
+          case 1:
+            listeners[i].fn.call(listeners[i].context);break;
+          case 2:
+            listeners[i].fn.call(listeners[i].context, a1);break;
+          case 3:
+            listeners[i].fn.call(listeners[i].context, a1, a2);break;
+          case 4:
+            listeners[i].fn.call(listeners[i].context, a1, a2, a3);break;
+          default:
+            if (!args) for (j = 1, args = new Array(len - 1); j < len; j++) {
+              args[j - 1] = arguments[j];
+            }
+
+            listeners[i].fn.apply(listeners[i].context, args);
+        }
+      }
+    }
+
+    return true;
+  };
+
+  /**
+   * Add a listener for a given event.
+   *
+   * @param {String|Symbol} event The event name.
+   * @param {Function} fn The listener function.
+   * @param {Mixed} [context=this] The context to invoke the listener with.
+   * @returns {EventEmitter} `this`.
+   * @api public
+   */
+  EventEmitter.prototype.on = function on(event, fn, context) {
+    var listener = new EE(fn, context || this),
+        evt = prefix ? prefix + event : event;
+
+    if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;else if (!this._events[evt].fn) this._events[evt].push(listener);else this._events[evt] = [this._events[evt], listener];
+
+    return this;
+  };
+
+  /**
+   * Add a one-time listener for a given event.
+   *
+   * @param {String|Symbol} event The event name.
+   * @param {Function} fn The listener function.
+   * @param {Mixed} [context=this] The context to invoke the listener with.
+   * @returns {EventEmitter} `this`.
+   * @api public
+   */
+  EventEmitter.prototype.once = function once(event, fn, context) {
+    var listener = new EE(fn, context || this, true),
+        evt = prefix ? prefix + event : event;
+
+    if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;else if (!this._events[evt].fn) this._events[evt].push(listener);else this._events[evt] = [this._events[evt], listener];
+
+    return this;
+  };
+
+  /**
+   * Remove the listeners of a given event.
+   *
+   * @param {String|Symbol} event The event name.
+   * @param {Function} fn Only remove the listeners that match this function.
+   * @param {Mixed} context Only remove the listeners that have this context.
+   * @param {Boolean} once Only remove one-time listeners.
+   * @returns {EventEmitter} `this`.
+   * @api public
+   */
+  EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+    var evt = prefix ? prefix + event : event;
+
+    if (!this._events[evt]) return this;
+    if (!fn) {
+      if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
+      return this;
+    }
+
+    var listeners = this._events[evt];
+
+    if (listeners.fn) {
+      if (listeners.fn === fn && (!once || listeners.once) && (!context || listeners.context === context)) {
+        if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
+      }
+    } else {
+      for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+        if (listeners[i].fn !== fn || once && !listeners[i].once || context && listeners[i].context !== context) {
+          events.push(listeners[i]);
+        }
+      }
+
+      //
+      // Reset the array, or remove it completely if we have no more listeners.
+      //
+      if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;else if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
+    }
+
+    return this;
+  };
+
+  /**
+   * Remove all listeners, or those of the specified event.
+   *
+   * @param {String|Symbol} [event] The event name.
+   * @returns {EventEmitter} `this`.
+   * @api public
+   */
+  EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+    var evt;
+
+    if (event) {
+      evt = prefix ? prefix + event : event;
+      if (this._events[evt]) {
+        if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
+      }
+    } else {
+      this._events = new Events();
+      this._eventsCount = 0;
+    }
+
+    return this;
+  };
+
+  //
+  // Alias methods names because people roll like that.
+  //
+  EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+  //
+  // This function doesn't apply anymore.
+  //
+  EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
+    return this;
+  };
+
+  //
+  // Expose the prefix.
+  //
+  EventEmitter.prefixed = prefix;
+
+  //
+  // Allow `EventEmitter` to be imported as module namespace.
+  //
+  EventEmitter.EventEmitter = EventEmitter;
+
+  //
+  // Expose the module.
+  //
+  {
+    module.exports = EventEmitter;
+  }
+});
+
+var globalUpdateEmitter = new index$10();
+
+function debounce(fn) {
+	var alreadyCalled = false;
+	return function () {
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
+
+		if (!alreadyCalled) {
+			alreadyCalled = true;
+			window.requestAnimationFrame(function () {
+				alreadyCalled = false;
+				fn.apply(undefined, args);
+			});
+		}
+	};
+}
+
+var listener = debounce(function () {
+	return globalUpdateEmitter.emit('update');
+});
+
+window.addEventListener('resize', listener);
+window.addEventListener('scroll', listener);
+
+var template$4 = function () {
+	return {
+		oncreate: function oncreate() {
+			// const componentListener = () => this.updateVisibility()
+			// globalUpdateEmitter.on('update', componentListener)
+
+			// this.set({
+			// 	listener: componentListener
+			// })
+		},
+		ondestroy: function ondestroy() {
+			// const componentListener = this.get('listener')
+			// globalUpdateEmitter.removeListener('update', componentListener)
+		},
+
+		methods: {
+			// updateVisibility() {
+			// 	const relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect()
+			// 	const viewportHeight = window.document.documentElement.clientHeight
+			// 	const visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight
+			// 	const topIsAboveViewport = relativeToViewport.top <= 0
+
+			// 	this.set({
+			// 		visible,
+			// 		topIsAboveViewport
+			// 	})
+			// }
+		}
+	};
+}();
+
+function create_main_fragment$4(state, component) {
+	var div;
+
+	return {
+		create: function create() {
+			div = createElement$1('div');
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(div, target, anchor);
+			component.refs.element = div;
+			if (component._yield) component._yield.mount(div, null);
+		},
+
+		unmount: function unmount() {
+			detachNode$1(div);
+			if (component.refs.element === div) component.refs.element = null;
+			if (component._yield) component._yield.unmount();
+		},
+
+		destroy: noop$1
+	};
+}
+
+function Visibility(options) {
+	options = options || {};
+	this.refs = {};
+	this._state = options.data || {};
+
+	this._observers = {
+		pre: Object.create(null),
+		post: Object.create(null)
+	};
+
+	this._handlers = Object.create(null);
+
+	this._root = options._root || this;
+	this._yield = options._yield;
+
+	this._torndown = false;
+
+	this._fragment = create_main_fragment$4(this._state, this);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+
+	if (options._root) {
+		options._root._renderHooks.push(template$4.oncreate.bind(this));
+	} else {
+		template$4.oncreate.call(this);
+	}
+}
+
+assign$1(Visibility.prototype, template$4.methods, proto);
+
+Visibility.prototype._set = function _set(newState) {
+	var oldState = this._state;
+	this._state = assign$1({}, oldState, newState);
+	dispatchObservers$1(this, this._observers.pre, newState, oldState);
+	dispatchObservers$1(this, this._observers.post, newState, oldState);
+};
+
+Visibility.prototype.teardown = Visibility.prototype.destroy = function destroy(detach) {
+	this.fire('destroy');
+	template$4.ondestroy.call(this);
+
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
 	this._fragment = null;
 
 	this._state = {};
@@ -1444,13 +1868,18 @@ function recompute$3(state, newState, oldState, isInitial) {
 		state.multiplyDaysByHeight = newState.multiplyDaysByHeight = template$3.computed.multiplyDaysByHeight(state.dayHeight);
 		state.singleDayHeight = newState.singleDayHeight = template$3.computed.singleDayHeight(state.dayHeight);
 	}
+
+	if (isInitial || 'timeline' in newState && differs$1(state.timeline, oldState.timeline) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs)) {
+		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.timeline, state.visibleEventSlugs);
+	}
 }
 
 var template$3 = function () {
 	return {
 		data: function data() {
 			return {
-				clickable: false
+				clickable: false,
+				visibleEventSlugs: Object.create(null)
 			};
 		},
 
@@ -1465,22 +1894,29 @@ var template$3 = function () {
 			},
 			singleDayHeight: function singleDayHeight(dayHeight) {
 				return Math.max(dayHeight, 4);
+			},
+			visibleEvents: function visibleEvents(timeline, visibleEventSlugs) {
+				return timeline.filter(function (event) {
+					return visibleEventSlugs[event.slug];
+				});
 			}
 		},
 		components: {
-			Link: index.Link
+			Link: index$1.Link
 		}
 	};
 }();
 
 function add_css$2() {
 	var style = createElement$1('style');
-	style.id = "svelte-616999677-style";
-	style.textContent = "\n[svelte-616999677][data-clickable=true], [svelte-616999677] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-616999677].event, [svelte-616999677] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-616999677].event[data-cut-off-at-start=true], [svelte-616999677] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-616999677].event[data-cut-off-at-end=true], [svelte-616999677] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-616999677].event:hover, [svelte-616999677] .event:hover {\n\tbackground-color: red;\n}\n\n";
+	style.id = "svelte-907107307-style";
+	style.textContent = "\n[svelte-907107307][data-clickable=true], [svelte-907107307] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-907107307].event, [svelte-907107307] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-907107307].event[data-cut-off-at-start=true], [svelte-907107307] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-907107307].event[data-cut-off-at-end=true], [svelte-907107307] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-907107307].event:hover, [svelte-907107307] .event:hover {\n\tbackground-color: red;\n}\n\n";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$3(state, component) {
+	var each_block_anchor;
+
 	var each_block_value = state.timeline;
 
 	var each_block_iterations = [];
@@ -1489,12 +1925,18 @@ function create_main_fragment$3(state, component) {
 		each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
 	}
 
-	var each_block_anchor = createComment$1();
-
 	return {
+		create: function create() {
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].create();
+			}
+
+			each_block_anchor = createComment$1();
+		},
+
 		mount: function mount(target, anchor) {
 			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].mount(target, null);
+				each_block_iterations[i].mount(target, anchor);
 			}
 
 			insertNode$1(each_block_anchor, target, anchor);
@@ -1503,32 +1945,42 @@ function create_main_fragment$3(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed || 'multiplyDaysByHeight' in changed || 'singleDayHeight' in changed || 'clickable' in changed) {
+			if ('timeline' in changed || 'multiplyDaysByHeight' in changed || 'visibleEventSlugs' in changed || 'singleDayHeight' in changed || 'clickable' in changed) {
 				for (var i = 0; i < each_block_value.length; i += 1) {
 					if (each_block_iterations[i]) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
 					} else {
 						each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+						each_block_iterations[i].create();
 						each_block_iterations[i].mount(each_block_anchor.parentNode, each_block_anchor);
 					}
 				}
 
-				destroyEach(each_block_iterations, true, each_block_value.length);
+				for (; i < each_block_iterations.length; i += 1) {
+					each_block_iterations[i].unmount();
+					each_block_iterations[i].destroy();
+				}
 				each_block_iterations.length = each_block_value.length;
 			}
 		},
 
-		destroy: function destroy(detach) {
-			destroyEach(each_block_iterations, detach, 0);
-
-			if (detach) {
-				detachNode$1(each_block_anchor);
+		unmount: function unmount() {
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].unmount();
 			}
+
+			detachNode$1(each_block_anchor);
+		},
+
+		destroy: function destroy() {
+			destroyEach(each_block_iterations, false, 0);
 		}
 	};
 }
 
 function create_each_block$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	var if_block_anchor;
+
 	function get_block(state, each_block_value, timelineEvent, timelineEvent_index) {
 		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block$2;
 		return create_if_block_1$2;
@@ -1537,9 +1989,12 @@ function create_each_block$1(state, each_block_value, timelineEvent, timelineEve
 	var current_block = get_block(state, each_block_value, timelineEvent, timelineEvent_index);
 	var if_block = current_block(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
-	var if_block_anchor = createComment$1();
-
 	return {
+		create: function create() {
+			if_block.create();
+			if_block_anchor = createComment$1();
+		},
+
 		mount: function mount(target, anchor) {
 			if_block.mount(target, anchor);
 			insertNode$1(if_block_anchor, target, anchor);
@@ -1549,41 +2004,116 @@ function create_each_block$1(state, each_block_value, timelineEvent, timelineEve
 			if (current_block === (current_block = get_block(state, each_block_value, timelineEvent, timelineEvent_index)) && if_block) {
 				if_block.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
 			} else {
-				if_block.destroy(true);
+				if_block.unmount();
+				if_block.destroy();
 				if_block = current_block(state, each_block_value, timelineEvent, timelineEvent_index, component);
+				if_block.create();
 				if_block.mount(if_block_anchor.parentNode, if_block_anchor);
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if_block.destroy(detach);
+		unmount: function unmount() {
+			if_block.unmount();
+			detachNode$1(if_block_anchor);
+		},
 
-			if (detach) {
-				detachNode$1(if_block_anchor);
-			}
+		destroy: function destroy() {
+			if_block.destroy();
 		}
 	};
 }
 
 function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var div_data_title_value, div_data_days_value, div_style_value;
+	var visibility_1_updating = false;
 
-	var div = createElement$1('div');
-	setAttribute(div, 'svelte-616999677', '');
-	div.className = "event";
-	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
-	setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
-	div.style.cssText = div_style_value = "\n\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t";
-	addEventListener$1(div, 'mouseover', mouseover_handler);
-	addEventListener$1(div, 'mouseleave', mouseleave_handler);
+	var visibility_1_yield_fragment = create_visibility_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
-	div._svelte = {
-		component: component,
+	var visibility_1_initial_data = {};
+	if (timelineEvent.slug in state.visibleEventSlugs) visibility_1_initial_data.visible = state.visibleEventSlugs[timelineEvent.slug];
+	var visibility_1 = new Visibility({
+		_root: component._root,
+		_yield: visibility_1_yield_fragment,
+		data: visibility_1_initial_data
+	});
+
+	component._bindings.push(function () {
+		if (visibility_1._torndown) return;
+		visibility_1.observe('visible', function (value) {
+			if (visibility_1_updating) return;
+			visibility_1_updating = true;
+			var state = component.get();
+			state.visibleEventSlugs[timelineEvent.slug] = value;
+			component._set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
+			visibility_1_updating = false;
+		}, { init: differs$1(visibility_1.get('visible'), state.visibleEventSlugs[timelineEvent.slug]) });
+	});
+
+	visibility_1._context = {
+		state: state,
 		each_block_value: each_block_value,
 		timelineEvent_index: timelineEvent_index
 	};
 
 	return {
+		create: function create() {
+			visibility_1_yield_fragment.create();
+			visibility_1._fragment.create();
+		},
+
+		mount: function mount(target, anchor) {
+			visibility_1._fragment.mount(target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
+			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+
+			if (!visibility_1_updating && 'visibleEventSlugs' in changed || 'timeline' in changed) {
+				visibility_1_updating = true;
+				visibility_1._set({ visible: state.visibleEventSlugs[timelineEvent.slug] });
+				visibility_1_updating = false;
+			}
+
+			visibility_1._context.state = state;
+			visibility_1._context.each_block_value = each_block_value;
+			visibility_1._context.timelineEvent_index = timelineEvent_index;
+		},
+
+		unmount: function unmount() {
+			visibility_1._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			visibility_1_yield_fragment.destroy();
+			visibility_1.destroy(false);
+		}
+	};
+}
+
+function create_visibility_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	var div, div_data_title_value, div_data_days_value, div_style_value;
+
+	return {
+		create: function create() {
+			div = createElement$1('div');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'svelte-907107307', '');
+			div.className = "event";
+			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+			setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
+			div.style.cssText = div_style_value = "\n\t\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
+			addListener$1(div, 'mouseover', mouseover_handler);
+			addListener$1(div, 'mouseleave', mouseleave_handler);
+
+			div._svelte = {
+				component: component,
+				each_block_value: each_block_value,
+				timelineEvent_index: timelineEvent_index
+			};
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(div, target, anchor);
 		},
@@ -1597,7 +2127,7 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 				setAttribute(div, 'data-days', div_data_days_value);
 			}
 
-			if (div_style_value !== (div_style_value = "\n\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t")) {
+			if (div_style_value !== (div_style_value = "\n\t\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
@@ -1605,41 +2135,113 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 			div._svelte.timelineEvent_index = timelineEvent_index;
 		},
 
-		destroy: function destroy(detach) {
-			removeEventListener$1(div, 'mouseover', mouseover_handler);
-			removeEventListener$1(div, 'mouseleave', mouseleave_handler);
+		unmount: function unmount() {
+			detachNode$1(div);
+		},
 
-			if (detach) {
-				detachNode$1(div);
-			}
+		destroy: function destroy() {
+			removeListener$1(div, 'mouseover', mouseover_handler);
+			removeListener$1(div, 'mouseleave', mouseleave_handler);
 		}
 	};
 }
 
 function create_link_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var div_data_title_value, div_id_value, div_data_top_value, div_data_left_value, div_style_value, div_data_days_value, div_data_cut_off_at_start_value, div_data_cut_off_at_end_value;
+	var visibility_1_updating = false;
 
-	var div = createElement$1('div');
-	setAttribute(div, 'svelte-616999677', '');
-	setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
-	div.id = div_id_value = timelineEvent.slug;
-	setAttribute(div, 'data-top', div_data_top_value = state.multiplyDaysByHeight(timelineEvent.axisAfterStart));
-	setAttribute(div, 'data-left', div_data_left_value = template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel));
-	div.className = "event";
-	div.style.cssText = div_style_value = "\n\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t";
-	setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
-	setAttribute(div, 'data-cut-off-at-start', div_data_cut_off_at_start_value = timelineEvent.axis.cutOffAtStart);
-	setAttribute(div, 'data-cut-off-at-end', div_data_cut_off_at_end_value = timelineEvent.axis.cutOffAtEnd);
-	addEventListener$1(div, 'mouseover', mouseover_handler_1);
-	addEventListener$1(div, 'mouseleave', mouseleave_handler_1);
+	var visibility_1_yield_fragment = create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
-	div._svelte = {
-		component: component,
+	var visibility_1_initial_data = {};
+	if (timelineEvent.slug in state.visibleEventSlugs) visibility_1_initial_data.visible = state.visibleEventSlugs[timelineEvent.slug];
+	var visibility_1 = new Visibility({
+		_root: component._root,
+		_yield: visibility_1_yield_fragment,
+		data: visibility_1_initial_data
+	});
+
+	component._bindings.push(function () {
+		if (visibility_1._torndown) return;
+		visibility_1.observe('visible', function (value) {
+			if (visibility_1_updating) return;
+			visibility_1_updating = true;
+			var state = component.get();
+			state.visibleEventSlugs[timelineEvent.slug] = value;
+			component._set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
+			visibility_1_updating = false;
+		}, { init: differs$1(visibility_1.get('visible'), state.visibleEventSlugs[timelineEvent.slug]) });
+	});
+
+	visibility_1._context = {
+		state: state,
 		each_block_value: each_block_value,
 		timelineEvent_index: timelineEvent_index
 	};
 
 	return {
+		create: function create() {
+			visibility_1_yield_fragment.create();
+			visibility_1._fragment.create();
+		},
+
+		mount: function mount(target, anchor) {
+			visibility_1._fragment.mount(target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
+			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+
+			if (!visibility_1_updating && 'visibleEventSlugs' in changed || 'timeline' in changed) {
+				visibility_1_updating = true;
+				visibility_1._set({ visible: state.visibleEventSlugs[timelineEvent.slug] });
+				visibility_1_updating = false;
+			}
+
+			visibility_1._context.state = state;
+			visibility_1._context.each_block_value = each_block_value;
+			visibility_1._context.timelineEvent_index = timelineEvent_index;
+		},
+
+		unmount: function unmount() {
+			visibility_1._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			visibility_1_yield_fragment.destroy();
+			visibility_1.destroy(false);
+		}
+	};
+}
+
+function create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+	var div, div_data_title_value, div_id_value, div_data_top_value, div_data_left_value, div_style_value, div_data_days_value, div_data_cut_off_at_start_value, div_data_cut_off_at_end_value;
+
+	return {
+		create: function create() {
+			div = createElement$1('div');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'svelte-907107307', '');
+			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+			div.id = div_id_value = timelineEvent.slug;
+			setAttribute(div, 'data-top', div_data_top_value = state.multiplyDaysByHeight(timelineEvent.axisAfterStart));
+			setAttribute(div, 'data-left', div_data_left_value = template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel));
+			div.className = "event";
+			div.style.cssText = div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
+			setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
+			setAttribute(div, 'data-cut-off-at-start', div_data_cut_off_at_start_value = timelineEvent.axis.cutOffAtStart);
+			setAttribute(div, 'data-cut-off-at-end', div_data_cut_off_at_end_value = timelineEvent.axis.cutOffAtEnd);
+			addListener$1(div, 'mouseover', mouseover_handler_1);
+			addListener$1(div, 'mouseleave', mouseleave_handler_1);
+
+			div._svelte = {
+				component: component,
+				each_block_value: each_block_value,
+				timelineEvent_index: timelineEvent_index
+			};
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(div, target, anchor);
 		},
@@ -1661,7 +2263,7 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 				setAttribute(div, 'data-left', div_data_left_value);
 			}
 
-			if (div_style_value !== (div_style_value = "\n\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t")) {
+			if (div_style_value !== (div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
@@ -1681,28 +2283,33 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 			div._svelte.timelineEvent_index = timelineEvent_index;
 		},
 
-		destroy: function destroy(detach) {
-			removeEventListener$1(div, 'mouseover', mouseover_handler_1);
-			removeEventListener$1(div, 'mouseleave', mouseleave_handler_1);
+		unmount: function unmount() {
+			detachNode$1(div);
+		},
 
-			if (detach) {
-				detachNode$1(div);
-			}
+		destroy: function destroy() {
+			removeListener$1(div, 'mouseover', mouseover_handler_1);
+			removeListener$1(div, 'mouseleave', mouseleave_handler_1);
 		}
 	};
 }
 
 function create_if_block$2(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+
 	var vcenter_1_yield_fragment = create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
 	var vcenter_1 = new VerticallyCentered({
-		target: null,
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
 		data: { left: template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: state.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
 	});
 
 	return {
+		create: function create() {
+			vcenter_1_yield_fragment.create();
+			vcenter_1._fragment.create();
+		},
+
 		mount: function mount(target, anchor) {
 			vcenter_1._fragment.mount(target, anchor);
 		},
@@ -1718,23 +2325,33 @@ function create_if_block$2(state, each_block_value, timelineEvent, timelineEvent
 			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
 		},
 
-		destroy: function destroy(detach) {
-			vcenter_1.destroy(detach);
+		unmount: function unmount() {
+			vcenter_1._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			vcenter_1_yield_fragment.destroy();
+			vcenter_1.destroy(false);
 		}
 	};
 }
 
 function create_if_block_1$2(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+
 	var link_1_yield_fragment = create_link_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
 	var link_1 = new template$3.components.Link({
-		target: null,
 		_root: component._root,
 		_yield: link_1_yield_fragment,
 		data: { parameters: state.clickable ? { zoom: timelineEvent.slug } : null }
 	});
 
 	return {
+		create: function create() {
+			link_1_yield_fragment.create();
+			link_1._fragment.create();
+		},
+
 		mount: function mount(target, anchor) {
 			link_1._fragment.mount(target, anchor);
 		},
@@ -1749,8 +2366,13 @@ function create_if_block_1$2(state, each_block_value, timelineEvent, timelineEve
 			if (Object.keys(link_1_changes).length) link_1.set(link_1_changes);
 		},
 
-		destroy: function destroy(detach) {
-			link_1.destroy(detach);
+		unmount: function unmount() {
+			link_1._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			link_1_yield_fragment.destroy();
+			link_1.destroy(false);
 		}
 	};
 }
@@ -1803,12 +2425,20 @@ function Events(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-616999677-style")) add_css$2();
+	if (!document.getElementById("svelte-907107307-style")) add_css$2();
 	this._renderHooks = [];
+	this._bindings = [];
 
 	this._fragment = create_main_fragment$3(this._state, this);
-	if (options.target) this._fragment.mount(options.target, null);
-	this._flush();
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+
+	while (this._bindings.length) {
+		this._bindings.pop()();
+	}this._flush();
 }
 
 assign$1(Events.prototype, proto);
@@ -1820,13 +2450,183 @@ Events.prototype._set = function _set(newState) {
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
-	this._flush();
+	while (this._bindings.length) {
+		this._bindings.pop()();
+	}this._flush();
 };
 
 Events.prototype.teardown = Events.prototype.destroy = function destroy(detach) {
 	this.fire('destroy');
 
-	this._fragment.destroy(detach !== false);
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
+	this._fragment = null;
+
+	this._state = {};
+	this._torndown = true;
+};
+
+var template$5 = function () {
+	return {
+		data: function data() {
+			return {
+				descriptionHeight: 40,
+				buffer: 4
+			};
+		}
+	};
+}();
+
+function add_css$3() {
+	var style = createElement$1('style');
+	style.id = "svelte-1266125325-style";
+	style.textContent = "\n[svelte-1266125325].event-description, [svelte-1266125325] .event-description {\n\tposition: fixed;\n\tborder-width: 2px;\n\tborder-style: solid;\n\tpadding: 4px 8px;\n}\n";
+	appendNode(style, document.head);
+}
+
+function create_main_fragment$5(state, component) {
+	var each_block_anchor;
+
+	var each_block_value = state.timeline;
+
+	var each_block_iterations = [];
+
+	for (var i = 0; i < each_block_value.length; i += 1) {
+		each_block_iterations[i] = create_each_block$2(state, each_block_value, each_block_value[i], i, component);
+	}
+
+	return {
+		create: function create() {
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].create();
+			}
+
+			each_block_anchor = createComment$1();
+		},
+
+		mount: function mount(target, anchor) {
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].mount(target, anchor);
+			}
+
+			insertNode$1(each_block_anchor, target, anchor);
+		},
+
+		update: function update(changed, state) {
+			var each_block_value = state.timeline;
+
+			if ('timeline' in changed || 'buffer' in changed || 'descriptionHeight' in changed) {
+				for (var i = 0; i < each_block_value.length; i += 1) {
+					if (each_block_iterations[i]) {
+						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+					} else {
+						each_block_iterations[i] = create_each_block$2(state, each_block_value, each_block_value[i], i, component);
+						each_block_iterations[i].create();
+						each_block_iterations[i].mount(each_block_anchor.parentNode, each_block_anchor);
+					}
+				}
+
+				for (; i < each_block_iterations.length; i += 1) {
+					each_block_iterations[i].unmount();
+					each_block_iterations[i].destroy();
+				}
+				each_block_iterations.length = each_block_value.length;
+			}
+		},
+
+		unmount: function unmount() {
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].unmount();
+			}
+
+			detachNode$1(each_block_anchor);
+		},
+
+		destroy: function destroy() {
+			destroyEach(each_block_iterations, false, 0);
+		}
+	};
+}
+
+function create_each_block$2(state, each_block_value, timelineEvent, i, component) {
+	var div, div_style_value, text_value, text;
+
+	return {
+		create: function create() {
+			div = createElement$1('div');
+			text = createText(text_value = timelineEvent.title);
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'svelte-1266125325', '');
+			div.className = "event-description";
+			div.style.cssText = div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t";
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(div, target, anchor);
+			appendNode(text, div);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, i) {
+			if (div_style_value !== (div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t")) {
+				div.style.cssText = div_style_value;
+			}
+
+			if (text_value !== (text_value = timelineEvent.title)) {
+				text.data = text_value;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(div);
+		},
+
+		destroy: noop$1
+	};
+}
+
+function EventDescriptions(options) {
+	options = options || {};
+	this._state = assign$1(template$5.data(), options.data);
+
+	this._observers = {
+		pre: Object.create(null),
+		post: Object.create(null)
+	};
+
+	this._handlers = Object.create(null);
+
+	this._root = options._root || this;
+	this._yield = options._yield;
+
+	this._torndown = false;
+	if (!document.getElementById("svelte-1266125325-style")) add_css$3();
+
+	this._fragment = create_main_fragment$5(this._state, this);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+}
+
+assign$1(EventDescriptions.prototype, proto);
+
+EventDescriptions.prototype._set = function _set(newState) {
+	var oldState = this._state;
+	this._state = assign$1({}, oldState, newState);
+	dispatchObservers$1(this, this._observers.pre, newState, oldState);
+	this._fragment.update(newState, this._state);
+	dispatchObservers$1(this, this._observers.post, newState, oldState);
+};
+
+EventDescriptions.prototype.teardown = EventDescriptions.prototype.destroy = function destroy(detach) {
+	this.fire('destroy');
+
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
 	this._fragment = null;
 
 	this._state = {};
@@ -2056,7 +2856,7 @@ function compareTwoValues(target, value) {
 	return WITHIN;
 }
 
-var index$9 = withinRange;
+var index$11 = withinRange;
 
 withinRange.LESS_THAN_START = LESS_THAN;
 withinRange.WITHIN = WITHIN;
@@ -2064,7 +2864,7 @@ withinRange.GREATER_THAN_END = GREATER_THAN;
 
 withinRange.relative = relative;
 
-var rangeSort = index$9.relative;
+var rangeSort = index$11.relative;
 
 
 var sortRange = function sortRange(ary, getRangeValues) {
@@ -2458,7 +3258,7 @@ var fromCieLab_1 = fromCieLab;
 var fromCieLuv_1 = fromCieLuv;
 var fromCieLch_1 = fromCieLch;
 var fromHsluv = fromCieLch$1;
-var index$11 = { hex: { test: function test(r) {
+var index$13 = { hex: { test: function test(r) {
       return "string" == typeof r && "#" === r.slice(0, 1);
     }, convert: fromHex_1 }, rgb: { test: function test(r) {
       return contains(r, ["r", "g", "b"]);
@@ -2568,8 +3368,8 @@ var helpers = { getIlluminant: function getIlluminant(r) {
       return e.bounded(r, [0, 255]);
     };return { r: n(r.r), g: n(r.g), b: n(r.b) };
   }, determineMode: function determineMode(r) {
-    for (var e in index$11) {
-      if (index$11.hasOwnProperty(e) && index$11[e].test(r)) return e;
+    for (var e in index$13) {
+      if (index$13.hasOwnProperty(e) && index$13[e].test(r)) return e;
     }return null;
   }, ready: function ready(r, e) {
     var n = r.conversions,
@@ -2597,7 +3397,7 @@ var helpers = { getIlluminant: function getIlluminant(r) {
         return null;}
   } };
 var helpers_1 = helpers;
-var dependencies = { conversions: index$11, operations: index$2$1, helpers: helpers_1 };
+var dependencies = { conversions: index$13, operations: index$2$1, helpers: helpers_1 };
 var entry = api_1(dependencies, constants);
 
 function recompute$1(state, newState, oldState, isInitial) {
@@ -2631,6 +3431,10 @@ function recompute$1(state, newState, oldState, isInitial) {
 
 	if (isInitial || 'hoveredEvent' in newState && differs$1(state.hoveredEvent, oldState.hoveredEvent)) {
 		state.axisIsRelevant = newState.axisIsRelevant = template$1.computed.axisIsRelevant(state.hoveredEvent);
+	}
+
+	if (isInitial || 'relevantEventsWithAxis' in newState && differs$1(state.relevantEventsWithAxis, oldState.relevantEventsWithAxis)) {
+		state.indentLevels = newState.indentLevels = template$1.computed.indentLevels(state.relevantEventsWithAxis);
 	}
 }
 
@@ -2706,9 +3510,9 @@ var template$1 = function () {
 	var hoverColors = eventColors.map(function (color) {
 		return entry.contrast(3, color).hex;
 	});
-	console.log(eventColors);
+
 	function addColorToEvents(events) {
-		return events.map(function (event, i) {
+		return events.map(function (event) {
 			return Object.assign({
 				color: eventColors[event.indentLevel % eventColors.length],
 				hoverColor: hoverColors[event.indentLevel % eventColors.length]
@@ -2729,6 +3533,12 @@ var template$1 = function () {
 	}
 
 	return {
+		data: function data() {
+			return {
+				visibleEvents: []
+			};
+		},
+
 		computed: {
 			zooms: function zooms(timelineData) {
 				return timelineData.reduce(function (map, event) {
@@ -2750,10 +3560,10 @@ var template$1 = function () {
 				};
 			},
 			relevantEvents: function relevantEvents(timelineData, currentZoom) {
-				return pipe(timelineData, function (timelineData) {
-					return filterToRelevantEvents(timelineData, currentZoom);
-				}, function (timelineData) {
-					return sortEventsForDisplay(timelineData, currentZoom);
+				return pipe(timelineData, function (_) {
+					return filterToRelevantEvents(_, currentZoom);
+				}, function (_) {
+					return sortEventsForDisplay(_, currentZoom);
 				});
 			},
 			axis: function axis(relevantEvents, currentZoom) {
@@ -2784,6 +3594,11 @@ var template$1 = function () {
 			},
 			currentZoom: function currentZoom(querystringParameters, zooms) {
 				return querystringParameters.zoom && zooms[querystringParameters.zoom] ? zooms[querystringParameters.zoom] : topZoom;
+			},
+			indentLevels: function indentLevels(relevantEventsWithAxis) {
+				return relevantEventsWithAxis.reduce(function (max, event) {
+					return max < event.indentLevel ? event.indentLevel : max;
+				}, 0);
 			}
 		},
 		helpers: {
@@ -2801,50 +3616,51 @@ var template$1 = function () {
 				});
 			}
 		}
+		// oncreate() {
+		// 	this.observe('visibleEvents', () => {
+		// 		console.log(this.get())
+		// 	})
+		// }
 	};
 }();
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-3827126313-style";
-	style.textContent = "\n[svelte-3827126313].timeline-container, [svelte-3827126313] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-3827126313].timeline-row, [svelte-3827126313] .timeline-row {\n\tposition: relative;\n}\n[svelte-3827126313].axis, [svelte-3827126313] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-3827126313].axis[data-relevant=true], [svelte-3827126313] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-3827126313].eventhover, [svelte-3827126313] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
+	style.id = "svelte-1673766917-style";
+	style.textContent = "\n[svelte-1673766917].timeline-container, [svelte-1673766917] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-1673766917].timeline-row, [svelte-1673766917] .timeline-row {\n\tposition: relative;\n}\n[svelte-1673766917].axis, [svelte-1673766917] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-1673766917].axis[data-relevant=true], [svelte-1673766917] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-1673766917].eventhover, [svelte-1673766917] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$1(state, component) {
+	var text,
+	    div,
+	    div_1,
+	    text_1,
+	    div_2,
+	    div_2_style_value,
+	    events_updating = false,
+	    text_2,
+	    div_3;
+
 	var if_block = state.hoveredEvent && create_if_block$1(state, component);
 
-	var text = createText("\n");
-	var div = createElement$1('div');
-	setAttribute(div, 'svelte-3827126313', '');
-	div.className = "timeline-container";
-	var div_1 = createElement$1('div');
-	appendNode(div_1, div);
-	div_1.className = "timeline-row";
-	div_1.style.cssText = "width: 100px; margin-right: 10px;";
 	var each_block_value = state.axis;
 
 	var each_block_iterations = [];
 
 	for (var i = 0; i < each_block_value.length; i += 1) {
 		each_block_iterations[i] = create_each_block(state, each_block_value, each_block_value[i], i, component);
-		each_block_iterations[i].mount(div_1, null);
 	}
 
-	appendNode(createText("\n\t"), div);
-	var div_2 = createElement$1('div');
-	appendNode(div_2, div);
-	div_2.className = "timeline-row";
-	div_2.style.cssText = "width: 250px";
-
+	var events_initial_data = {
+		timeline: state.relevantEventsWithAxis,
+		dayHeight: state.currentZoom.dayHeight,
+		clickable: true
+	};
+	if ('visibleEvents' in state) events_initial_data.visibleEvents = state.visibleEvents;
 	var events = new Events({
-		target: div_2,
 		_root: component._root,
-		data: {
-			timeline: state.relevantEventsWithAxis,
-			dayHeight: state.currentZoom.dayHeight,
-			clickable: true
-		}
+		data: events_initial_data
 	});
 
 	events.on('startHover', function (event) {
@@ -2855,11 +3671,71 @@ function create_main_fragment$1(state, component) {
 		component.endHover(event);
 	});
 
+	component._bindings.push(function () {
+		if (events._torndown) return;
+		events.observe('visibleEvents', function (value) {
+			if (events_updating) return;
+			events_updating = true;
+			component._set({ visibleEvents: value });
+			events_updating = false;
+		}, { init: differs$1(events.get('visibleEvents'), state.visibleEvents) });
+	});
+
+	events._context = {
+		state: state
+	};
+
+	var eventdescriptions = new EventDescriptions({
+		_root: component._root,
+		data: { timeline: state.visibleEvents }
+	});
+
 	return {
+		create: function create() {
+			if (if_block) if_block.create();
+			text = createText("\n");
+			div = createElement$1('div');
+			div_1 = createElement$1('div');
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].create();
+			}
+
+			text_1 = createText("\n\t");
+			div_2 = createElement$1('div');
+			events._fragment.create();
+			text_2 = createText("\n\t");
+			div_3 = createElement$1('div');
+			eventdescriptions._fragment.create();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'svelte-1673766917', '');
+			div.className = "timeline-container";
+			div_1.className = "timeline-row";
+			div_1.style.cssText = "width: 100px; margin-right: 10px;";
+			div_2.className = "timeline-row";
+			div_2.style.cssText = div_2_style_value = "width: " + template$1.helpers.multiplyIndentByWidth(state.indentLevels + 1) + "px";
+			div_3.className = "timeline-row";
+		},
+
 		mount: function mount(target, anchor) {
 			if (if_block) if_block.mount(target, anchor);
 			insertNode$1(text, target, anchor);
 			insertNode$1(div, target, anchor);
+			appendNode(div_1, div);
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].mount(div_1, null);
+			}
+
+			appendNode(text_1, div);
+			appendNode(div_2, div);
+			events._fragment.mount(div_2, null);
+			appendNode(text_2, div);
+			appendNode(div_3, div);
+			eventdescriptions._fragment.mount(div_3, null);
 		},
 
 		update: function update(changed, state) {
@@ -2868,10 +3744,12 @@ function create_main_fragment$1(state, component) {
 					if_block.update(changed, state);
 				} else {
 					if_block = create_if_block$1(state, component);
+					if_block.create();
 					if_block.mount(text.parentNode, text);
 				}
 			} else if (if_block) {
-				if_block.destroy(true);
+				if_block.unmount();
+				if_block.destroy();
 				if_block = null;
 			}
 
@@ -2883,13 +3761,30 @@ function create_main_fragment$1(state, component) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
 					} else {
 						each_block_iterations[i] = create_each_block(state, each_block_value, each_block_value[i], i, component);
+						each_block_iterations[i].create();
 						each_block_iterations[i].mount(div_1, null);
 					}
 				}
 
-				destroyEach(each_block_iterations, true, each_block_value.length);
+				for (; i < each_block_iterations.length; i += 1) {
+					each_block_iterations[i].unmount();
+					each_block_iterations[i].destroy();
+				}
 				each_block_iterations.length = each_block_value.length;
 			}
+
+			if (div_2_style_value !== (div_2_style_value = "width: " + template$1.helpers.multiplyIndentByWidth(state.indentLevels + 1) + "px")) {
+				div_2.style.cssText = div_2_style_value;
+			}
+
+			if (!events_updating && 'visibleEvents' in changed) {
+				events_updating = true;
+				events._set({ visibleEvents: state.visibleEvents
+				});
+				events_updating = false;
+			}
+
+			events._context.state = state;
 
 			var events_changes = {};
 
@@ -2898,31 +3793,45 @@ function create_main_fragment$1(state, component) {
 			events_changes.clickable = true;
 
 			if (Object.keys(events_changes).length) events.set(events_changes);
+
+			var eventdescriptions_changes = {};
+
+			if ('visibleEvents' in changed) eventdescriptions_changes.timeline = state.visibleEvents;
+
+			if (Object.keys(eventdescriptions_changes).length) eventdescriptions.set(eventdescriptions_changes);
 		},
 
-		destroy: function destroy(detach) {
-			if (if_block) if_block.destroy(detach);
+		unmount: function unmount() {
+			if (if_block) if_block.unmount();
+			detachNode$1(text);
+			detachNode$1(div);
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].unmount();
+			}
+		},
+
+		destroy: function destroy() {
+			if (if_block) if_block.destroy();
 
 			destroyEach(each_block_iterations, false, 0);
 
 			events.destroy(false);
-
-			if (detach) {
-				detachNode$1(text);
-				detachNode$1(div);
-			}
+			eventdescriptions.destroy(false);
 		}
 	};
 }
 
 function create_if_block_1$1(state, component) {
-	var text_1_value;
-
-	var text = createText("(");
-	var text_1 = createText(text_1_value = state.hoveredEvent.reference);
-	var text_2 = createText(")");
+	var text, text_1_value, text_1, text_2;
 
 	return {
+		create: function create() {
+			text = createText("(");
+			text_1 = createText(text_1_value = state.hoveredEvent.reference);
+			text_2 = createText(")");
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(text, target, anchor);
 			insertNode$1(text_1, target, anchor);
@@ -2935,33 +3844,40 @@ function create_if_block_1$1(state, component) {
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if (detach) {
-				detachNode$1(text);
-				detachNode$1(text_1);
-				detachNode$1(text_2);
-			}
-		}
+		unmount: function unmount() {
+			detachNode$1(text);
+			detachNode$1(text_1);
+			detachNode$1(text_2);
+		},
+
+		destroy: noop$1
 	};
 }
 
 function create_if_block$1(state, component) {
-	var text_value;
-
-	var div = createElement$1('div');
-	setAttribute(div, 'svelte-3827126313', '');
-	div.className = "eventhover";
-	var text = createText(text_value = state.hoveredEvent.title);
-	appendNode(text, div);
-	appendNode(createText(" "), div);
+	var div, text_value, text, text_1;
 
 	var if_block_1 = state.hoveredEvent.reference && create_if_block_1$1(state, component);
 
-	if (if_block_1) if_block_1.mount(div, null);
-
 	return {
+		create: function create() {
+			div = createElement$1('div');
+			text = createText(text_value = state.hoveredEvent.title);
+			text_1 = createText(" ");
+			if (if_block_1) if_block_1.create();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'svelte-1673766917', '');
+			div.className = "eventhover";
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(div, target, anchor);
+			appendNode(text, div);
+			appendNode(text_1, div);
+			if (if_block_1) if_block_1.mount(div, null);
 		},
 
 		update: function update(changed, state) {
@@ -2974,35 +3890,43 @@ function create_if_block$1(state, component) {
 					if_block_1.update(changed, state);
 				} else {
 					if_block_1 = create_if_block_1$1(state, component);
+					if_block_1.create();
 					if_block_1.mount(div, null);
 				}
 			} else if (if_block_1) {
-				if_block_1.destroy(true);
+				if_block_1.unmount();
+				if_block_1.destroy();
 				if_block_1 = null;
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if (if_block_1) if_block_1.destroy(false);
+		unmount: function unmount() {
+			detachNode$1(div);
+			if (if_block_1) if_block_1.unmount();
+		},
 
-			if (detach) {
-				detachNode$1(div);
-			}
+		destroy: function destroy() {
+			if (if_block_1) if_block_1.destroy();
 		}
 	};
 }
 
 function create_each_block(state, each_block_value, date, date_index, component) {
+
 	var vcenter_1_yield_fragment = create_vcenter_yield_fragment(state, each_block_value, date, date_index, component);
 
 	var vcenter_1 = new VerticallyCentered({
-		target: null,
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
 		data: { point: state.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint)) }
 	});
 
 	return {
+		create: function create() {
+			vcenter_1_yield_fragment.create();
+			vcenter_1._fragment.create();
+		},
+
 		mount: function mount(target, anchor) {
 			vcenter_1._fragment.mount(target, anchor);
 		},
@@ -3017,18 +3941,19 @@ function create_each_block(state, each_block_value, date, date_index, component)
 			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
 		},
 
-		destroy: function destroy(detach) {
-			vcenter_1.destroy(detach);
+		unmount: function unmount() {
+			vcenter_1._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			vcenter_1_yield_fragment.destroy();
+			vcenter_1.destroy(false);
 		}
 	};
 }
 
 function create_vcenter_yield_fragment(state, each_block_value, date, date_index, component) {
-	var div_data_relevant_value;
-
-	var div = createElement$1('div');
-	div.className = "axis";
-	setAttribute(div, 'data-relevant', div_data_relevant_value = state.axisIsRelevant(date.amd));
+	var div, div_data_relevant_value;
 
 	function get_block(state, each_block_value, date, date_index) {
 		if (date.type === 'snip') return create_if_block_2;
@@ -3038,11 +3963,21 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 	var current_block = get_block(state, each_block_value, date, date_index);
 	var if_block_2 = current_block(state, each_block_value, date, date_index, component);
 
-	if_block_2.mount(div, null);
-
 	return {
+		create: function create() {
+			div = createElement$1('div');
+			if_block_2.create();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			div.className = "axis";
+			setAttribute(div, 'data-relevant', div_data_relevant_value = state.axisIsRelevant(date.amd));
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(div, target, anchor);
+			if_block_2.mount(div, null);
 		},
 
 		update: function update(changed, state, each_block_value, date, date_index) {
@@ -3053,30 +3988,35 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 			if (current_block === (current_block = get_block(state, each_block_value, date, date_index)) && if_block_2) {
 				if_block_2.update(changed, state, each_block_value, date, date_index);
 			} else {
-				if_block_2.destroy(true);
+				if_block_2.unmount();
+				if_block_2.destroy();
 				if_block_2 = current_block(state, each_block_value, date, date_index, component);
+				if_block_2.create();
 				if_block_2.mount(div, null);
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if_block_2.destroy(false);
+		unmount: function unmount() {
+			detachNode$1(div);
+			if_block_2.unmount();
+		},
 
-			if (detach) {
-				detachNode$1(div);
-			}
+		destroy: function destroy() {
+			if_block_2.destroy();
 		}
 	};
 }
 
 function create_if_block_2(state, each_block_value, date, date_index, component) {
-	var text_1_value;
-
-	var text = createText("...snip (");
-	var text_1 = createText(text_1_value = date.days);
-	var text_2 = createText(" days)");
+	var text, text_1_value, text_1, text_2;
 
 	return {
+		create: function create() {
+			text = createText("...snip (");
+			text_1 = createText(text_1_value = date.days);
+			text_2 = createText(" days)");
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(text, target, anchor);
 			insertNode$1(text_1, target, anchor);
@@ -3089,22 +4029,24 @@ function create_if_block_2(state, each_block_value, date, date_index, component)
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if (detach) {
-				detachNode$1(text);
-				detachNode$1(text_1);
-				detachNode$1(text_2);
-			}
-		}
+		unmount: function unmount() {
+			detachNode$1(text);
+			detachNode$1(text_1);
+			detachNode$1(text_2);
+		},
+
+		destroy: noop$1
 	};
 }
 
 function create_if_block_3(state, each_block_value, date, date_index, component) {
-	var text_value;
-
-	var text = createText(text_value = date.hebrew || date.amd);
+	var text_value, text;
 
 	return {
+		create: function create() {
+			text = createText(text_value = date.hebrew || date.amd);
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode$1(text, target, anchor);
 		},
@@ -3115,17 +4057,17 @@ function create_if_block_3(state, each_block_value, date, date_index, component)
 			}
 		},
 
-		destroy: function destroy(detach) {
-			if (detach) {
-				detachNode$1(text);
-			}
-		}
+		unmount: function unmount() {
+			detachNode$1(text);
+		},
+
+		destroy: noop$1
 	};
 }
 
 function Main(options) {
 	options = options || {};
-	this._state = options.data || {};
+	this._state = assign$1(template$1.data(), options.data);
 	recompute$1(this._state, this._state, {}, true);
 
 	this._observers = {
@@ -3139,12 +4081,20 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-3827126313-style")) add_css();
+	if (!document.getElementById("svelte-1673766917-style")) add_css();
 	this._renderHooks = [];
+	this._bindings = [];
 
 	this._fragment = create_main_fragment$1(this._state, this);
-	if (options.target) this._fragment.mount(options.target, null);
-	this._flush();
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+
+	while (this._bindings.length) {
+		this._bindings.pop()();
+	}this._flush();
 }
 
 assign$1(Main.prototype, template$1.methods, proto);
@@ -3156,13 +4106,16 @@ Main.prototype._set = function _set(newState) {
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
-	this._flush();
+	while (this._bindings.length) {
+		this._bindings.pop()();
+	}this._flush();
 };
 
 Main.prototype.teardown = Main.prototype.destroy = function destroy(detach) {
 	this.fire('destroy');
 
-	this._fragment.destroy(detach !== false);
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
 	this._fragment = null;
 
 	this._state = {};
@@ -4236,8 +5189,8 @@ var timelineData = [{
 	"slug": "masada-fell"
 }];
 
-var attachQuerystringData = index.attachQuerystringData;
-var getCurrentParameters = index.getCurrentParameters;
+var attachQuerystringData = index$1.attachQuerystringData;
+var getCurrentParameters = index$1.getCurrentParameters;
 
 
 var component = new Main({
@@ -4251,4 +5204,3 @@ var component = new Main({
 attachQuerystringData(component);
 
 }());
-//# sourceMappingURL=bundle.js.map

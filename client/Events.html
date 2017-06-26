@@ -4,40 +4,44 @@
 			left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 			point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 		>
-			<div
-				class="event"
-				data-title="{{timelineEvent.title}}"
-				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
-				style="
-					height: {{singleDayHeight}}px;
-					background-color: {{timelineEvent.color}};
-				"
-				on:mouseover="fire('startHover', timelineEvent)"
-				on:mouseleave="fire('endHover', timelineEvent)"
-			/>
+			<Visibility bind:visible="visibleEventSlugs[timelineEvent.slug]">
+				<div
+					class="event"
+					data-title="{{timelineEvent.title}}"
+					data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
+					style="
+						height: {{singleDayHeight}}px;
+						background-color: {{timelineEvent.color}};
+					"
+					on:mouseover="fire('startHover', timelineEvent)"
+					on:mouseleave="fire('endHover', timelineEvent)"
+				/>
+			</Visibility>
 		</VCenter>
 	{{else}}
 		<Link
 			parameters="{{ clickable ? { zoom: timelineEvent.slug } : null }}"
 		>
-			<div
-				id="{{timelineEvent.slug}}"
-				style="
-					top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px;
-					left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
-					height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
-					background-color: {{timelineEvent.color}};
-				"
-				data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
-				data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
-				class="event"
-				data-title="{{timelineEvent.title}}"
-				data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
-				data-cut-off-at-start="{{timelineEvent.axis.cutOffAtStart}}"
-				data-cut-off-at-end="{{timelineEvent.axis.cutOffAtEnd}}"
-				on:mouseover="fire('startHover', timelineEvent)"
-				on:mouseleave="fire('endHover', timelineEvent)"
-			/>
+			<Visibility bind:visible="visibleEventSlugs[timelineEvent.slug]">
+				<div
+					id="{{timelineEvent.slug}}"
+					style="
+						top: {{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}px;
+						left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
+						height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
+						background-color: {{timelineEvent.color}};
+					"
+					data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
+					data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
+					class="event"
+					data-title="{{timelineEvent.title}}"
+					data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
+					data-cut-off-at-start="{{timelineEvent.axis.cutOffAtStart}}"
+					data-cut-off-at-end="{{timelineEvent.axis.cutOffAtEnd}}"
+					on:mouseover="fire('startHover', timelineEvent)"
+					on:mouseleave="fire('endHover', timelineEvent)"
+				/>
+			</Visibility>
 		</Link>
 	{{/if}}
 {{/each}}
@@ -73,14 +77,17 @@
 </style>
 
 <script>
-import { multiplyIndentByWidth } from './spacer-functions.js'
+import Visibility from './Visibility.html'
 import VCenter from './VerticallyCentered.html'
+
+import { multiplyIndentByWidth } from './spacer-functions.js'
 import svelteQuerystringRouter from 'svelte-querystring-router'
 
 export default {
 	data() {
 		return {
-			clickable: false
+			clickable: false,
+			visibleEventSlugs: Object.create(null)
 		}
 	},
 	helpers: {
@@ -88,11 +95,13 @@ export default {
 	},
 	computed: {
 		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
-		singleDayHeight: dayHeight => Math.max(dayHeight, 4)
+		singleDayHeight: dayHeight => Math.max(dayHeight, 4),
+		visibleEvents: (timeline, visibleEventSlugs) => timeline.filter(event => visibleEventSlugs[event.slug])
 	},
 	components: {
 		VCenter,
-		Link: svelteQuerystringRouter.Link
+		Link: svelteQuerystringRouter.Link,
+		Visibility
 	},
 }
 </script>

@@ -1,0 +1,35 @@
+<div ref:element>
+	{{yield}}
+</div>
+
+<script>
+import globalUpdateEmitter from './motion-event.js'
+
+export default {
+	oncreate() {
+		// const componentListener = () => this.updateVisibility()
+		// globalUpdateEmitter.on('update', componentListener)
+
+		// this.set({
+		// 	listener: componentListener
+		// })
+	},
+	ondestroy() {
+		// const componentListener = this.get('listener')
+		// globalUpdateEmitter.removeListener('update', componentListener)
+	},
+	methods: {
+		// updateVisibility() {
+		// 	const relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect()
+		// 	const viewportHeight = window.document.documentElement.clientHeight
+		// 	const visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight
+		// 	const topIsAboveViewport = relativeToViewport.top <= 0
+
+		// 	this.set({
+		// 		visible,
+		// 		topIsAboveViewport
+		// 	})
+		// }
+	}
+}
+</script>

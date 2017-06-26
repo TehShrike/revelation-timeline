@@ -17,14 +17,18 @@
 		</VCenter>
 		{{/each}}
 	</div>
-	<div class="timeline-row" style="width: 250px">
+	<div class="timeline-row" style="width: {{multiplyIndentByWidth(indentLevels + 1)}}px">
 		<Events
 			timeline="{{relevantEventsWithAxis}}"
 			on:startHover="startHover(event)"
 			on:endHover="endHover(event)"
 			dayHeight="{{currentZoom.dayHeight}}"
 			clickable="{{true}}"
+			bind:visibleEvents
 		/>
+	</div>
+	<div class="timeline-row">
+		<EventDescriptions timeline="{{visibleEvents}}" />
 	</div>
 </div>
 <style>
@@ -54,9 +58,12 @@
 	background-color: rgba(255, 255, 255, 0.8);
 }
 </style>
+
 <script>
 import VCenter from './VerticallyCentered.html'
 import Events from './Events.html'
+import EventDescriptions from './EventDescriptions.html'
+
 import createTimelineAxis from './create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
 import { multiplyIndentByWidth } from './spacer-functions.js'
@@ -132,9 +139,9 @@ const endingColor = '#2ECC40'
 // const eventColors = chromatism.adjacent(20, 5, startingColor).hex
 const eventColors = chromatism.fade(4, startingColor, endingColor).hex
 const hoverColors = eventColors.map(color => chromatism.contrast(3, color).hex)
-console.log(eventColors)
+
 function addColorToEvents(events) {
-	return events.map((event, i) => Object.assign({
+	return events.map(event => Object.assign({
 		color: eventColors[event.indentLevel % eventColors.length],
 		hoverColor: hoverColors[event.indentLevel % eventColors.length]
 	}, event))
@@ -156,6 +163,11 @@ function sortEventsForDisplay(timelineData, currentZoom) {
 }
 
 export default {
+	data() {
+		return {
+			visibleEvents: []
+		}
+	},
 	computed: {
 		zooms: timelineData => timelineData.reduce((map, event) => {
 			map[event.slug] = {
@@ -171,8 +183,8 @@ export default {
 		}),
 		multiplyDaysByHeight: currentZoom => days => days * currentZoom.dayHeight,
 		relevantEvents: (timelineData, currentZoom) => pipe(timelineData,
-			timelineData => filterToRelevantEvents(timelineData, currentZoom),
-			timelineData => sortEventsForDisplay(timelineData, currentZoom)
+			_ => filterToRelevantEvents(_, currentZoom),
+			_ => sortEventsForDisplay(_, currentZoom)
 		),
 		axis: (relevantEvents, currentZoom) => createTimelineAxis({
 			timelineData: relevantEvents,
@@ -192,7 +204,10 @@ export default {
 		currentZoom: (querystringParameters, zooms) =>
 			(querystringParameters.zoom && zooms[querystringParameters.zoom])
 				? zooms[querystringParameters.zoom]
-				: topZoom
+				: topZoom,
+		indentLevels: relevantEventsWithAxis => relevantEventsWithAxis.reduce((max, event) => {
+			return max < event.indentLevel ? event.indentLevel : max
+		}, 0)
 	},
 	helpers: {
 		multiplyIndentByWidth,
@@ -211,7 +226,13 @@ export default {
 	},
 	components: {
 		VCenter,
-		Events
+		Events,
+		EventDescriptions,
 	},
+	// oncreate() {
+	// 	this.observe('visibleEvents', () => {
+	// 		console.log(this.get())
+	// 	})
+	// }
 }
 </script>
