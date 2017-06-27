@@ -1462,30 +1462,34 @@ window.addEventListener('scroll', listener);
 var template$4 = function () {
 	return {
 		oncreate: function oncreate() {
-			// const componentListener = () => this.updateVisibility()
-			// globalUpdateEmitter.on('update', componentListener)
+			var _this = this;
 
-			// this.set({
-			// 	listener: componentListener
-			// })
+			var componentListener = function componentListener() {
+				return _this.updateVisibility();
+			};
+			globalUpdateEmitter.on('update', componentListener);
+
+			this.set({
+				listener: componentListener
+			});
 		},
 		ondestroy: function ondestroy() {
-			// const componentListener = this.get('listener')
-			// globalUpdateEmitter.removeListener('update', componentListener)
+			var componentListener = this.get('listener');
+			globalUpdateEmitter.removeListener('update', componentListener);
 		},
 
 		methods: {
-			// updateVisibility() {
-			// 	const relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect()
-			// 	const viewportHeight = window.document.documentElement.clientHeight
-			// 	const visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight
-			// 	const topIsAboveViewport = relativeToViewport.top <= 0
+			updateVisibility: function updateVisibility() {
+				var relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect();
+				var viewportHeight = window.document.documentElement.clientHeight;
+				var visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight;
+				var topIsAboveViewport = relativeToViewport.top <= 0;
 
-			// 	this.set({
-			// 		visible,
-			// 		topIsAboveViewport
-			// 	})
-			// }
+				this.set({
+					visible: visible,
+					topIsAboveViewport: topIsAboveViewport
+				});
+			}
 		}
 	};
 }();
@@ -1576,8 +1580,16 @@ function recompute$3(state, newState, oldState, isInitial) {
 		state.singleDayHeight = newState.singleDayHeight = template$3.computed.singleDayHeight(state.dayHeight);
 	}
 
-	if (isInitial || 'timeline' in newState && differs$1(state.timeline, oldState.timeline) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs)) {
-		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.timeline, state.visibleEventSlugs);
+	if (isInitial || 'ignoreType' in newState && differs$1(state.ignoreType, oldState.ignoreType)) {
+		state.ignoreTypeMap = newState.ignoreTypeMap = template$3.computed.ignoreTypeMap(state.ignoreType);
+	}
+
+	if (isInitial || 'timeline' in newState && differs$1(state.timeline, oldState.timeline) || 'ignoreTypeMap' in newState && differs$1(state.ignoreTypeMap, oldState.ignoreTypeMap)) {
+		state.nonIgnoredEvents = newState.nonIgnoredEvents = template$3.computed.nonIgnoredEvents(state.timeline, state.ignoreTypeMap);
+	}
+
+	if (isInitial || 'nonIgnoredEvents' in newState && differs$1(state.nonIgnoredEvents, oldState.nonIgnoredEvents) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs)) {
+		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs);
 	}
 }
 
@@ -1586,7 +1598,8 @@ var template$3 = function () {
 		data: function data() {
 			return {
 				clickable: false,
-				visibleEventSlugs: Object.create(null)
+				visibleEventSlugs: Object.create(null),
+				ignoreType: []
 			};
 		},
 
@@ -1602,8 +1615,18 @@ var template$3 = function () {
 			singleDayHeight: function singleDayHeight(dayHeight) {
 				return Math.max(dayHeight, 4);
 			},
-			visibleEvents: function visibleEvents(timeline, visibleEventSlugs) {
+			ignoreTypeMap: function ignoreTypeMap(ignoreType) {
+				return ignoreType.reduce(function (map, type) {
+					return map[type] = true, map;
+				}, Object.create(null));
+			},
+			nonIgnoredEvents: function nonIgnoredEvents(timeline, ignoreTypeMap) {
 				return timeline.filter(function (event) {
+					return !ignoreTypeMap[event.type];
+				});
+			},
+			visibleEvents: function visibleEvents(nonIgnoredEvents, visibleEventSlugs) {
+				return nonIgnoredEvents.filter(function (event) {
 					return visibleEventSlugs[event.slug];
 				});
 			}
@@ -1616,8 +1639,8 @@ var template$3 = function () {
 
 function add_css$2() {
 	var style = createElement$1('style');
-	style.id = "svelte-907107307-style";
-	style.textContent = "\n[svelte-907107307][data-clickable=true], [svelte-907107307] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-907107307].event, [svelte-907107307] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-907107307].event[data-cut-off-at-start=true], [svelte-907107307] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-907107307].event[data-cut-off-at-end=true], [svelte-907107307] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-907107307].event:hover, [svelte-907107307] .event:hover {\n\tbackground-color: red;\n}\n\n";
+	style.id = "svelte-2965743916-style";
+	style.textContent = "\n[svelte-2965743916][data-clickable=true], [svelte-2965743916] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-2965743916].event, [svelte-2965743916] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-2965743916].event[data-cut-off-at-start=true], [svelte-2965743916] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-2965743916].event[data-cut-off-at-end=true], [svelte-2965743916] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-2965743916].event:hover, [svelte-2965743916] .event:hover {\n\tbackground-color: red;\n}\n\n";
 	appendNode(style, document.head);
 }
 
@@ -1806,7 +1829,7 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-907107307', '');
+			setAttribute(div, 'svelte-2965743916', '');
 			div.className = "event";
 			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
 			setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
@@ -1929,7 +1952,7 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-907107307', '');
+			setAttribute(div, 'svelte-2965743916', '');
 			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
 			div.id = div_id_value = timelineEvent.slug;
 			setAttribute(div, 'data-top', div_data_top_value = state.multiplyDaysByHeight(timelineEvent.axisAfterStart));
@@ -2132,7 +2155,7 @@ function Events(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-907107307-style")) add_css$2();
+	if (!document.getElementById("svelte-2965743916-style")) add_css$2();
 	this._renderHooks = [];
 	this._bindings = [];
 
@@ -3195,7 +3218,8 @@ var template$1 = function () {
 		end: 1488003,
 		snipSectionsLongerThan: 10000,
 		snipBuffer: 1500,
-		type: 'top'
+		type: 'top',
+		ignoreType: []
 	};
 
 	function eventOverlapsRange(eventRange, zoomRange) {
@@ -3261,7 +3285,8 @@ var template$1 = function () {
 						end: event.amd.end,
 						dayHeight: event.dayHeight || defaultZoomedDayHeight,
 						snipSectionsLongerThan: 300,
-						snipBuffer: 50
+						snipBuffer: 50,
+						ignoreType: event.ignoreType || ['top']
 					};
 					return map;
 				}, {
@@ -3340,8 +3365,8 @@ var template$1 = function () {
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-2992398978-style";
-	style.textContent = "\n[svelte-2992398978].timeline-container, [svelte-2992398978] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-2992398978].timeline-row, [svelte-2992398978] .timeline-row {\n\tposition: relative;\n}\n[svelte-2992398978].axis, [svelte-2992398978] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-2992398978].axis[data-relevant=true], [svelte-2992398978] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-2992398978].eventhover, [svelte-2992398978] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
+	style.id = "svelte-1735786240-style";
+	style.textContent = "\n[svelte-1735786240].timeline-container, [svelte-1735786240] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-1735786240].timeline-row, [svelte-1735786240] .timeline-row {\n\tposition: relative;\n}\n[svelte-1735786240].axis, [svelte-1735786240] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-1735786240].axis[data-relevant=true], [svelte-1735786240] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-1735786240].eventhover, [svelte-1735786240] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -3369,7 +3394,8 @@ function create_main_fragment$1(state, component) {
 	var events_initial_data = {
 		timeline: state.relevantEventsWithAxis,
 		dayHeight: state.currentZoom.dayHeight,
-		clickable: true
+		clickable: true,
+		ignoreType: state.currentZoom.ignoreType
 	};
 	if ('visibleEvents' in state) events_initial_data.visibleEvents = state.visibleEvents;
 	var events = new Events({
@@ -3425,7 +3451,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2992398978', '');
+			setAttribute(div, 'svelte-1735786240', '');
 			div.className = "timeline-container";
 			div_1.className = "timeline-row";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
@@ -3505,6 +3531,7 @@ function create_main_fragment$1(state, component) {
 			if ('relevantEventsWithAxis' in changed) events_changes.timeline = state.relevantEventsWithAxis;
 			if ('currentZoom' in changed) events_changes.dayHeight = state.currentZoom.dayHeight;
 			events_changes.clickable = true;
+			if ('currentZoom' in changed) events_changes.ignoreType = state.currentZoom.ignoreType;
 
 			if (Object.keys(events_changes).length) events.set(events_changes);
 
@@ -3583,7 +3610,7 @@ function create_if_block$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2992398978', '');
+			setAttribute(div, 'svelte-1735786240', '');
 			div.className = "eventhover";
 		},
 
@@ -3795,7 +3822,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-2992398978-style")) add_css();
+	if (!document.getElementById("svelte-1735786240-style")) add_css();
 	this._renderHooks = [];
 	this._bindings = [];
 
@@ -4922,3 +4949,4 @@ var component = new Main({
 attachQuerystringData(component);
 
 }());
+//# sourceMappingURL=bundle.js.map
