@@ -24,6 +24,7 @@
 			on:endHover="endHover(event)"
 			dayHeight="{{currentZoom.dayHeight}}"
 			clickable="{{true}}"
+			ignoreType="{{currentZoom.ignoreType}}"
 			bind:visibleEvents
 		/>
 	</div>
@@ -114,6 +115,7 @@ const topZoom = {
 	snipSectionsLongerThan: 10000,
 	snipBuffer: 1500,
 	type: 'top',
+	ignoreType: []
 }
 
 function eventOverlapsRange(eventRange, zoomRange) {
@@ -176,7 +178,8 @@ export default {
 				end: event.amd.end,
 				dayHeight: event.dayHeight || defaultZoomedDayHeight,
 				snipSectionsLongerThan: 300,
-				snipBuffer: 50
+				snipBuffer: 50,
+				ignoreType: event.ignoreType || [ 'top' ]
 			}
 			return map
 		}, {

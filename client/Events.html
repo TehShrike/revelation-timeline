@@ -87,7 +87,8 @@ export default {
 	data() {
 		return {
 			clickable: false,
-			visibleEventSlugs: Object.create(null)
+			visibleEventSlugs: Object.create(null),
+			ignoreType: []
 		}
 	},
 	helpers: {
@@ -96,7 +97,9 @@ export default {
 	computed: {
 		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
 		singleDayHeight: dayHeight => Math.max(dayHeight, 4),
-		visibleEvents: (timeline, visibleEventSlugs) => timeline.filter(event => visibleEventSlugs[event.slug])
+		ignoreTypeMap: ignoreType => ignoreType.reduce((map, type) => (map[type] = true, map), Object.create(null)),
+		nonIgnoredEvents: (timeline, ignoreTypeMap) => timeline.filter(event => !ignoreTypeMap[event.type]),
+		visibleEvents: (nonIgnoredEvents, visibleEventSlugs) => nonIgnoredEvents.filter(event => visibleEventSlugs[event.slug])
 	},
 	components: {
 		VCenter,
