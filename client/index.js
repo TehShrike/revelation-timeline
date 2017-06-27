@@ -3,7 +3,7 @@ const { attachQuerystringData, getCurrentParameters } = svelteQuerystringRouter
 
 import Main from './Main.html'
 
-import timelineData from '../timeline-data/timeline-data.js'
+import timelineData from './timeline-data.js'
 
 const component = new Main({
 	target: document.querySelector('#timeline'),
