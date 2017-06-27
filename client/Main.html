@@ -106,6 +106,7 @@ function addIndentAndAxisAfterStart(events, startDay, endDay) {
 	})
 }
 
+const defaultZoomedDayHeight = 0.5
 const topZoom = {
 	dayHeight: 0.1,
 	start: 1471937,
@@ -173,7 +174,7 @@ export default {
 			map[event.slug] = {
 				start: event.amd.start,
 				end: event.amd.end,
-				dayHeight: 15000 / Math.floor((event.amd.end - event.amd.start)),
+				dayHeight: event.dayHeight || defaultZoomedDayHeight,
 				snipSectionsLongerThan: 300,
 				snipBuffer: 50
 			}

@@ -12,7 +12,8 @@ const longPropertyNames = {
 	h: 'hebrew',
 	s: 'macedonian',
 	g: 'gregorian',
-	r: 'reference'
+	r: 'reference',
+	dayheight: 'dayHeight'
 }
 
 // if a non-AMD date is empty or NA, ignore it
@@ -29,6 +30,7 @@ async function get() {
 const keepPropertyNames = [ 'title', 'josephus war', 'r', 'type' ]
 const datePropertyNames = [ 'h', 's', 'g', 'amd' ]
 const integerDatePropertyNames = [ 'amd' ]
+const floatPropertyNames = [ 'dayheight' ]
 
 async function main() {
 	const markdown = await get()
@@ -162,6 +164,10 @@ function isIntegerDateFieldName(field) {
 	return integerDatePropertyNames.indexOf(field) >= 0
 }
 
+function isFloatFieldName(field) {
+	return floatPropertyNames.indexOf(field) >= 0
+}
+
 function rangeArrayToObject([ start, end ]) {
 	return { start, end }
 }
@@ -181,6 +187,8 @@ function turnLinesToObject(lines) {
 				o[shortFieldName] = rangeArrayToObject(parseAnyRange(secondPart))
 			} else if (keepPropertyNames.indexOf(shortFieldName) >= 0) {
 				o[shortFieldName] = secondPart
+			} else if (isFloatFieldName(shortFieldName)) {
+				o[shortFieldName] = parseFloat(secondPart)
 			} else {
 				console.log('Unknown field name', shortFieldName)
 			}

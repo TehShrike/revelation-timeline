@@ -319,6 +319,7 @@ Josephus's War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
 	+ H: 4061-Sivan 22, 4068
 	+ AMD: [1483532-1483647] - 1485883
 	+ type: top
+	+ dayHeight: 0.5
 
 AMD is fuzzy for start
 From fifth seal to death of Nero

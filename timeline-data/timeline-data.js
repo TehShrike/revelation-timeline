@@ -218,6 +218,7 @@ module.exports = [
 			"end": 1485883
 		},
 		"type": "top",
+		"dayHeight": 0.5,
 		"slug": "great-tribulation-rome-israel-killing-christians"
 	},
 	{
