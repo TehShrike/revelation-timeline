@@ -79,6 +79,7 @@ module.exports = [
 			"end": 1485229
 		},
 		"type": "top",
+		"dayHeight": 3,
 		"slug": "seven-seals"
 	},
 	{
@@ -218,7 +219,7 @@ module.exports = [
 			"end": 1485883
 		},
 		"type": "top",
-		"dayHeight": 0.5,
+		"dayHeight": 2,
 		"slug": "great-tribulation-rome-israel-killing-christians"
 	},
 	{
@@ -364,6 +365,7 @@ module.exports = [
 			"end": 1486668
 		},
 		"type": "top",
+		"dayHeight": 4,
 		"slug": "seven-trumpets"
 	},
 	{
@@ -502,6 +504,7 @@ module.exports = [
 			"end": 1487959
 		},
 		"type": "top",
+		"dayHeight": 3,
 		"slug": "great-wrath-rome-against-israel"
 	},
 	{

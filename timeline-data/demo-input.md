@@ -319,7 +319,7 @@ Josephus's War 6:250 says 10th, but Talmud and Dio Cassius say 9th-10th
 	+ H: 4061-Sivan 22, 4068
 	+ AMD: [1483532-1483647] - 1485883
 	+ type: top
-	+ dayHeight: 0.5
+	+ dayHeight: 2
 
 AMD is fuzzy for start
 From fifth seal to death of Nero
@@ -328,6 +328,7 @@ From fifth seal to death of Nero
 	+ H: Heshvan 24, 4066-4074
 	+ AMD: 1485295- [1487928-1487959]
 	+ type: top
+	+ dayHeight: 3
 - Forty months
 	- R: Revelation 11:2
 	- H: Ab 9, 4070 to Tebeth 29, AD 4074
@@ -371,9 +372,11 @@ From fifth seal to death of Nero
 	- G: April 6, 30 to September 8, 66
 	- AMD: 1471939-1485229
 	- type: top
+	- dayHeight: 3
 - Seven trumpets
 	- H: Tishri 1, 4066 to Ab 9, 4070
 	- S: Hyperberataios 1, 377 to Loos 9, 381
 	- G: September 8, 66 to August 3, 70
 	- AMD: 1485242-1486668
 	- type: top
+	- dayHeight: 4

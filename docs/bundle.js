@@ -13,8 +13,6 @@ object-assign
 @license MIT
 */
 
-/* eslint-disable no-unused-vars */
-
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -1179,7 +1177,6 @@ function detachNode$1(node) {
 	node.parentNode.removeChild(node);
 }
 
-// TODO this is out of date
 function destroyEach(iterations, detach, start) {
 	for (var i = start; i < iterations.length; i += 1) {
 		if (iterations[i]) iterations[i].destroy(detach);
@@ -2494,6 +2491,12 @@ function calculateAxisPoints(dates) {
 		}
 	});
 }
+
+// console.log(createTimelineAxis(require('./filter-and-sort')(require('./timeline-data')), 5).map(date => {
+// 	return Object.assign({
+// 		afterCrucifixion: (date.start || date.amd) - 1471937
+// 	}, date)
+// }))
 
 var addAxisPointsToTimelineData_1 = addAxisPointsToTimelineData;
 
@@ -3910,6 +3913,7 @@ var timelineData = [{
 		"end": 1485229
 	},
 	"type": "top",
+	"dayHeight": 3,
 	"slug": "seven-seals"
 }, {
 	"title": "First Seal - Tiberius",
@@ -4042,7 +4046,7 @@ var timelineData = [{
 		"end": 1485883
 	},
 	"type": "top",
-	"dayHeight": 0.5,
+	"dayHeight": 2,
 	"slug": "great-tribulation-rome-israel-killing-christians"
 }, {
 	"title": "Sixth Seal - visible appearance of Christ in the sky",
@@ -4181,6 +4185,7 @@ var timelineData = [{
 		"end": 1486668
 	},
 	"type": "top",
+	"dayHeight": 4,
 	"slug": "seven-trumpets"
 }, {
 	"title": "Second Trumpet",
@@ -4312,6 +4317,7 @@ var timelineData = [{
 		"end": 1487959
 	},
 	"type": "top",
+	"dayHeight": 3,
 	"slug": "great-wrath-rome-against-israel"
 }, {
 	"title": "Jewish preparations for defence of temple and city start in earnest",
