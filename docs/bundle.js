@@ -1436,314 +1436,7 @@ VerticallyCentered.prototype.teardown = VerticallyCentered.prototype.destroy = f
 	this._torndown = true;
 };
 
-var index$10 = createCommonjsModule(function (module) {
-  'use strict';
-
-  var has = Object.prototype.hasOwnProperty,
-      prefix = '~';
-
-  /**
-   * Constructor to create a storage for our `EE` objects.
-   * An `Events` instance is a plain object whose properties are event names.
-   *
-   * @constructor
-   * @api private
-   */
-  function Events() {}
-
-  //
-  // We try to not inherit from `Object.prototype`. In some engines creating an
-  // instance in this way is faster than calling `Object.create(null)` directly.
-  // If `Object.create(null)` is not supported we prefix the event names with a
-  // character to make sure that the built-in object properties are not
-  // overridden or used as an attack vector.
-  //
-  if (Object.create) {
-    Events.prototype = Object.create(null);
-
-    //
-    // This hack is needed because the `__proto__` property is still inherited in
-    // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
-    //
-    if (!new Events().__proto__) prefix = false;
-  }
-
-  /**
-   * Representation of a single event listener.
-   *
-   * @param {Function} fn The listener function.
-   * @param {Mixed} context The context to invoke the listener with.
-   * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
-   * @constructor
-   * @api private
-   */
-  function EE(fn, context, once) {
-    this.fn = fn;
-    this.context = context;
-    this.once = once || false;
-  }
-
-  /**
-   * Minimal `EventEmitter` interface that is molded against the Node.js
-   * `EventEmitter` interface.
-   *
-   * @constructor
-   * @api public
-   */
-  function EventEmitter() {
-    this._events = new Events();
-    this._eventsCount = 0;
-  }
-
-  /**
-   * Return an array listing the events for which the emitter has registered
-   * listeners.
-   *
-   * @returns {Array}
-   * @api public
-   */
-  EventEmitter.prototype.eventNames = function eventNames() {
-    var names = [],
-        events,
-        name;
-
-    if (this._eventsCount === 0) return names;
-
-    for (name in events = this._events) {
-      if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
-    }
-
-    if (Object.getOwnPropertySymbols) {
-      return names.concat(Object.getOwnPropertySymbols(events));
-    }
-
-    return names;
-  };
-
-  /**
-   * Return the listeners registered for a given event.
-   *
-   * @param {String|Symbol} event The event name.
-   * @param {Boolean} exists Only check if there are listeners.
-   * @returns {Array|Boolean}
-   * @api public
-   */
-  EventEmitter.prototype.listeners = function listeners(event, exists) {
-    var evt = prefix ? prefix + event : event,
-        available = this._events[evt];
-
-    if (exists) return !!available;
-    if (!available) return [];
-    if (available.fn) return [available.fn];
-
-    for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
-      ee[i] = available[i].fn;
-    }
-
-    return ee;
-  };
-
-  /**
-   * Calls each of the listeners registered for a given event.
-   *
-   * @param {String|Symbol} event The event name.
-   * @returns {Boolean} `true` if the event had listeners, else `false`.
-   * @api public
-   */
-  EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-    var evt = prefix ? prefix + event : event;
-
-    if (!this._events[evt]) return false;
-
-    var listeners = this._events[evt],
-        len = arguments.length,
-        args,
-        i;
-
-    if (listeners.fn) {
-      if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
-
-      switch (len) {
-        case 1:
-          return listeners.fn.call(listeners.context), true;
-        case 2:
-          return listeners.fn.call(listeners.context, a1), true;
-        case 3:
-          return listeners.fn.call(listeners.context, a1, a2), true;
-        case 4:
-          return listeners.fn.call(listeners.context, a1, a2, a3), true;
-        case 5:
-          return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-        case 6:
-          return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
-      }
-
-      for (i = 1, args = new Array(len - 1); i < len; i++) {
-        args[i - 1] = arguments[i];
-      }
-
-      listeners.fn.apply(listeners.context, args);
-    } else {
-      var length = listeners.length,
-          j;
-
-      for (i = 0; i < length; i++) {
-        if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
-
-        switch (len) {
-          case 1:
-            listeners[i].fn.call(listeners[i].context);break;
-          case 2:
-            listeners[i].fn.call(listeners[i].context, a1);break;
-          case 3:
-            listeners[i].fn.call(listeners[i].context, a1, a2);break;
-          case 4:
-            listeners[i].fn.call(listeners[i].context, a1, a2, a3);break;
-          default:
-            if (!args) for (j = 1, args = new Array(len - 1); j < len; j++) {
-              args[j - 1] = arguments[j];
-            }
-
-            listeners[i].fn.apply(listeners[i].context, args);
-        }
-      }
-    }
-
-    return true;
-  };
-
-  /**
-   * Add a listener for a given event.
-   *
-   * @param {String|Symbol} event The event name.
-   * @param {Function} fn The listener function.
-   * @param {Mixed} [context=this] The context to invoke the listener with.
-   * @returns {EventEmitter} `this`.
-   * @api public
-   */
-  EventEmitter.prototype.on = function on(event, fn, context) {
-    var listener = new EE(fn, context || this),
-        evt = prefix ? prefix + event : event;
-
-    if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;else if (!this._events[evt].fn) this._events[evt].push(listener);else this._events[evt] = [this._events[evt], listener];
-
-    return this;
-  };
-
-  /**
-   * Add a one-time listener for a given event.
-   *
-   * @param {String|Symbol} event The event name.
-   * @param {Function} fn The listener function.
-   * @param {Mixed} [context=this] The context to invoke the listener with.
-   * @returns {EventEmitter} `this`.
-   * @api public
-   */
-  EventEmitter.prototype.once = function once(event, fn, context) {
-    var listener = new EE(fn, context || this, true),
-        evt = prefix ? prefix + event : event;
-
-    if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;else if (!this._events[evt].fn) this._events[evt].push(listener);else this._events[evt] = [this._events[evt], listener];
-
-    return this;
-  };
-
-  /**
-   * Remove the listeners of a given event.
-   *
-   * @param {String|Symbol} event The event name.
-   * @param {Function} fn Only remove the listeners that match this function.
-   * @param {Mixed} context Only remove the listeners that have this context.
-   * @param {Boolean} once Only remove one-time listeners.
-   * @returns {EventEmitter} `this`.
-   * @api public
-   */
-  EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-    var evt = prefix ? prefix + event : event;
-
-    if (!this._events[evt]) return this;
-    if (!fn) {
-      if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
-      return this;
-    }
-
-    var listeners = this._events[evt];
-
-    if (listeners.fn) {
-      if (listeners.fn === fn && (!once || listeners.once) && (!context || listeners.context === context)) {
-        if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
-      }
-    } else {
-      for (var i = 0, events = [], length = listeners.length; i < length; i++) {
-        if (listeners[i].fn !== fn || once && !listeners[i].once || context && listeners[i].context !== context) {
-          events.push(listeners[i]);
-        }
-      }
-
-      //
-      // Reset the array, or remove it completely if we have no more listeners.
-      //
-      if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;else if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
-    }
-
-    return this;
-  };
-
-  /**
-   * Remove all listeners, or those of the specified event.
-   *
-   * @param {String|Symbol} [event] The event name.
-   * @returns {EventEmitter} `this`.
-   * @api public
-   */
-  EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
-    var evt;
-
-    if (event) {
-      evt = prefix ? prefix + event : event;
-      if (this._events[evt]) {
-        if (--this._eventsCount === 0) this._events = new Events();else delete this._events[evt];
-      }
-    } else {
-      this._events = new Events();
-      this._eventsCount = 0;
-    }
-
-    return this;
-  };
-
-  //
-  // Alias methods names because people roll like that.
-  //
-  EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-  //
-  // This function doesn't apply anymore.
-  //
-  EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
-    return this;
-  };
-
-  //
-  // Expose the prefix.
-  //
-  EventEmitter.prefixed = prefix;
-
-  //
-  // Allow `EventEmitter` to be imported as module namespace.
-  //
-  EventEmitter.EventEmitter = EventEmitter;
-
-  //
-  // Expose the module.
-  //
-  {
-    module.exports = EventEmitter;
-  }
-});
-
-var globalUpdateEmitter = new index$10();
+var globalUpdateEmitter = new index$8();
 
 function debounce(fn) {
 	var alreadyCalled = false;
@@ -2873,7 +2566,7 @@ function compareTwoValues(target, value) {
 	return WITHIN;
 }
 
-var index$11 = withinRange;
+var index$9 = withinRange;
 
 withinRange.LESS_THAN_START = LESS_THAN;
 withinRange.WITHIN = WITHIN;
@@ -2881,7 +2574,7 @@ withinRange.GREATER_THAN_END = GREATER_THAN;
 
 withinRange.relative = relative;
 
-var rangeSort = index$11.relative;
+var rangeSort = index$9.relative;
 
 
 var sortRange = function sortRange(ary, getRangeValues) {
@@ -3275,7 +2968,7 @@ var fromCieLab_1 = fromCieLab;
 var fromCieLuv_1 = fromCieLuv;
 var fromCieLch_1 = fromCieLch;
 var fromHsluv = fromCieLch$1;
-var index$13 = { hex: { test: function test(r) {
+var index$11 = { hex: { test: function test(r) {
       return "string" == typeof r && "#" === r.slice(0, 1);
     }, convert: fromHex_1 }, rgb: { test: function test(r) {
       return contains(r, ["r", "g", "b"]);
@@ -3385,8 +3078,8 @@ var helpers = { getIlluminant: function getIlluminant(r) {
       return e.bounded(r, [0, 255]);
     };return { r: n(r.r), g: n(r.g), b: n(r.b) };
   }, determineMode: function determineMode(r) {
-    for (var e in index$13) {
-      if (index$13.hasOwnProperty(e) && index$13[e].test(r)) return e;
+    for (var e in index$11) {
+      if (index$11.hasOwnProperty(e) && index$11[e].test(r)) return e;
     }return null;
   }, ready: function ready(r, e) {
     var n = r.conversions,
@@ -3414,7 +3107,7 @@ var helpers = { getIlluminant: function getIlluminant(r) {
         return null;}
   } };
 var helpers_1 = helpers;
-var dependencies = { conversions: index$13, operations: index$2$1, helpers: helpers_1 };
+var dependencies = { conversions: index$11, operations: index$2$1, helpers: helpers_1 };
 var entry = api_1(dependencies, constants);
 
 function recompute$1(state, newState, oldState, isInitial) {
@@ -3492,6 +3185,7 @@ var template$1 = function () {
 		});
 	}
 
+	var defaultZoomedDayHeight = 0.5;
 	var topZoom = {
 		dayHeight: 0.1,
 		start: 1471937,
@@ -3562,7 +3256,7 @@ var template$1 = function () {
 					map[event.slug] = {
 						start: event.amd.start,
 						end: event.amd.end,
-						dayHeight: 15000 / Math.floor(event.amd.end - event.amd.start),
+						dayHeight: event.dayHeight || defaultZoomedDayHeight,
 						snipSectionsLongerThan: 300,
 						snipBuffer: 50
 					};
@@ -3643,8 +3337,8 @@ var template$1 = function () {
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-1673766917-style";
-	style.textContent = "\n[svelte-1673766917].timeline-container, [svelte-1673766917] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-1673766917].timeline-row, [svelte-1673766917] .timeline-row {\n\tposition: relative;\n}\n[svelte-1673766917].axis, [svelte-1673766917] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-1673766917].axis[data-relevant=true], [svelte-1673766917] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-1673766917].eventhover, [svelte-1673766917] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
+	style.id = "svelte-2992398978-style";
+	style.textContent = "\n[svelte-2992398978].timeline-container, [svelte-2992398978] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-2992398978].timeline-row, [svelte-2992398978] .timeline-row {\n\tposition: relative;\n}\n[svelte-2992398978].axis, [svelte-2992398978] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-2992398978].axis[data-relevant=true], [svelte-2992398978] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-2992398978].eventhover, [svelte-2992398978] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -3728,7 +3422,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-1673766917', '');
+			setAttribute(div, 'svelte-2992398978', '');
 			div.className = "timeline-container";
 			div_1.className = "timeline-row";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
@@ -3886,7 +3580,7 @@ function create_if_block$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-1673766917', '');
+			setAttribute(div, 'svelte-2992398978', '');
 			div.className = "eventhover";
 		},
 
@@ -4098,7 +3792,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-1673766917-style")) add_css();
+	if (!document.getElementById("svelte-2992398978-style")) add_css();
 	this._renderHooks = [];
 	this._bindings = [];
 
@@ -4348,6 +4042,7 @@ var timelineData = [{
 		"end": 1485883
 	},
 	"type": "top",
+	"dayHeight": 0.5,
 	"slug": "great-tribulation-rome-israel-killing-christians"
 }, {
 	"title": "Sixth Seal - visible appearance of Christ in the sky",
