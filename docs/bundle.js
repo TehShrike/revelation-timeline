@@ -698,6 +698,8 @@ var template = function () {
 }();
 
 function create_main_fragment(state, component) {
+	var if_block_anchor;
+
 	function get_block(state) {
 		if (state.parameters) return create_if_block;
 		return create_if_block_1;
@@ -706,9 +708,12 @@ function create_main_fragment(state, component) {
 	var current_block = get_block(state);
 	var if_block = current_block(state, component);
 
-	var if_block_anchor = createComment();
-
 	return {
+		create: function create() {
+			if_block.create();
+			if_block_anchor = createComment();
+		},
+
 		mount: function mount(target, anchor) {
 			if_block.mount(target, anchor);
 			insertNode(if_block_anchor, target, anchor);
@@ -718,47 +723,49 @@ function create_main_fragment(state, component) {
 			if (current_block === (current_block = get_block(state)) && if_block) {
 				if_block.update(changed, state);
 			} else {
-				{
-					if_block.unmount();
-					if_block.destroy();
-				}
+				if_block.unmount();
+				if_block.destroy();
 				if_block = current_block(state, component);
+				if_block.create();
 				if_block.mount(if_block_anchor.parentNode, if_block_anchor);
 			}
 		},
 
 		unmount: function unmount() {
+			if_block.unmount();
 			detachNode(if_block_anchor);
 		},
 
 		destroy: function destroy() {
-			{
-				if_block.unmount();
-				if_block.destroy();
-			}
+			if_block.destroy();
 		}
 	};
 }
 
 function create_if_block(state, component) {
-	var a_href_value, a_class_value, a_style_value;
-
-	var a = createElement('a');
-	a.href = a_href_value = state.querystring;
-	a.className = a_class_value = state.className;
-	a.style.cssText = a_style_value = state.style;
+	var a, a_href_value, a_class_value, a_style_value;
 
 	function click_handler(event) {
 		component.navigate(event);
 	}
 
-	addListener(a, 'click', click_handler);
-	component.refs.link = a;
-	if (component._yield) component._yield.mount(a, null);
-
 	return {
+		create: function create() {
+			a = createElement('a');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			a.href = a_href_value = state.querystring;
+			a.className = a_class_value = state.className;
+			a.style.cssText = a_style_value = state.style;
+			addListener(a, 'click', click_handler);
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode(a, target, anchor);
+			component.refs.link = a;
+			if (component._yield) component._yield.mount(a, null);
 		},
 
 		update: function update(changed, state) {
@@ -777,27 +784,33 @@ function create_if_block(state, component) {
 
 		unmount: function unmount() {
 			detachNode(a);
+			if (component.refs.link === a) component.refs.link = null;
 			if (component._yield) component._yield.unmount();
 		},
 
 		destroy: function destroy() {
 			removeListener(a, 'click', click_handler);
-			if (component.refs.link === a) component.refs.link = null;
 		}
 	};
 }
 
 function create_if_block_1(state, component) {
-	var a_class_value, a_style_value;
-
-	var a = createElement('a');
-	a.className = a_class_value = state.className;
-	a.style.cssText = a_style_value = state.style;
-	if (component._yield) component._yield.mount(a, null);
+	var a, a_class_value, a_style_value;
 
 	return {
+		create: function create() {
+			a = createElement('a');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			a.className = a_class_value = state.className;
+			a.style.cssText = a_style_value = state.style;
+		},
+
 		mount: function mount(target, anchor) {
 			insertNode(a, target, anchor);
+			if (component._yield) component._yield.mount(a, null);
 		},
 
 		update: function update(changed, state) {
@@ -838,7 +851,11 @@ function Link(options) {
 	this._torndown = false;
 
 	this._fragment = create_main_fragment(this._state, this);
-	if (options.target) this._fragment.mount(options.target, null);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
 }
 
 assign(Link.prototype, template.methods, {
