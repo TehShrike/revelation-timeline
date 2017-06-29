@@ -2328,8 +2328,8 @@ var template$5 = function () {
 
 function add_css$3() {
 	var style = createElement$1('style');
-	style.id = "svelte-614443567-style";
-	style.textContent = "\n[svelte-614443567].event-description, [svelte-614443567] .event-description {\n\tposition: fixed;\n\tborder-width: 2px;\n\tborder-style: solid;\n\tpadding: 4px 8px;\n}\n";
+	style.id = "svelte-2385669870-style";
+	style.textContent = "\n[svelte-2385669870].event-description, [svelte-2385669870] .event-description {\n\tborder-width: 2px;\n\tborder-style: solid;\n\tpadding: 4px 8px;\n\tmargin: 8px 0px;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -2364,7 +2364,7 @@ function create_main_fragment$5(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed || 'buffer' in changed || 'descriptionHeight' in changed || 'outline' in changed) {
+			if ('timeline' in changed || 'outline' in changed) {
 				for (var i = 0; i < each_block_value.length; i += 1) {
 					if (each_block_iterations[i]) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
@@ -2408,9 +2408,9 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-614443567', '');
+			setAttribute(div, 'svelte-2385669870', '');
 			div.className = "event-description";
-			div.style.cssText = div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t";
+			div.style.cssText = div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t";
 		},
 
 		mount: function mount(target, anchor) {
@@ -2419,7 +2419,7 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 		},
 
 		update: function update(changed, state, each_block_value, timelineEvent, i) {
-			if (div_style_value !== (div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t")) {
+			if (div_style_value !== (div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
@@ -2452,7 +2452,7 @@ function EventDescriptions(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-614443567-style")) add_css$3();
+	if (!document.getElementById("svelte-2385669870-style")) add_css$3();
 
 	this._fragment = create_main_fragment$5(this._state, this);
 
@@ -3418,11 +3418,7 @@ var template$1 = function () {
 				centerPoint: centerPoint
 			}, event);
 		}).sort(function (eventA, eventB) {
-			if (hoveredEvent && eventA.slug === hoveredEvent.slug) {
-				return A_IS_FIRST;
-			} else if (hoveredEvent && eventB.slug === hoveredEvent.slug) {
-				return B_IS_FIRST;
-			} else if (eventA.isInsideCenter && !eventB.isInsideCenter) {
+			if (eventA.isInsideCenter && !eventB.isInsideCenter) {
 				return A_IS_FIRST;
 			} else if (eventB.isInsideCenter && !eventA.isInsideCenter) {
 				return B_IS_FIRST;
@@ -3448,9 +3444,14 @@ var template$1 = function () {
 			throw new Error('Missed a case');
 		});
 
-		var eventsToKeep = prioritizedEvents.slice(0, numberOfEventsToHighlight);
+		var bestEventsToShow = prioritizedEvents.slice(0, numberOfEventsToHighlight);
+		var needToAddHoveredEvent = hoveredEvent && bestEventsToShow.every(function (event) {
+			return event.slug !== hoveredEvent.slug;
+		});
 
-		return eventsToKeep.sort(function (eventA, eventB) {
+		var eventsToShow = needToAddHoveredEvent ? [hoveredEvent].concat(toConsumableArray(bestEventsToShow)) : bestEventsToShow;
+
+		return eventsToShow.sort(function (eventA, eventB) {
 			return eventA.amd.start - eventB.amd.start;
 		});
 	}
@@ -3553,23 +3554,22 @@ var template$1 = function () {
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-2858106034-style";
-	style.textContent = "\n[svelte-2858106034].timeline-container, [svelte-2858106034] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-2858106034].timeline-row, [svelte-2858106034] .timeline-row {\n\tposition: relative;\n}\n[svelte-2858106034].axis, [svelte-2858106034] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-2858106034].axis[data-relevant=true], [svelte-2858106034] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-2858106034].eventhover, [svelte-2858106034] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
+	style.id = "svelte-794577450-style";
+	style.textContent = "\n[svelte-794577450].timeline-container, [svelte-794577450] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-794577450].timeline-column, [svelte-794577450] .timeline-column {\n\tposition: relative;\n}\n[svelte-794577450].axis, [svelte-794577450] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-794577450].axis[data-relevant=true], [svelte-794577450] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-794577450].event-description-column, [svelte-794577450] .event-description-column {\n\tdisplay: flex;\n\talign-items: center;\n\n\tposition: fixed;\n\ttop: 0;\n\theight: 100%;\n}\n";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$1(state, component) {
-	var text,
-	    div,
+	var div,
 	    div_1,
-	    text_1,
+	    text,
 	    div_2,
 	    div_2_style_value,
 	    events_updating = false,
-	    text_2,
-	    div_3;
-
-	var if_block = state.hoveredEvent && create_if_block$1(state, component);
+	    text_1,
+	    div_3,
+	    div_4,
+	    div_5;
 
 	var each_block_value = state.axis;
 
@@ -3623,8 +3623,6 @@ function create_main_fragment$1(state, component) {
 
 	return {
 		create: function create() {
-			if (if_block) if_block.create();
-			text = createText("\n");
 			div = createElement$1('div');
 			div_1 = createElement$1('div');
 
@@ -3632,28 +3630,29 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].create();
 			}
 
-			text_1 = createText("\n\t");
+			text = createText("\n\t");
 			div_2 = createElement$1('div');
 			events._fragment.create();
-			text_2 = createText("\n\t");
+			text_1 = createText("\n\t");
 			div_3 = createElement$1('div');
+			div_4 = createElement$1('div');
+			div_5 = createElement$1('div');
 			eventdescriptions._fragment.create();
 			this.hydrate();
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2858106034', '');
+			setAttribute(div, 'svelte-794577450', '');
 			div.className = "timeline-container";
-			div_1.className = "timeline-row";
+			div_1.className = "timeline-column";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
-			div_2.className = "timeline-row";
+			div_2.className = "timeline-column";
 			div_2.style.cssText = div_2_style_value = "width: " + template$1.helpers.multiplyIndentByWidth(state.indentLevels + 1) + "px";
-			div_3.className = "timeline-row";
+			div_3.className = "timeline-column";
+			div_4.className = "event-description-column";
 		},
 
 		mount: function mount(target, anchor) {
-			if (if_block) if_block.mount(target, anchor);
-			insertNode$1(text, target, anchor);
 			insertNode$1(div, target, anchor);
 			appendNode(div_1, div);
 
@@ -3661,29 +3660,17 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].mount(div_1, null);
 			}
 
-			appendNode(text_1, div);
+			appendNode(text, div);
 			appendNode(div_2, div);
 			events._fragment.mount(div_2, null);
-			appendNode(text_2, div);
+			appendNode(text_1, div);
 			appendNode(div_3, div);
-			eventdescriptions._fragment.mount(div_3, null);
+			appendNode(div_4, div_3);
+			appendNode(div_5, div_4);
+			eventdescriptions._fragment.mount(div_5, null);
 		},
 
 		update: function update(changed, state) {
-			if (state.hoveredEvent) {
-				if (if_block) {
-					if_block.update(changed, state);
-				} else {
-					if_block = create_if_block$1(state, component);
-					if_block.create();
-					if_block.mount(text.parentNode, text);
-				}
-			} else if (if_block) {
-				if_block.unmount();
-				if_block.destroy();
-				if_block = null;
-			}
-
 			var each_block_value = state.axis;
 
 			if ('multiplyDaysByHeight' in changed || 'distanceFromStartDay' in changed || 'axis' in changed || 'axisIsRelevant' in changed) {
@@ -3735,8 +3722,6 @@ function create_main_fragment$1(state, component) {
 		},
 
 		unmount: function unmount() {
-			if (if_block) if_block.unmount();
-			detachNode$1(text);
 			detachNode$1(div);
 
 			for (var i = 0; i < each_block_iterations.length; i += 1) {
@@ -3745,101 +3730,10 @@ function create_main_fragment$1(state, component) {
 		},
 
 		destroy: function destroy() {
-			if (if_block) if_block.destroy();
-
 			destroyEach(each_block_iterations, false, 0);
 
 			events.destroy(false);
 			eventdescriptions.destroy(false);
-		}
-	};
-}
-
-function create_if_block_1$1(state, component) {
-	var text, text_1_value, text_1, text_2;
-
-	return {
-		create: function create() {
-			text = createText("(");
-			text_1 = createText(text_1_value = state.hoveredEvent.reference);
-			text_2 = createText(")");
-		},
-
-		mount: function mount(target, anchor) {
-			insertNode$1(text, target, anchor);
-			insertNode$1(text_1, target, anchor);
-			insertNode$1(text_2, target, anchor);
-		},
-
-		update: function update(changed, state) {
-			if (text_1_value !== (text_1_value = state.hoveredEvent.reference)) {
-				text_1.data = text_1_value;
-			}
-		},
-
-		unmount: function unmount() {
-			detachNode$1(text);
-			detachNode$1(text_1);
-			detachNode$1(text_2);
-		},
-
-		destroy: noop$1
-	};
-}
-
-function create_if_block$1(state, component) {
-	var div, text_value, text, text_1;
-
-	var if_block_1 = state.hoveredEvent.reference && create_if_block_1$1(state, component);
-
-	return {
-		create: function create() {
-			div = createElement$1('div');
-			text = createText(text_value = state.hoveredEvent.title);
-			text_1 = createText(" ");
-			if (if_block_1) if_block_1.create();
-			this.hydrate();
-		},
-
-		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2858106034', '');
-			div.className = "eventhover";
-		},
-
-		mount: function mount(target, anchor) {
-			insertNode$1(div, target, anchor);
-			appendNode(text, div);
-			appendNode(text_1, div);
-			if (if_block_1) if_block_1.mount(div, null);
-		},
-
-		update: function update(changed, state) {
-			if (text_value !== (text_value = state.hoveredEvent.title)) {
-				text.data = text_value;
-			}
-
-			if (state.hoveredEvent.reference) {
-				if (if_block_1) {
-					if_block_1.update(changed, state);
-				} else {
-					if_block_1 = create_if_block_1$1(state, component);
-					if_block_1.create();
-					if_block_1.mount(div, null);
-				}
-			} else if (if_block_1) {
-				if_block_1.unmount();
-				if_block_1.destroy();
-				if_block_1 = null;
-			}
-		},
-
-		unmount: function unmount() {
-			detachNode$1(div);
-			if (if_block_1) if_block_1.unmount();
-		},
-
-		destroy: function destroy() {
-			if (if_block_1) if_block_1.destroy();
 		}
 	};
 }
@@ -3889,17 +3783,17 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 	var div, div_data_relevant_value;
 
 	function get_block(state, each_block_value, date, date_index) {
-		if (date.type === 'snip') return create_if_block_2;
-		return create_if_block_3;
+		if (date.type === 'snip') return create_if_block$1;
+		return create_if_block_1$1;
 	}
 
 	var current_block = get_block(state, each_block_value, date, date_index);
-	var if_block_2 = current_block(state, each_block_value, date, date_index, component);
+	var if_block = current_block(state, each_block_value, date, date_index, component);
 
 	return {
 		create: function create() {
 			div = createElement$1('div');
-			if_block_2.create();
+			if_block.create();
 			this.hydrate();
 		},
 
@@ -3910,7 +3804,7 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 
 		mount: function mount(target, anchor) {
 			insertNode$1(div, target, anchor);
-			if_block_2.mount(div, null);
+			if_block.mount(div, null);
 		},
 
 		update: function update(changed, state, each_block_value, date, date_index) {
@@ -3918,29 +3812,29 @@ function create_vcenter_yield_fragment(state, each_block_value, date, date_index
 				setAttribute(div, 'data-relevant', div_data_relevant_value);
 			}
 
-			if (current_block === (current_block = get_block(state, each_block_value, date, date_index)) && if_block_2) {
-				if_block_2.update(changed, state, each_block_value, date, date_index);
+			if (current_block === (current_block = get_block(state, each_block_value, date, date_index)) && if_block) {
+				if_block.update(changed, state, each_block_value, date, date_index);
 			} else {
-				if_block_2.unmount();
-				if_block_2.destroy();
-				if_block_2 = current_block(state, each_block_value, date, date_index, component);
-				if_block_2.create();
-				if_block_2.mount(div, null);
+				if_block.unmount();
+				if_block.destroy();
+				if_block = current_block(state, each_block_value, date, date_index, component);
+				if_block.create();
+				if_block.mount(div, null);
 			}
 		},
 
 		unmount: function unmount() {
 			detachNode$1(div);
-			if_block_2.unmount();
+			if_block.unmount();
 		},
 
 		destroy: function destroy() {
-			if_block_2.destroy();
+			if_block.destroy();
 		}
 	};
 }
 
-function create_if_block_2(state, each_block_value, date, date_index, component) {
+function create_if_block$1(state, each_block_value, date, date_index, component) {
 	var text, text_1_value, text_1, text_2;
 
 	return {
@@ -3972,7 +3866,7 @@ function create_if_block_2(state, each_block_value, date, date_index, component)
 	};
 }
 
-function create_if_block_3(state, each_block_value, date, date_index, component) {
+function create_if_block_1$1(state, each_block_value, date, date_index, component) {
 	var text_value, text;
 
 	return {
@@ -4014,7 +3908,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-2858106034-style")) add_css();
+	if (!document.getElementById("svelte-794577450-style")) add_css();
 	this._renderHooks = [];
 	this._bindings = [];
 
