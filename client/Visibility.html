@@ -23,11 +23,24 @@ export default {
 			const relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect()
 			const viewportHeight = window.document.documentElement.clientHeight
 			const visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight
-			const topIsAboveViewport = relativeToViewport.top <= 0
+			const topIsAboveViewport = relativeToViewport.top < 0
+			const bottomIsBelowViewport = relativeToViewport.bottom > viewportHeight
+
+			const topRatio = visible
+				? (topIsAboveViewport ? 0 : (relativeToViewport.top / viewportHeight))
+				: null
+
+			const bottomRatio = visible
+				? (bottomIsBelowViewport ? viewportHeight : (relativeToViewport.bottom / viewportHeight))
+				: null
 
 			this.set({
 				visible,
-				topIsAboveViewport
+				topIsAboveViewport,
+				top: relativeToViewport.top,
+				bottom: relativeToViewport.bottom,
+				topRatio,
+				bottomRatio
 			})
 		}
 	}

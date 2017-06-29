@@ -9,9 +9,9 @@
 		<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
 			<div class="axis" data-relevant="{{axisIsRelevant(date.amd)}}">
 				{{#if date.type === 'snip'}}
-				...snip ({{date.days}} days)
+					...snip ({{date.days}} days)
 				{{else}}
-				{{date.hebrew || date.amd}}
+					{{date.hebrew || date.amd}}
 				{{/if}}
 			</div>
 		</VCenter>
@@ -29,7 +29,10 @@
 		/>
 	</div>
 	<div class="timeline-row">
-		<EventDescriptions timeline="{{visibleEvents}}" />
+		<EventDescriptions
+			timeline="{{eventsToHighlight}}"
+			hoveredEvent="{{hoveredEvent}}"
+		/>
 	</div>
 </div>
 <style>
@@ -122,7 +125,7 @@ function eventOverlapsRange(eventRange, zoomRange) {
 	const solidlyInside = eventRange.start >= zoomRange.start && eventRange.end <= zoomRange.end
 	const overlapsBeginning = eventRange.end >= zoomRange.start && eventRange.start < zoomRange.start
 	const overlapsEnd = eventRange.start <= zoomRange.end && eventRange.end > zoomRange.end
-	
+
 	return solidlyInside || overlapsBeginning || overlapsEnd
 }
 
@@ -152,17 +155,76 @@ function addColorToEvents(events) {
 
 function filterToRelevantEvents(timelineData, currentZoom) {
 	return timelineData.filter(
-		event => eventOverlapsRange(event.amd, currentZoom) 
+		event => eventOverlapsRange(event.amd, currentZoom)
 			&& (!currentZoom.type || currentZoom.type === event.type)
 	)
 }
 
 function sortEventsForDisplay(timelineData, currentZoom) {
 	return sortRange(timelineData,
-		event => event.type === 'top' 
+		event => event.type === 'top'
 			? [ 0, -daysThatOverlapRange(event.amd, currentZoom), 0 ]
 			: [ 1, event.amd.start, -daysThatOverlapRange(event.amd, currentZoom) ]
 	)
+}
+
+const centerRatio = 0.6
+const topMarginRatio = (1 - centerRatio) / 2
+const bottomMarginRatio = centerRatio + topMarginRatio
+const numberOfEventsToHighlight = 6
+
+const A_IS_FIRST = -1
+const B_IS_FIRST = 1
+
+const distanceToCenter = event => Math.abs(0.5 - event.centerPoint)
+
+function filterToHighlightedEvents(events, hoveredEvent) {
+	const prioritizedEvents = events.map(event => {
+		const isInsideCenter = event.topRatio >= topMarginRatio
+			&& event.bottomRatio <= bottomMarginRatio
+
+		const centerPoint = isInsideCenter
+			? (event.topRatio + event.bottomRatio) / 2
+			: null
+
+		return Object.assign({
+			isInsideCenter,
+			centerPoint,
+		}, event)
+	}).sort((eventA, eventB) => {
+		if (hoveredEvent && eventA.slug === hoveredEvent.slug) {
+			return A_IS_FIRST
+		} else if (hoveredEvent && eventB.slug === hoveredEvent.slug) {
+			return B_IS_FIRST
+		} else if (eventA.isInsideCenter && !eventB.isInsideCenter) {
+			return A_IS_FIRST
+		} else if (eventB.isInsideCenter && !eventA.isInsideCenter) {
+			return B_IS_FIRST
+		} else if (eventA.isInsideCenter && eventB.isInsideCenter) {
+			const distanceA = distanceToCenter(eventA)
+			const distanceB = distanceToCenter(eventB)
+
+			if (distanceA > distanceB) {
+				return A_IS_FIRST
+			} else if (distanceB > distanceA) {
+				return B_IS_FIRST
+			} else {
+				return 0
+			}
+		} else if (eventA.indentLevel === eventB.indentLevel) {
+			return 0
+		} else if (eventA.indentLevel > eventB.indentLevel) {
+			return A_IS_FIRST
+		} else if (eventB.indentLevel > eventA.indentLevel) {
+			return B_IS_FIRST
+		}
+
+		throw new Error('Missed a case')
+	})
+
+	const eventsToKeep = prioritizedEvents.slice(0, numberOfEventsToHighlight)
+
+	return eventsToKeep.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
 }
 
 export default {
@@ -211,7 +273,8 @@ export default {
 				: topZoom,
 		indentLevels: relevantEventsWithAxis => relevantEventsWithAxis.reduce((max, event) => {
 			return max < event.indentLevel ? event.indentLevel : max
-		}, 0)
+		}, 0),
+		eventsToHighlight: (visibleEvents, hoveredEvent) => filterToHighlightedEvents(visibleEvents, hoveredEvent)
 	},
 	helpers: {
 		multiplyIndentByWidth,

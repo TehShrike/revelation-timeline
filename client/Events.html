@@ -4,7 +4,11 @@
 			left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 			point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 		>
-			<Visibility bind:visible="visibleEventSlugs[timelineEvent.slug]">
+			<Visibility 
+				bind:visible="visibleEventSlugs[timelineEvent.slug]"
+				bind:topRatio="slugToTopRatio[timelineEvent.slug]"
+				bind:bottomRatio="slugToBottomRatio[timelineEvent.slug]"
+			>
 				<div
 					class="event"
 					data-title="{{timelineEvent.title}}"
@@ -22,7 +26,11 @@
 		<Link
 			parameters="{{ clickable ? { zoom: timelineEvent.slug } : null }}"
 		>
-			<Visibility bind:visible="visibleEventSlugs[timelineEvent.slug]">
+			<Visibility 
+				bind:visible="visibleEventSlugs[timelineEvent.slug]"
+				bind:topRatio="slugToTopRatio[timelineEvent.slug]"
+				bind:bottomRatio="slugToBottomRatio[timelineEvent.slug]"
+			>
 				<div
 					id="{{timelineEvent.slug}}"
 					style="
@@ -88,6 +96,8 @@ export default {
 		return {
 			clickable: false,
 			visibleEventSlugs: Object.create(null),
+			slugToTopRatio: Object.create(null),
+			slugToBottomRatio: Object.create(null),
 			ignoreType: []
 		}
 	},
@@ -96,10 +106,15 @@ export default {
 	},
 	computed: {
 		multiplyDaysByHeight: dayHeight => days => days * dayHeight,
-		singleDayHeight: dayHeight => Math.max(dayHeight, 4),
+		singleDayHeight: dayHeight => Math.max(dayHeight, 8),
 		ignoreTypeMap: ignoreType => ignoreType.reduce((map, type) => (map[type] = true, map), Object.create(null)),
 		nonIgnoredEvents: (timeline, ignoreTypeMap) => timeline.filter(event => !ignoreTypeMap[event.type]),
-		visibleEvents: (nonIgnoredEvents, visibleEventSlugs) => nonIgnoredEvents.filter(event => visibleEventSlugs[event.slug])
+		visibleEvents: (nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio) => nonIgnoredEvents
+			.filter(event => visibleEventSlugs[event.slug])
+			.map(event => Object.assign({
+				topRatio: slugToTopRatio[event.slug],
+				bottomRatio: slugToBottomRatio[event.slug],
+			}, event))
 	},
 	components: {
 		VCenter,

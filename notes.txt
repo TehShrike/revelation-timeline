@@ -1,0 +1,16 @@
+- if the bar goes off the top/bottom of the range, make it not rounded on that side
+- if dates on the axis are too close, hide all of them but one.  If an event is hovered over, make sure its axis point is the one that is visible.
+
+
+
+
+- filter to the N timeline elements that are closest to the center of the viewport, ignoring the top/bottom 15% or so
+	- will need to be smarter about long events so that they aren't ignored by the code that ignores items outside of the top/bottom 15%
+
+Take up to N events, in this order:
+	- the currently hovered event
+	- events that are entirely inside the middle half of the viewport
+		- sort by how close their center point is to the center of the screen
+	- events that are partially inside the middle half of the viewport
+		- sort by indent level, right-most ones first
+

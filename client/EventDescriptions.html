@@ -4,6 +4,7 @@
 		style="
 			border-color: {{timelineEvent.color}};
 			top: {{buffer + (descriptionHeight * i) + (buffer * i)}}px;
+			{{outline(timelineEvent)}}
 		"
 	>
 		{{timelineEvent.title}}
@@ -20,12 +21,27 @@
 </style>
 
 <script>
+
+function getOutlineCssString(hoveredEvent, timelineEvent) {
+	return hoveredEvent.slug === timelineEvent.slug
+		? 'outline: 4px solid ' + timelineEvent.color + ';'
+		: ''
+}
+
+const noopString = () => ''
+
 export default {
 	data() {
 		return {
 			descriptionHeight: 40,
 			buffer: 4
 		}
+	},
+	computed: {
+		outline: hoveredEvent => 
+			hoveredEvent 
+				? timelineEvent => getOutlineCssString(hoveredEvent, timelineEvent) 
+				: noopString
 	}
 }
 </script>
