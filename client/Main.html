@@ -1,10 +1,5 @@
-{{#if hoveredEvent}}
-<div class="eventhover">
-	{{hoveredEvent.title}} {{#if hoveredEvent.reference}}({{hoveredEvent.reference}}){{/if}}
-</div>
-{{/if}}
 <div class="timeline-container">
-	<div class="timeline-row" style="width: 100px; margin-right: 10px;">
+	<div class="timeline-column" style="width: 100px; margin-right: 10px;">
 		{{#each axis as date}}
 		<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
 			<div class="axis" data-relevant="{{axisIsRelevant(date.amd)}}">
@@ -17,7 +12,7 @@
 		</VCenter>
 		{{/each}}
 	</div>
-	<div class="timeline-row" style="width: {{multiplyIndentByWidth(indentLevels + 1)}}px">
+	<div class="timeline-column" style="width: {{multiplyIndentByWidth(indentLevels + 1)}}px">
 		<Events
 			timeline="{{relevantEventsWithAxis}}"
 			on:startHover="startHover(event)"
@@ -28,11 +23,15 @@
 			bind:visibleEvents
 		/>
 	</div>
-	<div class="timeline-row">
-		<EventDescriptions
-			timeline="{{eventsToHighlight}}"
-			hoveredEvent="{{hoveredEvent}}"
-		/>
+	<div class="timeline-column">
+		<div class="event-description-column">
+			<div>
+				<EventDescriptions
+					timeline="{{eventsToHighlight}}"
+					hoveredEvent="{{hoveredEvent}}"
+				/>
+			</div>
+		</div>
 	</div>
 </div>
 <style>
@@ -41,7 +40,7 @@
 	flex-wrap: nowrap;
 	align-items: flex-start;
 }
-.timeline-row {
+.timeline-column {
 	position: relative;
 }
 .axis {
@@ -52,14 +51,13 @@
 .axis[data-relevant=true] {
 	color: red;
 }
-.eventhover {
-	z-index: 1;
+.event-description-column {
+	display: flex;
+	align-items: center;
+
 	position: fixed;
 	top: 0;
-	left: 0;
-	padding: 10px;
-	background-color: white;
-	background-color: rgba(255, 255, 255, 0.8);
+	height: 100%;
 }
 </style>
 

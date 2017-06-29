@@ -1,9 +1,8 @@
 {{#each timeline as timelineEvent, i}}
-	<div 
+	<div
 		class="event-description"
 		style="
 			border-color: {{timelineEvent.color}};
-			top: {{buffer + (descriptionHeight * i) + (buffer * i)}}px;
 			{{outline(timelineEvent)}}
 		"
 	>
@@ -13,10 +12,10 @@
 
 <style>
 .event-description {
-	position: fixed;
 	border-width: 2px;
 	border-style: solid;
 	padding: 4px 8px;
+	margin: 8px 0px;
 }
 </style>
 
@@ -38,9 +37,9 @@ export default {
 		}
 	},
 	computed: {
-		outline: hoveredEvent => 
-			hoveredEvent 
-				? timelineEvent => getOutlineCssString(hoveredEvent, timelineEvent) 
+		outline: hoveredEvent =>
+			hoveredEvent
+				? timelineEvent => getOutlineCssString(hoveredEvent, timelineEvent)
 				: noopString
 	}
 }
