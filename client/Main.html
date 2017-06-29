@@ -191,7 +191,9 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 			isInsideCenter,
 			centerPoint,
 		}, event)
-	}).sort((eventA, eventB) => {
+	})
+	.filter(event => !hoveredEvent || hoveredEvent.slug !== event.slug)
+	.sort((eventA, eventB) => {
 		if (hoveredEvent && eventA.slug === hoveredEvent.slug) {
 			return A_IS_FIRST
 		} else if (hoveredEvent && eventB.slug === hoveredEvent.slug) {
@@ -222,9 +224,10 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 		throw new Error('Missed a case')
 	})
 
-	const eventsToKeep = prioritizedEvents.slice(0, numberOfEventsToHighlight)
+	const bestEventsToShow = prioritizedEvents.slice(0, numberOfEventsToHighlight)
+	const eventsToShow = hoveredEvent ? [ hoveredEvent, ...bestEventsToShow ] : bestEventsToShow
 
-	return eventsToKeep.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
+	return eventsToShow.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
 }
 
 export default {
