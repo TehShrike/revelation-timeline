@@ -1483,11 +1483,20 @@ var template$4 = function () {
 				var relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect();
 				var viewportHeight = window.document.documentElement.clientHeight;
 				var visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight;
-				var topIsAboveViewport = relativeToViewport.top <= 0;
+				var topIsAboveViewport = relativeToViewport.top < 0;
+				var bottomIsBelowViewport = relativeToViewport.bottom > viewportHeight;
+
+				var topRatio = visible ? topIsAboveViewport ? 0 : relativeToViewport.top / viewportHeight : null;
+
+				var bottomRatio = visible ? bottomIsBelowViewport ? viewportHeight : relativeToViewport.bottom / viewportHeight : null;
 
 				this.set({
 					visible: visible,
-					topIsAboveViewport: topIsAboveViewport
+					topIsAboveViewport: topIsAboveViewport,
+					top: relativeToViewport.top,
+					bottom: relativeToViewport.bottom,
+					topRatio: topRatio,
+					bottomRatio: bottomRatio
 				});
 			}
 		}
@@ -1588,8 +1597,8 @@ function recompute$3(state, newState, oldState, isInitial) {
 		state.nonIgnoredEvents = newState.nonIgnoredEvents = template$3.computed.nonIgnoredEvents(state.timeline, state.ignoreTypeMap);
 	}
 
-	if (isInitial || 'nonIgnoredEvents' in newState && differs$1(state.nonIgnoredEvents, oldState.nonIgnoredEvents) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs)) {
-		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs);
+	if (isInitial || 'nonIgnoredEvents' in newState && differs$1(state.nonIgnoredEvents, oldState.nonIgnoredEvents) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs) || 'slugToTopRatio' in newState && differs$1(state.slugToTopRatio, oldState.slugToTopRatio) || 'slugToBottomRatio' in newState && differs$1(state.slugToBottomRatio, oldState.slugToBottomRatio)) {
+		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs, state.slugToTopRatio, state.slugToBottomRatio);
 	}
 }
 
@@ -1599,6 +1608,8 @@ var template$3 = function () {
 			return {
 				clickable: false,
 				visibleEventSlugs: Object.create(null),
+				slugToTopRatio: Object.create(null),
+				slugToBottomRatio: Object.create(null),
 				ignoreType: []
 			};
 		},
@@ -1613,7 +1624,7 @@ var template$3 = function () {
 				};
 			},
 			singleDayHeight: function singleDayHeight(dayHeight) {
-				return Math.max(dayHeight, 4);
+				return Math.max(dayHeight, 8);
 			},
 			ignoreTypeMap: function ignoreTypeMap(ignoreType) {
 				return ignoreType.reduce(function (map, type) {
@@ -1625,9 +1636,14 @@ var template$3 = function () {
 					return !ignoreTypeMap[event.type];
 				});
 			},
-			visibleEvents: function visibleEvents(nonIgnoredEvents, visibleEventSlugs) {
+			visibleEvents: function visibleEvents(nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio) {
 				return nonIgnoredEvents.filter(function (event) {
 					return visibleEventSlugs[event.slug];
+				}).map(function (event) {
+					return Object.assign({
+						topRatio: slugToTopRatio[event.slug],
+						bottomRatio: slugToBottomRatio[event.slug]
+					}, event);
 				});
 			}
 		},
@@ -1639,8 +1655,8 @@ var template$3 = function () {
 
 function add_css$2() {
 	var style = createElement$1('style');
-	style.id = "svelte-2965743916-style";
-	style.textContent = "\n[svelte-2965743916][data-clickable=true], [svelte-2965743916] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-2965743916].event, [svelte-2965743916] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-2965743916].event[data-cut-off-at-start=true], [svelte-2965743916] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-2965743916].event[data-cut-off-at-end=true], [svelte-2965743916] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-2965743916].event:hover, [svelte-2965743916] .event:hover {\n\tbackground-color: red;\n}\n\n";
+	style.id = "svelte-376884130-style";
+	style.textContent = "\n[svelte-376884130][data-clickable=true], [svelte-376884130] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-376884130].event, [svelte-376884130] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-376884130].event[data-cut-off-at-start=true], [svelte-376884130] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-376884130].event[data-cut-off-at-end=true], [svelte-376884130] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-376884130].event:hover, [svelte-376884130] .event:hover {\n\tbackground-color: red;\n}\n\n";
 	appendNode(style, document.head);
 }
 
@@ -1675,7 +1691,7 @@ function create_main_fragment$3(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed || 'multiplyDaysByHeight' in changed || 'visibleEventSlugs' in changed || 'singleDayHeight' in changed || 'clickable' in changed) {
+			if ('timeline' in changed || 'multiplyDaysByHeight' in changed || 'visibleEventSlugs' in changed || 'slugToTopRatio' in changed || 'slugToBottomRatio' in changed || 'singleDayHeight' in changed || 'clickable' in changed) {
 				for (var i = 0; i < each_block_value.length; i += 1) {
 					if (each_block_iterations[i]) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
@@ -1754,12 +1770,16 @@ function create_each_block$1(state, each_block_value, timelineEvent, timelineEve
 }
 
 function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var visibility_1_updating = false;
+	var visibility_1_updating = false,
+	    visibility_1_updating_1 = false,
+	    visibility_1_updating_2 = false;
 
 	var visibility_1_yield_fragment = create_visibility_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
 	var visibility_1_initial_data = {};
 	if (timelineEvent.slug in state.visibleEventSlugs) visibility_1_initial_data.visible = state.visibleEventSlugs[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToTopRatio) visibility_1_initial_data.topRatio = state.slugToTopRatio[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToBottomRatio) visibility_1_initial_data.bottomRatio = state.slugToBottomRatio[timelineEvent.slug];
 	var visibility_1 = new Visibility({
 		_root: component._root,
 		_yield: visibility_1_yield_fragment,
@@ -1776,6 +1796,30 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 			component._set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
 			visibility_1_updating = false;
 		}, { init: differs$1(visibility_1.get('visible'), state.visibleEventSlugs[timelineEvent.slug]) });
+	});
+
+	component._bindings.push(function () {
+		if (visibility_1._torndown) return;
+		visibility_1.observe('topRatio', function (value) {
+			if (visibility_1_updating_1) return;
+			visibility_1_updating_1 = true;
+			var state = component.get();
+			state.slugToTopRatio[timelineEvent.slug] = value;
+			component._set({ slugToTopRatio: state.slugToTopRatio, timeline: state.timeline });
+			visibility_1_updating_1 = false;
+		}, { init: differs$1(visibility_1.get('topRatio'), state.slugToTopRatio[timelineEvent.slug]) });
+	});
+
+	component._bindings.push(function () {
+		if (visibility_1._torndown) return;
+		visibility_1.observe('bottomRatio', function (value) {
+			if (visibility_1_updating_2) return;
+			visibility_1_updating_2 = true;
+			var state = component.get();
+			state.slugToBottomRatio[timelineEvent.slug] = value;
+			component._set({ slugToBottomRatio: state.slugToBottomRatio, timeline: state.timeline });
+			visibility_1_updating_2 = false;
+		}, { init: differs$1(visibility_1.get('bottomRatio'), state.slugToBottomRatio[timelineEvent.slug]) });
 	});
 
 	visibility_1._context = {
@@ -1801,6 +1845,18 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 				visibility_1_updating = true;
 				visibility_1._set({ visible: state.visibleEventSlugs[timelineEvent.slug] });
 				visibility_1_updating = false;
+			}
+
+			if (!visibility_1_updating_1 && 'slugToTopRatio' in changed || 'timeline' in changed) {
+				visibility_1_updating_1 = true;
+				visibility_1._set({ topRatio: state.slugToTopRatio[timelineEvent.slug] });
+				visibility_1_updating_1 = false;
+			}
+
+			if (!visibility_1_updating_2 && 'slugToBottomRatio' in changed || 'timeline' in changed) {
+				visibility_1_updating_2 = true;
+				visibility_1._set({ bottomRatio: state.slugToBottomRatio[timelineEvent.slug] });
+				visibility_1_updating_2 = false;
 			}
 
 			visibility_1._context.state = state;
@@ -1829,7 +1885,7 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2965743916', '');
+			setAttribute(div, 'svelte-376884130', '');
 			div.className = "event";
 			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
 			setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
@@ -1877,12 +1933,16 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 }
 
 function create_link_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var visibility_1_updating = false;
+	var visibility_1_updating = false,
+	    visibility_1_updating_1 = false,
+	    visibility_1_updating_2 = false;
 
 	var visibility_1_yield_fragment = create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, timelineEvent_index, component);
 
 	var visibility_1_initial_data = {};
 	if (timelineEvent.slug in state.visibleEventSlugs) visibility_1_initial_data.visible = state.visibleEventSlugs[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToTopRatio) visibility_1_initial_data.topRatio = state.slugToTopRatio[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToBottomRatio) visibility_1_initial_data.bottomRatio = state.slugToBottomRatio[timelineEvent.slug];
 	var visibility_1 = new Visibility({
 		_root: component._root,
 		_yield: visibility_1_yield_fragment,
@@ -1899,6 +1959,30 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 			component._set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
 			visibility_1_updating = false;
 		}, { init: differs$1(visibility_1.get('visible'), state.visibleEventSlugs[timelineEvent.slug]) });
+	});
+
+	component._bindings.push(function () {
+		if (visibility_1._torndown) return;
+		visibility_1.observe('topRatio', function (value) {
+			if (visibility_1_updating_1) return;
+			visibility_1_updating_1 = true;
+			var state = component.get();
+			state.slugToTopRatio[timelineEvent.slug] = value;
+			component._set({ slugToTopRatio: state.slugToTopRatio, timeline: state.timeline });
+			visibility_1_updating_1 = false;
+		}, { init: differs$1(visibility_1.get('topRatio'), state.slugToTopRatio[timelineEvent.slug]) });
+	});
+
+	component._bindings.push(function () {
+		if (visibility_1._torndown) return;
+		visibility_1.observe('bottomRatio', function (value) {
+			if (visibility_1_updating_2) return;
+			visibility_1_updating_2 = true;
+			var state = component.get();
+			state.slugToBottomRatio[timelineEvent.slug] = value;
+			component._set({ slugToBottomRatio: state.slugToBottomRatio, timeline: state.timeline });
+			visibility_1_updating_2 = false;
+		}, { init: differs$1(visibility_1.get('bottomRatio'), state.slugToBottomRatio[timelineEvent.slug]) });
 	});
 
 	visibility_1._context = {
@@ -1924,6 +2008,18 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 				visibility_1_updating = true;
 				visibility_1._set({ visible: state.visibleEventSlugs[timelineEvent.slug] });
 				visibility_1_updating = false;
+			}
+
+			if (!visibility_1_updating_1 && 'slugToTopRatio' in changed || 'timeline' in changed) {
+				visibility_1_updating_1 = true;
+				visibility_1._set({ topRatio: state.slugToTopRatio[timelineEvent.slug] });
+				visibility_1_updating_1 = false;
+			}
+
+			if (!visibility_1_updating_2 && 'slugToBottomRatio' in changed || 'timeline' in changed) {
+				visibility_1_updating_2 = true;
+				visibility_1._set({ bottomRatio: state.slugToBottomRatio[timelineEvent.slug] });
+				visibility_1_updating_2 = false;
 			}
 
 			visibility_1._context.state = state;
@@ -1952,7 +2048,7 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2965743916', '');
+			setAttribute(div, 'svelte-376884130', '');
 			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
 			div.id = div_id_value = timelineEvent.slug;
 			setAttribute(div, 'data-top', div_data_top_value = state.multiplyDaysByHeight(timelineEvent.axisAfterStart));
@@ -2155,7 +2251,7 @@ function Events(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-2965743916-style")) add_css$2();
+	if (!document.getElementById("svelte-376884130-style")) add_css$2();
 	this._renderHooks = [];
 	this._bindings = [];
 
@@ -2196,21 +2292,44 @@ Events.prototype.teardown = Events.prototype.destroy = function destroy(detach) 
 	this._torndown = true;
 };
 
+function recompute$4(state, newState, oldState, isInitial) {
+	if (isInitial || 'hoveredEvent' in newState && differs$1(state.hoveredEvent, oldState.hoveredEvent)) {
+		state.outline = newState.outline = template$5.computed.outline(state.hoveredEvent);
+	}
+}
+
 var template$5 = function () {
+
+	function getOutlineCssString(hoveredEvent, timelineEvent) {
+		return hoveredEvent.slug === timelineEvent.slug ? 'outline: 4px solid ' + timelineEvent.color + ';' : '';
+	}
+
+	var noopString = function noopString() {
+		return '';
+	};
+
 	return {
 		data: function data() {
 			return {
 				descriptionHeight: 40,
 				buffer: 4
 			};
+		},
+
+		computed: {
+			outline: function outline(hoveredEvent) {
+				return hoveredEvent ? function (timelineEvent) {
+					return getOutlineCssString(hoveredEvent, timelineEvent);
+				} : noopString;
+			}
 		}
 	};
 }();
 
 function add_css$3() {
 	var style = createElement$1('style');
-	style.id = "svelte-1266125325-style";
-	style.textContent = "\n[svelte-1266125325].event-description, [svelte-1266125325] .event-description {\n\tposition: fixed;\n\tborder-width: 2px;\n\tborder-style: solid;\n\tpadding: 4px 8px;\n}\n";
+	style.id = "svelte-614443567-style";
+	style.textContent = "\n[svelte-614443567].event-description, [svelte-614443567] .event-description {\n\tposition: fixed;\n\tborder-width: 2px;\n\tborder-style: solid;\n\tpadding: 4px 8px;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -2245,7 +2364,7 @@ function create_main_fragment$5(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed || 'buffer' in changed || 'descriptionHeight' in changed) {
+			if ('timeline' in changed || 'buffer' in changed || 'descriptionHeight' in changed || 'outline' in changed) {
 				for (var i = 0; i < each_block_value.length; i += 1) {
 					if (each_block_iterations[i]) {
 						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
@@ -2289,9 +2408,9 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-1266125325', '');
+			setAttribute(div, 'svelte-614443567', '');
 			div.className = "event-description";
-			div.style.cssText = div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t";
+			div.style.cssText = div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t";
 		},
 
 		mount: function mount(target, anchor) {
@@ -2300,7 +2419,7 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 		},
 
 		update: function update(changed, state, each_block_value, timelineEvent, i) {
-			if (div_style_value !== (div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t")) {
+			if (div_style_value !== (div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\ttop: " + (state.buffer + state.descriptionHeight * i + state.buffer * i) + "px;\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
@@ -2320,6 +2439,7 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 function EventDescriptions(options) {
 	options = options || {};
 	this._state = assign$1(template$5.data(), options.data);
+	recompute$4(this._state, this._state, {}, true);
 
 	this._observers = {
 		pre: Object.create(null),
@@ -2332,7 +2452,7 @@ function EventDescriptions(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-1266125325-style")) add_css$3();
+	if (!document.getElementById("svelte-614443567-style")) add_css$3();
 
 	this._fragment = create_main_fragment$5(this._state, this);
 
@@ -2347,6 +2467,7 @@ assign$1(EventDescriptions.prototype, proto);
 EventDescriptions.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign$1({}, oldState, newState);
+	recompute$4(this._state, newState, oldState, false);
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
@@ -3172,6 +3293,10 @@ function recompute$1(state, newState, oldState, isInitial) {
 	if (isInitial || 'relevantEventsWithAxis' in newState && differs$1(state.relevantEventsWithAxis, oldState.relevantEventsWithAxis)) {
 		state.indentLevels = newState.indentLevels = template$1.computed.indentLevels(state.relevantEventsWithAxis);
 	}
+
+	if (isInitial || 'visibleEvents' in newState && differs$1(state.visibleEvents, oldState.visibleEvents) || 'hoveredEvent' in newState && differs$1(state.hoveredEvent, oldState.hoveredEvent)) {
+		state.eventsToHighlight = newState.eventsToHighlight = template$1.computed.eventsToHighlight(state.visibleEvents, state.hoveredEvent);
+	}
 }
 
 var template$1 = function () {
@@ -3270,6 +3395,66 @@ var template$1 = function () {
 		});
 	}
 
+	var centerRatio = 0.6;
+	var topMarginRatio = (1 - centerRatio) / 2;
+	var bottomMarginRatio = centerRatio + topMarginRatio;
+	var numberOfEventsToHighlight = 6;
+
+	var A_IS_FIRST = -1;
+	var B_IS_FIRST = 1;
+
+	var distanceToCenter = function distanceToCenter(event) {
+		return Math.abs(0.5 - event.centerPoint);
+	};
+
+	function filterToHighlightedEvents(events, hoveredEvent) {
+		var prioritizedEvents = events.map(function (event) {
+			var isInsideCenter = event.topRatio >= topMarginRatio && event.bottomRatio <= bottomMarginRatio;
+
+			var centerPoint = isInsideCenter ? (event.topRatio + event.bottomRatio) / 2 : null;
+
+			return Object.assign({
+				isInsideCenter: isInsideCenter,
+				centerPoint: centerPoint
+			}, event);
+		}).sort(function (eventA, eventB) {
+			if (hoveredEvent && eventA.slug === hoveredEvent.slug) {
+				return A_IS_FIRST;
+			} else if (hoveredEvent && eventB.slug === hoveredEvent.slug) {
+				return B_IS_FIRST;
+			} else if (eventA.isInsideCenter && !eventB.isInsideCenter) {
+				return A_IS_FIRST;
+			} else if (eventB.isInsideCenter && !eventA.isInsideCenter) {
+				return B_IS_FIRST;
+			} else if (eventA.isInsideCenter && eventB.isInsideCenter) {
+				var distanceA = distanceToCenter(eventA);
+				var distanceB = distanceToCenter(eventB);
+
+				if (distanceA > distanceB) {
+					return A_IS_FIRST;
+				} else if (distanceB > distanceA) {
+					return B_IS_FIRST;
+				} else {
+					return 0;
+				}
+			} else if (eventA.indentLevel === eventB.indentLevel) {
+				return 0;
+			} else if (eventA.indentLevel > eventB.indentLevel) {
+				return A_IS_FIRST;
+			} else if (eventB.indentLevel > eventA.indentLevel) {
+				return B_IS_FIRST;
+			}
+
+			throw new Error('Missed a case');
+		});
+
+		var eventsToKeep = prioritizedEvents.slice(0, numberOfEventsToHighlight);
+
+		return eventsToKeep.sort(function (eventA, eventB) {
+			return eventA.amd.start - eventB.amd.start;
+		});
+	}
+
 	return {
 		data: function data() {
 			return {
@@ -3338,6 +3523,9 @@ var template$1 = function () {
 				return relevantEventsWithAxis.reduce(function (max, event) {
 					return max < event.indentLevel ? event.indentLevel : max;
 				}, 0);
+			},
+			eventsToHighlight: function eventsToHighlight(visibleEvents, hoveredEvent) {
+				return filterToHighlightedEvents(visibleEvents, hoveredEvent);
 			}
 		},
 		helpers: {
@@ -3365,8 +3553,8 @@ var template$1 = function () {
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-1735786240-style";
-	style.textContent = "\n[svelte-1735786240].timeline-container, [svelte-1735786240] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-1735786240].timeline-row, [svelte-1735786240] .timeline-row {\n\tposition: relative;\n}\n[svelte-1735786240].axis, [svelte-1735786240] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-1735786240].axis[data-relevant=true], [svelte-1735786240] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-1735786240].eventhover, [svelte-1735786240] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
+	style.id = "svelte-2858106034-style";
+	style.textContent = "\n[svelte-2858106034].timeline-container, [svelte-2858106034] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-2858106034].timeline-row, [svelte-2858106034] .timeline-row {\n\tposition: relative;\n}\n[svelte-2858106034].axis, [svelte-2858106034] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-2858106034].axis[data-relevant=true], [svelte-2858106034] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-2858106034].eventhover, [svelte-2858106034] .eventhover {\n\tz-index: 1;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tpadding: 10px;\n\tbackground-color: white;\n\tbackground-color: rgba(255, 255, 255, 0.8);\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -3427,7 +3615,10 @@ function create_main_fragment$1(state, component) {
 
 	var eventdescriptions = new EventDescriptions({
 		_root: component._root,
-		data: { timeline: state.visibleEvents }
+		data: {
+			timeline: state.eventsToHighlight,
+			hoveredEvent: state.hoveredEvent
+		}
 	});
 
 	return {
@@ -3451,7 +3642,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-1735786240', '');
+			setAttribute(div, 'svelte-2858106034', '');
 			div.className = "timeline-container";
 			div_1.className = "timeline-row";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
@@ -3537,7 +3728,8 @@ function create_main_fragment$1(state, component) {
 
 			var eventdescriptions_changes = {};
 
-			if ('visibleEvents' in changed) eventdescriptions_changes.timeline = state.visibleEvents;
+			if ('eventsToHighlight' in changed) eventdescriptions_changes.timeline = state.eventsToHighlight;
+			if ('hoveredEvent' in changed) eventdescriptions_changes.hoveredEvent = state.hoveredEvent;
 
 			if (Object.keys(eventdescriptions_changes).length) eventdescriptions.set(eventdescriptions_changes);
 		},
@@ -3610,7 +3802,7 @@ function create_if_block$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-1735786240', '');
+			setAttribute(div, 'svelte-2858106034', '');
 			div.className = "eventhover";
 		},
 
@@ -3822,7 +4014,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-1735786240-style")) add_css();
+	if (!document.getElementById("svelte-2858106034-style")) add_css();
 	this._renderHooks = [];
 	this._bindings = [];
 
