@@ -3,13 +3,13 @@ import EventEmitter from 'eventemitter3'
 const globalUpdateEmitter = new EventEmitter()
 
 function debounce(fn) {
-	let alreadyCalled = false
+	var alreadyCalled = false
 	return (...args) => {
 		if (!alreadyCalled) {
 			alreadyCalled = true
 			window.requestAnimationFrame(() => {
-				alreadyCalled = false
 				fn(...args)
+				alreadyCalled = false
 			})
 		}
 	}
