@@ -1472,6 +1472,7 @@ var template$4 = function () {
 			this.set({
 				listener: componentListener
 			});
+			this.updateVisibility();
 		},
 		ondestroy: function ondestroy() {
 			var componentListener = this.get('listener');
@@ -1483,21 +1484,29 @@ var template$4 = function () {
 				var relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect();
 				var viewportHeight = window.document.documentElement.clientHeight;
 				var visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight;
-				var topIsAboveViewport = relativeToViewport.top < 0;
-				var bottomIsBelowViewport = relativeToViewport.bottom > viewportHeight;
 
-				var topRatio = visible ? topIsAboveViewport ? 0 : relativeToViewport.top / viewportHeight : null;
+				if (visible) {
+					var topRatio = relativeToViewport.top / viewportHeight;
+					var bottomRatio = relativeToViewport.bottom / viewportHeight;
 
-				var bottomRatio = visible ? bottomIsBelowViewport ? viewportHeight : relativeToViewport.bottom / viewportHeight : null;
-
-				this.set({
-					visible: visible,
-					topIsAboveViewport: topIsAboveViewport,
-					top: relativeToViewport.top,
-					bottom: relativeToViewport.bottom,
-					topRatio: topRatio,
-					bottomRatio: bottomRatio
-				});
+					this.set({
+						visible: visible,
+						top: relativeToViewport.top,
+						bottom: relativeToViewport.bottom,
+						topRatio: topRatio,
+						bottomRatio: bottomRatio
+					});
+				} else {
+					if (this.get('visible')) {
+						this.set({
+							visible: visible,
+							top: null,
+							bottom: null,
+							topRatio: null,
+							bottomRatio: null
+						});
+					}
+				}
 			}
 		}
 	};
@@ -3406,35 +3415,53 @@ var template$1 = function () {
 	var distanceToCenter = function distanceToCenter(event) {
 		return Math.abs(0.5 - event.centerPoint);
 	};
+	var sortByClosestToCenter = function sortByClosestToCenter(eventA, eventB) {
+		var distanceA = distanceToCenter(eventA);
+		var distanceB = distanceToCenter(eventB);
+
+		if (distanceA < distanceB) {
+			return A_IS_FIRST;
+		} else if (distanceB < distanceA) {
+			return B_IS_FIRST;
+		} else {
+			return 0;
+		}
+	};
 
 	function filterToHighlightedEvents(events, hoveredEvent) {
-		var prioritizedEvents = events.map(function (event) {
-			var isInsideCenter = event.topRatio >= topMarginRatio && event.bottomRatio <= bottomMarginRatio;
+		var eventsWithCalculations = events.map(function (event) {
+			var topIsInCenter = event.topRatio >= topMarginRatio && event.topRatio <= bottomMarginRatio;
+			var bottomIsInCenter = event.bottomRatio <= bottomMarginRatio && event.bottomRatio >= topMarginRatio;
 
-			var centerPoint = isInsideCenter ? (event.topRatio + event.bottomRatio) / 2 : null;
+			var isInsideCenter = topIsInCenter && bottomIsInCenter;
+			var overlapsCenter = topIsInCenter || bottomIsInCenter;
+
+			var centerPoint = (event.topRatio + event.bottomRatio) / 2;
 
 			return Object.assign({
 				isInsideCenter: isInsideCenter,
-				centerPoint: centerPoint
+				centerPoint: centerPoint,
+				overlapsCenter: overlapsCenter
 			}, event);
+		});
+
+		// console.log('overlaps the center', eventsWithCalculations
+		// 	.filter(event => event.overlapsCenter)
+		// 	.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
+		// 	.map(event => event.title)
+		// )
+
+		var prioritizedEvents = eventsWithCalculations.filter(function (event) {
+			return event.overlapsCenter;
 		}).sort(function (eventA, eventB) {
 			if (eventA.isInsideCenter && !eventB.isInsideCenter) {
 				return A_IS_FIRST;
 			} else if (eventB.isInsideCenter && !eventA.isInsideCenter) {
 				return B_IS_FIRST;
 			} else if (eventA.isInsideCenter && eventB.isInsideCenter) {
-				var distanceA = distanceToCenter(eventA);
-				var distanceB = distanceToCenter(eventB);
-
-				if (distanceA > distanceB) {
-					return A_IS_FIRST;
-				} else if (distanceB > distanceA) {
-					return B_IS_FIRST;
-				} else {
-					return 0;
-				}
+				return sortByClosestToCenter(eventA, eventB);
 			} else if (eventA.indentLevel === eventB.indentLevel) {
-				return 0;
+				return sortByClosestToCenter(eventA, eventB);
 			} else if (eventA.indentLevel > eventB.indentLevel) {
 				return A_IS_FIRST;
 			} else if (eventB.indentLevel > eventA.indentLevel) {
@@ -3554,8 +3581,8 @@ var template$1 = function () {
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-794577450-style";
-	style.textContent = "\n[svelte-794577450].timeline-container, [svelte-794577450] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-794577450].timeline-column, [svelte-794577450] .timeline-column {\n\tposition: relative;\n}\n[svelte-794577450].axis, [svelte-794577450] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-794577450].axis[data-relevant=true], [svelte-794577450] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-794577450].event-description-column, [svelte-794577450] .event-description-column {\n\tdisplay: flex;\n\talign-items: center;\n\n\tposition: fixed;\n\ttop: 0;\n\theight: 100%;\n}\n";
+	style.id = "svelte-3519468498-style";
+	style.textContent = "\n[svelte-3519468498].timeline-container, [svelte-3519468498] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-3519468498].timeline-column, [svelte-3519468498] .timeline-column {\n\tposition: relative;\n}\n[svelte-3519468498].axis, [svelte-3519468498] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-3519468498].axis[data-relevant=true], [svelte-3519468498] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-3519468498].event-description-column, [svelte-3519468498] .event-description-column {\n\tdisplay: flex;\n\talign-items: center;\n\n\tposition: fixed;\n\ttop: 0;\n\theight: 100%;\n}\n";
 	appendNode(style, document.head);
 }
 
@@ -3642,7 +3669,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-794577450', '');
+			setAttribute(div, 'svelte-3519468498', '');
 			div.className = "timeline-container";
 			div_1.className = "timeline-column";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
@@ -3908,7 +3935,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-794577450-style")) add_css();
+	if (!document.getElementById("svelte-3519468498-style")) add_css();
 	this._renderHooks = [];
 	this._bindings = [];
 
