@@ -13,6 +13,7 @@ export default {
 		this.set({
 			listener: componentListener
 		})
+		this.updateVisibility()
 	},
 	ondestroy() {
 		const componentListener = this.get('listener')
@@ -23,25 +24,29 @@ export default {
 			const relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect()
 			const viewportHeight = window.document.documentElement.clientHeight
 			const visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight
-			const topIsAboveViewport = relativeToViewport.top < 0
-			const bottomIsBelowViewport = relativeToViewport.bottom > viewportHeight
 
-			const topRatio = visible
-				? (topIsAboveViewport ? 0 : (relativeToViewport.top / viewportHeight))
-				: null
+			if (visible) {
+				const topRatio = relativeToViewport.top / viewportHeight
+				const bottomRatio = relativeToViewport.bottom / viewportHeight
 
-			const bottomRatio = visible
-				? (bottomIsBelowViewport ? viewportHeight : (relativeToViewport.bottom / viewportHeight))
-				: null
-
-			this.set({
-				visible,
-				topIsAboveViewport,
-				top: relativeToViewport.top,
-				bottom: relativeToViewport.bottom,
-				topRatio,
-				bottomRatio
-			})
+				this.set({
+					visible,
+					top: relativeToViewport.top,
+					bottom: relativeToViewport.bottom,
+					topRatio,
+					bottomRatio
+				})
+			} else {
+				if (this.get('visible')) {
+					this.set({
+						visible,
+						top: null,
+						bottom: null,
+						topRatio: null,
+						bottomRatio: null,
+					})
+				}
+			}
 		}
 	}
 }
