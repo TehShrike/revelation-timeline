@@ -175,39 +175,53 @@ const A_IS_FIRST = -1
 const B_IS_FIRST = 1
 
 const distanceToCenter = event => Math.abs(0.5 - event.centerPoint)
+const sortByClosestToCenter = (eventA, eventB) => {
+	const distanceA = distanceToCenter(eventA)
+	const distanceB = distanceToCenter(eventB)
+
+	if (distanceA < distanceB) {
+		return A_IS_FIRST
+	} else if (distanceB < distanceA) {
+		return B_IS_FIRST
+	} else {
+		return 0
+	}
+}
 
 function filterToHighlightedEvents(events, hoveredEvent) {
-	const prioritizedEvents = events.map(event => {
-		const isInsideCenter = event.topRatio >= topMarginRatio
-			&& event.bottomRatio <= bottomMarginRatio
+	const eventsWithCalculations = events.map(event => {
+		const topIsInCenter = event.topRatio >= topMarginRatio && event.topRatio <= bottomMarginRatio
+		const bottomIsInCenter = event.bottomRatio <= bottomMarginRatio && event.bottomRatio >= topMarginRatio
 
-		const centerPoint = isInsideCenter
-			? (event.topRatio + event.bottomRatio) / 2
-			: null
+		const isInsideCenter = topIsInCenter && bottomIsInCenter
+		const overlapsCenter = topIsInCenter || bottomIsInCenter
+
+		const centerPoint = (event.topRatio + event.bottomRatio) / 2
 
 		return Object.assign({
 			isInsideCenter,
 			centerPoint,
+			overlapsCenter
 		}, event)
 	})
+
+	// console.log('overlaps the center', eventsWithCalculations
+	// 	.filter(event => event.overlapsCenter)
+	// 	.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
+	// 	.map(event => event.title)
+	// )
+
+	const prioritizedEvents = eventsWithCalculations
+	.filter(event => event.overlapsCenter)
 	.sort((eventA, eventB) => {
 		if (eventA.isInsideCenter && !eventB.isInsideCenter) {
 			return A_IS_FIRST
 		} else if (eventB.isInsideCenter && !eventA.isInsideCenter) {
 			return B_IS_FIRST
 		} else if (eventA.isInsideCenter && eventB.isInsideCenter) {
-			const distanceA = distanceToCenter(eventA)
-			const distanceB = distanceToCenter(eventB)
-
-			if (distanceA > distanceB) {
-				return A_IS_FIRST
-			} else if (distanceB > distanceA) {
-				return B_IS_FIRST
-			} else {
-				return 0
-			}
+			return sortByClosestToCenter(eventA, eventB)
 		} else if (eventA.indentLevel === eventB.indentLevel) {
-			return 0
+			return sortByClosestToCenter(eventA, eventB)
 		} else if (eventA.indentLevel > eventB.indentLevel) {
 			return A_IS_FIRST
 		} else if (eventB.indentLevel > eventA.indentLevel) {
