@@ -5,6 +5,8 @@
 <script>
 import globalUpdateEmitter from './motion-event.js'
 
+const average = (a, b) => (a + b) / 2
+
 export default {
 	oncreate() {
 		const componentListener = () => this.updateVisibility()
@@ -20,7 +22,26 @@ export default {
 		globalUpdateEmitter.removeListener('update', componentListener)
 	},
 	methods: {
+		setNotVisible() {
+			if (this.get('visible')) {
+				this.set({
+					visible: false,
+					top: null,
+					bottom: null,
+					left: null,
+					right: null,
+					verticalCenter: null,
+					topRatio: null,
+					bottomRatio: null,
+				})
+			}
+		},
 		updateVisibility() {
+			if (!this.refs.element) {
+				this.setNotVisible()
+				return
+			}
+
 			const relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect()
 			const viewportHeight = window.document.documentElement.clientHeight
 			const visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight
@@ -33,19 +54,14 @@ export default {
 					visible,
 					top: relativeToViewport.top,
 					bottom: relativeToViewport.bottom,
+					left: relativeToViewport.left,
+					right: relativeToViewport.right,
+					verticalCenter: average(relativeToViewport.top, relativeToViewport.bottom),
 					topRatio,
 					bottomRatio
 				})
 			} else {
-				if (this.get('visible')) {
-					this.set({
-						visible,
-						top: null,
-						bottom: null,
-						topRatio: null,
-						bottomRatio: null,
-					})
-				}
+				this.setNotVisible()
 			}
 		}
 	}
