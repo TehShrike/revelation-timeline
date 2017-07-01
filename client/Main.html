@@ -166,15 +166,15 @@ function sortEventsForDisplay(timelineData, currentZoom) {
 	)
 }
 
-const centerRatio = 0.6
-const topMarginRatio = (1 - centerRatio) / 2
-const bottomMarginRatio = centerRatio + topMarginRatio
+const viewportHighlightRatio = 0.6
+const topMarginRatio = (1 - viewportHighlightRatio) / 2
+const bottomMarginRatio = viewportHighlightRatio + topMarginRatio
 const numberOfEventsToHighlight = 6
 
 const A_IS_FIRST = -1
 const B_IS_FIRST = 1
 
-const distanceToCenter = event => Math.abs(0.5 - event.centerPoint)
+const distanceToCenter = event => Math.abs(0.5 - event.centerPointRatio)
 const sortByClosestToCenter = (eventA, eventB) => {
 	const distanceA = distanceToCenter(eventA)
 	const distanceB = distanceToCenter(eventB)
@@ -196,19 +196,19 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 		const isInsideCenter = topIsInCenter && bottomIsInCenter
 		const overlapsCenter = topIsInCenter || bottomIsInCenter
 
-		const centerPoint = (event.topRatio + event.bottomRatio) / 2
+		const centerPointRatio = (event.topRatio + event.bottomRatio) / 2
 
 		return Object.assign({
 			isInsideCenter,
-			centerPoint,
+			centerPointRatio,
 			overlapsCenter
 		}, event)
 	})
 
-	// console.log('overlaps the center', eventsWithCalculations
+	// console.log('centerPointRatio', eventsWithCalculations
 	// 	.filter(event => event.overlapsCenter)
 	// 	.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
-	// 	.map(event => event.title)
+	// 	.map(event => event.centerPointRatio)
 	// )
 
 	const prioritizedEvents = eventsWithCalculations
@@ -237,7 +237,8 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 
 	const eventsToShow = needToAddHoveredEvent ? [ hoveredEvent, ...bestEventsToShow ] : bestEventsToShow
 
-	return eventsToShow.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
+	return eventsToShow
+		.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
 }
 
 export default {
