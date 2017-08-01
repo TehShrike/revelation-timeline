@@ -42,10 +42,10 @@
     "rollup-plugin-babel": "2.7.1",
     "rollup-plugin-commonjs": "8.0.2",
     "rollup-plugin-node-resolve": "3.0.0",
-    "rollup-plugin-svelte": "1.8.1",
+    "rollup-plugin-svelte": "3.0.1",
     "rollup-watch": "4.0.0",
-    "svelte": "1.23.4",
-    "svelte-querystring-router": "1.0.2",
+    "svelte": "1.27.0",
+    "svelte-querystring-router": "1.0.3",
     "then-denodeify": "~1.0.1",
     "verse-reference-regex": "1.0.1"
   },

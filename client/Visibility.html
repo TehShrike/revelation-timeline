@@ -1,4 +1,4 @@
-<div ref:element>
+<div ref:element data-whatever-thingy="{{updateOnChange}}">
 	{{yield}}
 </div>
 
@@ -15,7 +15,24 @@ export default {
 		this.set({
 			listener: componentListener
 		})
-		this.updateVisibility()
+
+		try {
+			this.updateVisibility()
+		} catch (e) {
+			console.error('Error in oncreate for some reason', e)
+		}
+
+
+		this.observe('updateOnChange', () => {
+			// https://github.com/sveltejs/svelte/issues/730
+			Promise.resolve().then(() => {
+				try {
+					this.updateVisibility()
+				} catch (e) {
+					console.error('There was an error trying to update visibility', e)
+				}
+			})
+		})
 	},
 	ondestroy() {
 		const componentListener = this.get('listener')
@@ -38,6 +55,7 @@ export default {
 		},
 		updateVisibility() {
 			if (!this.refs.element) {
+				// this.log('!!!!!!!!!!!No element found!!!!!!!!!!!!!!!!!!')
 				this.setNotVisible()
 				return
 			}
@@ -61,7 +79,16 @@ export default {
 					bottomRatio
 				})
 			} else {
+				// this.log('No longer visible')
 				this.setNotVisible()
+			}
+		},
+		log(message) {
+			const logName = this.get('logName')
+			if (logName) {
+				console.log('Visibility -', logName, '-', message)
+			} else {
+				console.log('no logName!!! -', message)
 			}
 		}
 	}

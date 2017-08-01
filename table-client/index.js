@@ -3,7 +3,7 @@ const { attachQuerystringData, getCurrentParameters } = routerInstance
 
 import TableMain from './TableMain.html'
 
-import timelineData from '../timeline-data/timeline-data.js'
+import timelineData from '../client/timeline-data.js'
 
 
 const component = new TableMain({

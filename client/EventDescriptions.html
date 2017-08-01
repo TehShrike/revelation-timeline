@@ -1,13 +1,21 @@
-{{#each timeline as timelineEvent, i}}
-	<div
-		class="event-description"
-		style="
-			border-color: {{timelineEvent.color}};
-			{{outline(timelineEvent)}}
-		"
+{{#each timeline as timelineEvent, index @slug}}
+	<Visibility
+		bind:verticalCenter="slugToVerticalCenter[timelineEvent.slug]"
+		bind:left="slugToLeft[timelineEvent.slug]"
+		bind:visible="slugToVisible[timelineEvent.slug]"
+		logName="Description: {{timelineEvent.slug}}"
+		updateOnChange="{{index}}"
 	>
-		{{timelineEvent.title}}
-	</div>
+		<div
+			class="event-description"
+			style="
+				border-color: {{timelineEvent.color}};
+				{{outline(timelineEvent)}}
+			"
+		>
+			{{timelineEvent.title}}
+		</div>
+	</Visibility>
 {{/each}}
 
 <style>
@@ -21,6 +29,8 @@
 
 <script>
 
+import Visibility from './Visibility.html'
+
 function getOutlineCssString(hoveredEvent, timelineEvent) {
 	return hoveredEvent.slug === timelineEvent.slug
 		? 'outline: 4px solid ' + timelineEvent.color + ';'
@@ -28,19 +38,63 @@ function getOutlineCssString(hoveredEvent, timelineEvent) {
 }
 
 const noopString = () => ''
+const allSlugsExistInMap = (events, map) => events.every(event => map[event.slug])
+const missing = (events, map) => events.find(event => !map[event.slug]).slug
 
 export default {
 	data() {
 		return {
 			descriptionHeight: 40,
-			buffer: 4
+			buffer: 4,
+			slugToVerticalCenter: Object.create(null),
+			slugToLeft: Object.create(null),
+			slugToVisible: Object.create(null),
 		}
 	},
 	computed: {
 		outline: hoveredEvent =>
 			hoveredEvent
 				? timelineEvent => getOutlineCssString(hoveredEvent, timelineEvent)
-				: noopString
+				: noopString,
+		slugToPoints: (slugToVerticalCenter, slugToLeft, slugToVisible, timeline) => {
+			if (!allSlugsExistInMap(timeline, slugToVerticalCenter)) {
+				console.log('allSlugsExistInMap fails with slugToVerticalCenter when finding', missing(timeline, slugToVerticalCenter))
+			}
+			// if (!allSlugsExistInMap(timeline, slugToLeft)) {
+			// 	console.log('allSlugsExistInMap fails with slugToLeft when finding', missing(timeline, slugToLeft))
+			// }
+
+			if (!allSlugsExistInMap(timeline, slugToVerticalCenter)
+					|| !allSlugsExistInMap(timeline, slugToLeft)) {
+				return null
+			}
+
+			const map = {}//Object.create(null)
+
+			Object.entries(slugToVisible)
+				.filter(([ , visible]) => visible)
+				.map(([slug, ]) => slug)
+				.forEach(slug => {
+					map[slug] = {
+						x: slugToLeft[slug],
+						y: slugToVerticalCenter[slug],
+					}
+
+					if (!slugToLeft[slug]) {
+						console.error('No slugToLeft for', slug)
+					}
+					if (!slugToVerticalCenter[slug]) {
+						console.error('No slugToVerticalCenter for', slug)
+					}
+				})
+
+			// console.log('slugToPoints returning', Object.keys(map).length, map)
+
+			return map
+		}
+	},
+	components: {
+		Visibility
 	}
 }
 </script>

@@ -29,6 +29,7 @@
 				<EventDescriptions
 					timeline="{{eventsToHighlight}}"
 					hoveredEvent="{{hoveredEvent}}"
+					bind:slugToPoints="slugToVisibleDescriptionPoints"
 				/>
 			</div>
 		</div>
@@ -71,42 +72,11 @@ import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
 import { multiplyIndentByWidth } from './spacer-functions.js'
 import sortRange from '../timeline-data/sort-range.js'
 import pipe from './pipe.js'
+import addIndentAndAxisAfterStart from './add-timeline-event-indent.js'
 
 import chromatism from 'chromatism'
 
-function createIndentLevelCalculator() {
-	const indentLevels = []
-	return event => {
-		const eventDate = event.amd
-		const replaceIndent = indentLevels.findIndex(previousDate => previousDate.end < eventDate.start)
-		if (replaceIndent === -1) {
-			indentLevels.push(eventDate)
-			return indentLevels.length - 1
-		} else {
-			indentLevels[replaceIndent] = eventDate
-			return replaceIndent
-		}
-	}
-}
-function addIndentAndAxisAfterStart(events, startDay, endDay) {
-	const getIndentLevel = createIndentLevelCalculator()
-	return events.map(event => {
-		if (event.axis.start === undefined || event.axis.end === undefined) {
-			console.error(event)
-			throw new Error(`No axis values for ${event.title}`)
-		}
-		const axisAfterStart = Math.max(event.axis.start - startDay, 0)
-		const eventDays = event.axis.end - event.axis.start + 1
-		const daysBeforeStart = Math.max(startDay - event.axis.start, 0)
-		const daysAfterEnd = Math.max(event.axis.end - endDay, 0)
-		const visibleDays = eventDays - daysBeforeStart - daysAfterEnd
-		return Object.assign({
-			indentLevel: getIndentLevel(event),
-			axisAfterStart,
-			visibleDays
-		}, event)
-	})
-}
+const EMPTY_ARRAY = []
 
 const defaultZoomedDayHeight = 0.5
 const topZoom = {
@@ -197,11 +167,13 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 		const overlapsCenter = topIsInCenter || bottomIsInCenter
 
 		const centerPointRatio = (event.topRatio + event.bottomRatio) / 2
+		const centerPoint = (event.top + event.bottom) / 2
 
 		return Object.assign({
 			isInsideCenter,
 			centerPointRatio,
-			overlapsCenter
+			overlapsCenter,
+			centerPoint,
 		}, event)
 	})
 
@@ -244,7 +216,9 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 export default {
 	data() {
 		return {
-			visibleEvents: []
+			visibleEvents: [],
+			slugToVisibleDescriptionPoints: null,
+			slugToTimelineRight: null,
 		}
 	},
 	computed: {
@@ -288,7 +262,49 @@ export default {
 		indentLevels: relevantEventsWithAxis => relevantEventsWithAxis.reduce((max, event) => {
 			return max < event.indentLevel ? event.indentLevel : max
 		}, 0),
-		eventsToHighlight: (visibleEvents, hoveredEvent) => filterToHighlightedEvents(visibleEvents, hoveredEvent)
+		eventsToHighlight: (visibleEvents, hoveredEvent) => filterToHighlightedEvents(visibleEvents, hoveredEvent),
+		identifyingLinePoints: (eventsToHighlight, slugToVisibleDescriptionPoints) => {
+			if (!slugToVisibleDescriptionPoints) {
+				// console.log('returning dummy array')
+				return EMPTY_ARRAY
+			}
+
+			const viewportHeight = window.document.documentElement.clientHeight
+			const ratioToPoint = ratio => viewportHeight * ratio
+
+			eventsToHighlight.forEach(({ slug }) => {
+				if (!slugToVisibleDescriptionPoints[slug]) {
+					console.error('no VisibleDescriptionPoint found for', slug)
+				}
+			})
+
+			// console.log(slugToVisibleDescriptionPoints)
+
+			// console.log(
+			// 	eventsToHighlight.filter(({ slug }) => {
+			// 		return slugToVisibleDescriptionPoints[slug]
+			// 	}).map(event => `${event.title}, ${event.centerPoint}`)
+			// )
+
+			const nextStep = eventsToHighlight.filter(({ slug }) => {
+				return slugToVisibleDescriptionPoints[slug]
+			}).map(event => Object.assign({
+				from: {
+					y: event.centerPoint,
+					x: event.right,
+				},
+				to: slugToVisibleDescriptionPoints[event.slug],
+				color: event.color,
+				hoverColor: event.hoverColor,
+				// y: event.amd.start === event.amd.end ? ratioToPoint(event.centerPointRatio) : null
+			}, event))
+
+			// console.log(nextStep)
+
+			// console.log(JSON.stringify(nextStep, null, '\t'))
+			// console.log('highlighted:', eventsToHighlight.length, 'displayable:', nextStep.length)
+			// const ratioTo
+		},
 	},
 	helpers: {
 		multiplyIndentByWidth,
@@ -310,10 +326,10 @@ export default {
 		Events,
 		EventDescriptions,
 	},
-	// oncreate() {
-	// 	this.observe('visibleEvents', () => {
-	// 		console.log(this.get())
-	// 	})
-	// }
+	oncreate() {
+		// this.observe('slugToVisibleDescriptionPoints', () => {
+		// 	console.log('slugToVisibleDescriptionPoints', this.get('slugToVisibleDescriptionPoints'))
+		// })
+	}
 }
 </script>

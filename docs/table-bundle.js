@@ -901,8 +901,7 @@ assign(Link.prototype, template.methods, {
 	fire: fire,
 	observe: observe,
 	on: on,
-	set: set$1,
-	_flush: _flush
+	set: set$1
 });
 
 Link.prototype._set = function _set(newState) {
@@ -925,8 +924,12 @@ Link.prototype.teardown = Link.prototype.destroy = function destroy(detach) {
 	this._torndown = true;
 };
 
-function createElement(name) {
-	return document.createElement(name);
+function differs(a, b) {
+	return a !== b || a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object' || typeof a === 'function';
+}
+
+function createComment() {
+	return document.createComment('');
 }
 
 function insertNode(node, target, anchor) {
@@ -937,6 +940,10 @@ function detachNode(node) {
 	node.parentNode.removeChild(node);
 }
 
+function createElement(name) {
+	return document.createElement(name);
+}
+
 function addListener(node, event, handler) {
 	node.addEventListener(event, handler, false);
 }
@@ -945,13 +952,7 @@ function removeListener(node, event, handler) {
 	node.removeEventListener(event, handler, false);
 }
 
-function createComment() {
-	return document.createComment('');
-}
-
-function differs(a, b) {
-	return a !== b || a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object' || typeof a === 'function';
-}
+function noop() {}
 
 function assign(target) {
 	var k,
@@ -967,31 +968,6 @@ function assign(target) {
 
 	return target;
 }
-
-function dispatchObservers(component, group, newState, oldState) {
-	for (var key in group) {
-		if (!(key in newState)) continue;
-
-		var newValue = newState[key];
-		var oldValue = oldState[key];
-
-		if (differs(newValue, oldValue)) {
-			var callbacks = group[key];
-			if (!callbacks) continue;
-
-			for (var i = 0; i < callbacks.length; i += 1) {
-				var callback = callbacks[i];
-				if (callback.__calling) continue;
-
-				callback.__calling = true;
-				callback.call(component, newValue, oldValue);
-				callback.__calling = false;
-			}
-		}
-	}
-}
-
-function noop() {}
 
 function get$1(key) {
 	return key ? this._state[key] : this._state;
@@ -1041,14 +1017,35 @@ function on(eventName, handler) {
 
 function set$1(newState) {
 	this._set(assign({}, newState));
-	this._root._flush();
+	callAll(this._root._oncreate);
 }
 
-function _flush() {
-	if (!this._renderHooks) return;
+function dispatchObservers(component, group, newState, oldState) {
+	for (var key in group) {
+		if (!(key in newState)) continue;
 
-	while (this._renderHooks.length) {
-		this._renderHooks.pop()();
+		var newValue = newState[key];
+		var oldValue = oldState[key];
+
+		if (differs(newValue, oldValue)) {
+			var callbacks = group[key];
+			if (!callbacks) continue;
+
+			for (var i = 0; i < callbacks.length; i += 1) {
+				var callback = callbacks[i];
+				if (callback.__calling) continue;
+
+				callback.__calling = true;
+				callback.call(component, newValue, oldValue);
+				callback.__calling = false;
+			}
+		}
+	}
+}
+
+function callAll(fns) {
+	while (fns && fns.length) {
+		fns.pop()();
 	}
 }
 
@@ -1707,14 +1704,12 @@ function on$1(eventName, handler) {
 
 function set$2(newState) {
 	this._set(assign$1({}, newState));
-	this._root._flush();
+	callAll$1(this._root._oncreate);
 }
 
-function _flush$1() {
-	if (!this._renderHooks) return;
-
-	while (this._renderHooks.length) {
-		this._renderHooks.pop()();
+function callAll$1(fns) {
+	while (fns && fns.length) {
+		fns.pop()();
 	}
 }
 
@@ -1723,8 +1718,7 @@ var proto = {
 	fire: fire$1,
 	observe: observe$1,
 	on: on$1,
-	set: set$2,
-	_flush: _flush$1
+	set: set$2
 };
 
 function recompute$1(state, newState, oldState, isInitial) {
@@ -1896,13 +1890,13 @@ var template$1 = function () {
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-1938401734-style";
-	style.textContent = "\n[svelte-1938401734][data-wrap=false], [svelte-1938401734] [data-wrap=false] {\n\twhite-space: nowrap;\n}\n";
+	style.id = 'svelte-1759661908-style';
+	style.textContent = "\n[svelte-1759661908][data-wrap=false], [svelte-1759661908] [data-wrap=false] {\n\twhite-space: nowrap;\n}\n";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$1(state, component) {
-	var text, table, thead, tr, text_1, tbody;
+	var text, table, thead, tr, text_3, tbody;
 
 	var link_1_yield_fragment = create_link_yield_fragment(state, component);
 
@@ -1941,7 +1935,7 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].create();
 			}
 
-			text_1 = createText("\n\t");
+			text_3 = createText("\n\t");
 			tbody = createElement$1('tbody');
 
 			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
@@ -1951,7 +1945,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(table, 'svelte-1938401734', '');
+			setAttribute(table, 'svelte-1759661908', '');
 			table.className = "pure-table pure-table-bordered";
 		},
 
@@ -1966,7 +1960,7 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].mount(tr, null);
 			}
 
-			appendNode(text_1, table);
+			appendNode(text_3, table);
 			appendNode(tbody, table);
 
 			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
@@ -2223,8 +2217,8 @@ function TableMain(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-1938401734-style")) add_css();
-	this._renderHooks = [];
+	if (!document.getElementById('svelte-1759661908-style')) add_css();
+	this._oncreate = [];
 
 	this._fragment = create_main_fragment$1(this._state, this);
 
@@ -2232,7 +2226,8 @@ function TableMain(options) {
 		this._fragment.create();
 		this._fragment.mount(options.target, null);
 	}
-	this._flush();
+
+	callAll$1(this._oncreate);
 }
 
 assign$1(TableMain.prototype, proto);
@@ -2244,7 +2239,7 @@ TableMain.prototype._set = function _set(newState) {
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
-	this._flush();
+	callAll$1(this._oncreate);
 };
 
 TableMain.prototype.teardown = TableMain.prototype.destroy = function destroy(detach) {
@@ -2335,6 +2330,7 @@ var timelineData = [{
 		"end": 1485229
 	},
 	"type": "top",
+	"dayHeight": 3,
 	"slug": "seven-seals"
 }, {
 	"title": "First Seal - Tiberius",
@@ -2467,7 +2463,7 @@ var timelineData = [{
 		"end": 1485883
 	},
 	"type": "top",
-	"dayHeight": 0.5,
+	"dayHeight": 2,
 	"slug": "great-tribulation-rome-israel-killing-christians"
 }, {
 	"title": "Sixth Seal - visible appearance of Christ in the sky",
@@ -2606,6 +2602,7 @@ var timelineData = [{
 		"end": 1486668
 	},
 	"type": "top",
+	"dayHeight": 4,
 	"slug": "seven-trumpets"
 }, {
 	"title": "Second Trumpet",
@@ -2737,6 +2734,7 @@ var timelineData = [{
 		"end": 1487959
 	},
 	"type": "top",
+	"dayHeight": 3,
 	"slug": "great-wrath-rome-against-israel"
 }, {
 	"title": "Jewish preparations for defence of temple and city start in earnest",
@@ -3341,3 +3339,4 @@ var component = new TableMain({
 attachQuerystringData(component);
 
 }());
+//# sourceMappingURL=table-bundle.js.map

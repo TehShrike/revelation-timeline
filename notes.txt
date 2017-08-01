@@ -14,3 +14,9 @@ Take up to N events, in this order:
 	- events that are partially inside the middle half of the viewport
 		- sort by indent level, right-most ones first
 
+
+
+- find the vertical+horizontal center of the visible mass of the event bars.  That is the "from" point
+- find the vertical center of the left-most point of the event descriptions.  That is the "to" point
+- for each pair of points, create a component containing a canvas with a width and height that would make its corners touch the two from and to points - either top-left to bottom-right, or bottom-left to top-right
+- draw a path between the two corners

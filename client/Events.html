@@ -1,18 +1,21 @@
-{{#each timeline as timelineEvent}}
+{{#each timeline as timelineEvent, index @slug}}
 	{{#if timelineEvent.axis.end === timelineEvent.axis.start}}
 		<VCenter
 			left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 			point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 		>
-			<Visibility 
+			<Visibility
 				bind:visible="visibleEventSlugs[timelineEvent.slug]"
 				bind:topRatio="slugToTopRatio[timelineEvent.slug]"
+				bind:top="slugToTop[timelineEvent.slug]"
+				bind:bottom="slugToBottom[timelineEvent.slug]"
 				bind:bottomRatio="slugToBottomRatio[timelineEvent.slug]"
+				bind:right="slugToRight[timelineEvent.slug]"
+				logName="Events single: {{timelineEvent.slug}}"
+				updateOnChange="{{index}}"
 			>
 				<div
 					class="event"
-					data-title="{{timelineEvent.title}}"
-					data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
 					style="
 						height: {{singleDayHeight}}px;
 						background-color: {{timelineEvent.color}};
@@ -26,10 +29,15 @@
 		<Link
 			parameters="{{ clickable ? { zoom: timelineEvent.slug } : null }}"
 		>
-			<Visibility 
+			<Visibility
 				bind:visible="visibleEventSlugs[timelineEvent.slug]"
 				bind:topRatio="slugToTopRatio[timelineEvent.slug]"
+				bind:top="slugToTop[timelineEvent.slug]"
+				bind:bottom="slugToBottom[timelineEvent.slug]"
 				bind:bottomRatio="slugToBottomRatio[timelineEvent.slug]"
+				bind:right="slugToRight[timelineEvent.slug]"
+				logName="Events long: {{timelineEvent.slug}}"
+				updateOnChange="{{index}}"
 			>
 				<div
 					id="{{timelineEvent.slug}}"
@@ -39,11 +47,7 @@
 						height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
 						background-color: {{timelineEvent.color}};
 					"
-					data-top="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
-					data-left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 					class="event"
-					data-title="{{timelineEvent.title}}"
-					data-days="{{timelineEvent.axis.end - timelineEvent.axis.start + 1}}"
 					data-cut-off-at-start="{{timelineEvent.axis.cutOffAtStart}}"
 					data-cut-off-at-end="{{timelineEvent.axis.cutOffAtEnd}}"
 					on:mouseover="fire('startHover', timelineEvent)"
@@ -93,11 +97,15 @@ import svelteQuerystringRouter from 'svelte-querystring-router'
 
 export default {
 	data() {
+		const empty = () => Object.create(null)
 		return {
 			clickable: false,
-			visibleEventSlugs: Object.create(null),
-			slugToTopRatio: Object.create(null),
-			slugToBottomRatio: Object.create(null),
+			visibleEventSlugs: empty(),
+			slugToTopRatio: empty(),
+			slugToBottomRatio: empty(),
+			slugToTop: empty(),
+			slugToBottom: empty(),
+			slugToRight: empty(),
 			ignoreType: []
 		}
 	},
@@ -109,12 +117,15 @@ export default {
 		singleDayHeight: dayHeight => Math.max(dayHeight, 8),
 		ignoreTypeMap: ignoreType => ignoreType.reduce((map, type) => (map[type] = true, map), Object.create(null)),
 		nonIgnoredEvents: (timeline, ignoreTypeMap) => timeline.filter(event => !ignoreTypeMap[event.type]),
-		visibleEvents: (nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio) => nonIgnoredEvents
+		visibleEvents: (nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio, slugToTop, slugToBottom, slugToRight) => nonIgnoredEvents
 			.filter(event => visibleEventSlugs[event.slug])
 			.map(event => Object.assign({
 				topRatio: slugToTopRatio[event.slug],
 				bottomRatio: slugToBottomRatio[event.slug],
-			}, event))
+				top: slugToTop[event.slug],
+				bottom: slugToBottom[event.slug],
+				right: slugToRight[event.slug],
+			}, event)),
 	},
 	components: {
 		VCenter,

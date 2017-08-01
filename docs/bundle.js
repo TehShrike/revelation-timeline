@@ -141,7 +141,43 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 
+var slicedToArray = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
 
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+}();
 
 
 
@@ -861,8 +897,7 @@ assign(Link.prototype, template.methods, {
 	fire: fire,
 	observe: observe,
 	on: on,
-	set: set$1,
-	_flush: _flush
+	set: set$1
 });
 
 Link.prototype._set = function _set(newState) {
@@ -885,8 +920,12 @@ Link.prototype.teardown = Link.prototype.destroy = function destroy(detach) {
 	this._torndown = true;
 };
 
-function createElement(name) {
-	return document.createElement(name);
+function differs(a, b) {
+	return a !== b || a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object' || typeof a === 'function';
+}
+
+function createComment() {
+	return document.createComment('');
 }
 
 function insertNode(node, target, anchor) {
@@ -897,6 +936,10 @@ function detachNode(node) {
 	node.parentNode.removeChild(node);
 }
 
+function createElement(name) {
+	return document.createElement(name);
+}
+
 function addListener(node, event, handler) {
 	node.addEventListener(event, handler, false);
 }
@@ -905,13 +948,7 @@ function removeListener(node, event, handler) {
 	node.removeEventListener(event, handler, false);
 }
 
-function createComment() {
-	return document.createComment('');
-}
-
-function differs(a, b) {
-	return a !== b || a && (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === 'object' || typeof a === 'function';
-}
+function noop() {}
 
 function assign(target) {
 	var k,
@@ -927,31 +964,6 @@ function assign(target) {
 
 	return target;
 }
-
-function dispatchObservers(component, group, newState, oldState) {
-	for (var key in group) {
-		if (!(key in newState)) continue;
-
-		var newValue = newState[key];
-		var oldValue = oldState[key];
-
-		if (differs(newValue, oldValue)) {
-			var callbacks = group[key];
-			if (!callbacks) continue;
-
-			for (var i = 0; i < callbacks.length; i += 1) {
-				var callback = callbacks[i];
-				if (callback.__calling) continue;
-
-				callback.__calling = true;
-				callback.call(component, newValue, oldValue);
-				callback.__calling = false;
-			}
-		}
-	}
-}
-
-function noop() {}
 
 function get$1(key) {
 	return key ? this._state[key] : this._state;
@@ -1001,14 +1013,35 @@ function on(eventName, handler) {
 
 function set$1(newState) {
 	this._set(assign({}, newState));
-	this._root._flush();
+	callAll(this._root._oncreate);
 }
 
-function _flush() {
-	if (!this._renderHooks) return;
+function dispatchObservers(component, group, newState, oldState) {
+	for (var key in group) {
+		if (!(key in newState)) continue;
 
-	while (this._renderHooks.length) {
-		this._renderHooks.pop()();
+		var newValue = newState[key];
+		var oldValue = oldState[key];
+
+		if (differs(newValue, oldValue)) {
+			var callbacks = group[key];
+			if (!callbacks) continue;
+
+			for (var i = 0; i < callbacks.length; i += 1) {
+				var callback = callbacks[i];
+				if (callback.__calling) continue;
+
+				callback.__calling = true;
+				callback.call(component, newValue, oldValue);
+				callback.__calling = false;
+			}
+		}
+	}
+}
+
+function callAll(fns) {
+	while (fns && fns.length) {
+		fns.pop()();
 	}
 }
 
@@ -1282,14 +1315,17 @@ function on$1(eventName, handler) {
 
 function set$2(newState) {
 	this._set(assign$1({}, newState));
-	this._root._flush();
+	if (this._root._lock) return;
+	this._root._lock = true;
+	callAll$1(this._root._beforecreate);
+	callAll$1(this._root._oncreate);
+	callAll$1(this._root._aftercreate);
+	this._root._lock = false;
 }
 
-function _flush$1() {
-	if (!this._renderHooks) return;
-
-	while (this._renderHooks.length) {
-		this._renderHooks.pop()();
+function callAll$1(fns) {
+	while (fns && fns.length) {
+		fns.pop()();
 	}
 }
 
@@ -1298,8 +1334,7 @@ var proto = {
 	fire: fire$1,
 	observe: observe$1,
 	on: on$1,
-	set: set$2,
-	_flush: _flush$1
+	set: set$2
 };
 
 function recompute$2(state, newState, oldState, isInitial) {
@@ -1334,10 +1369,14 @@ var template$2 = function () {
 	};
 }();
 
+function encapsulateStyles$1(node) {
+	setAttribute(node, 'svelte-2389753504', '');
+}
+
 function add_css$1() {
 	var style = createElement$1('style');
-	style.id = "svelte-629105964-style";
-	style.textContent = "\n\t[svelte-629105964].vcentered, [svelte-629105964] .vcentered {\n\t\tposition: absolute;\n\t}\n";
+	style.id = 'svelte-2389753504-style';
+	style.textContent = "[svelte-2389753504].vcentered,[svelte-2389753504] .vcentered{position:absolute}";
 	appendNode(style, document.head);
 }
 
@@ -1351,7 +1390,7 @@ function create_main_fragment$2(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-629105964', '');
+			encapsulateStyles$1(div);
 			div.style.cssText = div_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
 			div.className = "vcentered";
 		},
@@ -1370,11 +1409,12 @@ function create_main_fragment$2(state, component) {
 
 		unmount: function unmount() {
 			detachNode$1(div);
-			if (component.refs.container === div) component.refs.container = null;
 			if (component._yield) component._yield.unmount();
 		},
 
-		destroy: noop$1
+		destroy: function destroy() {
+			if (component.refs.container === div) component.refs.container = null;
+		}
 	};
 }
 
@@ -1395,7 +1435,15 @@ function VerticallyCentered(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-629105964-style")) add_css$1();
+	if (!document.getElementById('svelte-2389753504-style')) add_css$1();
+
+	var oncreate = template$2.oncreate.bind(this);
+
+	if (!options._root) {
+		this._oncreate = [oncreate];
+	} else {
+		this._root._oncreate.push(oncreate);
+	}
 
 	this._fragment = create_main_fragment$2(this._state, this);
 
@@ -1404,10 +1452,8 @@ function VerticallyCentered(options) {
 		this._fragment.mount(options.target, null);
 	}
 
-	if (options._root) {
-		options._root._renderHooks.push(template$2.oncreate.bind(this));
-	} else {
-		template$2.oncreate.call(this);
+	if (!options._root) {
+		callAll$1(this._oncreate);
 	}
 }
 
@@ -1445,8 +1491,8 @@ function debounce(fn) {
 		if (!alreadyCalled) {
 			alreadyCalled = true;
 			window.requestAnimationFrame(function () {
-				alreadyCalled = false;
 				fn.apply(undefined, args);
+				alreadyCalled = false;
 			});
 		}
 	};
@@ -1460,6 +1506,10 @@ window.addEventListener('resize', listener);
 window.addEventListener('scroll', listener);
 
 var template$4 = function () {
+	var average = function average(a, b) {
+		return (a + b) / 2;
+	};
+
 	return {
 		oncreate: function oncreate() {
 			var _this = this;
@@ -1472,7 +1522,23 @@ var template$4 = function () {
 			this.set({
 				listener: componentListener
 			});
-			this.updateVisibility();
+
+			try {
+				this.updateVisibility();
+			} catch (e) {
+				console.error('Error in oncreate for some reason', e);
+			}
+
+			this.observe('updateOnChange', function () {
+				// https://github.com/sveltejs/svelte/issues/730
+				Promise.resolve().then(function () {
+					try {
+						_this.updateVisibility();
+					} catch (e) {
+						console.error('There was an error trying to update visibility', e);
+					}
+				});
+			});
 		},
 		ondestroy: function ondestroy() {
 			var componentListener = this.get('listener');
@@ -1480,7 +1546,27 @@ var template$4 = function () {
 		},
 
 		methods: {
+			setNotVisible: function setNotVisible() {
+				if (this.get('visible')) {
+					this.set({
+						visible: false,
+						top: null,
+						bottom: null,
+						left: null,
+						right: null,
+						verticalCenter: null,
+						topRatio: null,
+						bottomRatio: null
+					});
+				}
+			},
 			updateVisibility: function updateVisibility() {
+				if (!this.refs.element) {
+					// this.log('!!!!!!!!!!!No element found!!!!!!!!!!!!!!!!!!')
+					this.setNotVisible();
+					return;
+				}
+
 				var relativeToViewport = this.refs.element.firstElementChild.getBoundingClientRect();
 				var viewportHeight = window.document.documentElement.clientHeight;
 				var visible = relativeToViewport.bottom >= 0 && relativeToViewport.top <= viewportHeight;
@@ -1493,19 +1579,23 @@ var template$4 = function () {
 						visible: visible,
 						top: relativeToViewport.top,
 						bottom: relativeToViewport.bottom,
+						left: relativeToViewport.left,
+						right: relativeToViewport.right,
+						verticalCenter: average(relativeToViewport.top, relativeToViewport.bottom),
 						topRatio: topRatio,
 						bottomRatio: bottomRatio
 					});
 				} else {
-					if (this.get('visible')) {
-						this.set({
-							visible: visible,
-							top: null,
-							bottom: null,
-							topRatio: null,
-							bottomRatio: null
-						});
-					}
+					// this.log('No longer visible')
+					this.setNotVisible();
+				}
+			},
+			log: function log(message) {
+				var logName = this.get('logName');
+				if (logName) {
+					console.log('Visibility -', logName, '-', message);
+				} else {
+					console.log('no logName!!! -', message);
 				}
 			}
 		}
@@ -1513,11 +1603,16 @@ var template$4 = function () {
 }();
 
 function create_main_fragment$4(state, component) {
-	var div;
+	var div, div_data_whatever_thingy_value;
 
 	return {
 		create: function create() {
 			div = createElement$1('div');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			setAttribute(div, 'data-whatever-thingy', div_data_whatever_thingy_value = state.updateOnChange);
 		},
 
 		mount: function mount(target, anchor) {
@@ -1526,13 +1621,20 @@ function create_main_fragment$4(state, component) {
 			if (component._yield) component._yield.mount(div, null);
 		},
 
+		update: function update(changed, state) {
+			if (div_data_whatever_thingy_value !== (div_data_whatever_thingy_value = state.updateOnChange)) {
+				setAttribute(div, 'data-whatever-thingy', div_data_whatever_thingy_value);
+			}
+		},
+
 		unmount: function unmount() {
 			detachNode$1(div);
-			if (component.refs.element === div) component.refs.element = null;
 			if (component._yield) component._yield.unmount();
 		},
 
-		destroy: noop$1
+		destroy: function destroy() {
+			if (component.refs.element === div) component.refs.element = null;
+		}
 	};
 }
 
@@ -1553,6 +1655,14 @@ function Visibility(options) {
 
 	this._torndown = false;
 
+	var oncreate = template$4.oncreate.bind(this);
+
+	if (!options._root) {
+		this._oncreate = [oncreate];
+	} else {
+		this._root._oncreate.push(oncreate);
+	}
+
 	this._fragment = create_main_fragment$4(this._state, this);
 
 	if (options.target) {
@@ -1560,10 +1670,8 @@ function Visibility(options) {
 		this._fragment.mount(options.target, null);
 	}
 
-	if (options._root) {
-		options._root._renderHooks.push(template$4.oncreate.bind(this));
-	} else {
-		template$4.oncreate.call(this);
+	if (!options._root) {
+		callAll$1(this._oncreate);
 	}
 }
 
@@ -1573,6 +1681,7 @@ Visibility.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign$1({}, oldState, newState);
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
+	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
 };
 
@@ -1606,19 +1715,25 @@ function recompute$3(state, newState, oldState, isInitial) {
 		state.nonIgnoredEvents = newState.nonIgnoredEvents = template$3.computed.nonIgnoredEvents(state.timeline, state.ignoreTypeMap);
 	}
 
-	if (isInitial || 'nonIgnoredEvents' in newState && differs$1(state.nonIgnoredEvents, oldState.nonIgnoredEvents) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs) || 'slugToTopRatio' in newState && differs$1(state.slugToTopRatio, oldState.slugToTopRatio) || 'slugToBottomRatio' in newState && differs$1(state.slugToBottomRatio, oldState.slugToBottomRatio)) {
-		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs, state.slugToTopRatio, state.slugToBottomRatio);
+	if (isInitial || 'nonIgnoredEvents' in newState && differs$1(state.nonIgnoredEvents, oldState.nonIgnoredEvents) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs) || 'slugToTopRatio' in newState && differs$1(state.slugToTopRatio, oldState.slugToTopRatio) || 'slugToBottomRatio' in newState && differs$1(state.slugToBottomRatio, oldState.slugToBottomRatio) || 'slugToTop' in newState && differs$1(state.slugToTop, oldState.slugToTop) || 'slugToBottom' in newState && differs$1(state.slugToBottom, oldState.slugToBottom) || 'slugToRight' in newState && differs$1(state.slugToRight, oldState.slugToRight)) {
+		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs, state.slugToTopRatio, state.slugToBottomRatio, state.slugToTop, state.slugToBottom, state.slugToRight);
 	}
 }
 
 var template$3 = function () {
 	return {
 		data: function data() {
+			var empty = function empty() {
+				return Object.create(null);
+			};
 			return {
 				clickable: false,
-				visibleEventSlugs: Object.create(null),
-				slugToTopRatio: Object.create(null),
-				slugToBottomRatio: Object.create(null),
+				visibleEventSlugs: empty(),
+				slugToTopRatio: empty(),
+				slugToBottomRatio: empty(),
+				slugToTop: empty(),
+				slugToBottom: empty(),
+				slugToRight: empty(),
 				ignoreType: []
 			};
 		},
@@ -1645,13 +1760,16 @@ var template$3 = function () {
 					return !ignoreTypeMap[event.type];
 				});
 			},
-			visibleEvents: function visibleEvents(nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio) {
+			visibleEvents: function visibleEvents(nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio, slugToTop, slugToBottom, slugToRight) {
 				return nonIgnoredEvents.filter(function (event) {
 					return visibleEventSlugs[event.slug];
 				}).map(function (event) {
 					return Object.assign({
 						topRatio: slugToTopRatio[event.slug],
-						bottomRatio: slugToBottomRatio[event.slug]
+						bottomRatio: slugToBottomRatio[event.slug],
+						top: slugToTop[event.slug],
+						bottom: slugToBottom[event.slug],
+						right: slugToRight[event.slug]
 					}, event);
 				});
 			}
@@ -1662,36 +1780,58 @@ var template$3 = function () {
 	};
 }();
 
+function encapsulateStyles$2(node) {
+	setAttribute(node, 'svelte-2387132463', '');
+}
+
 function add_css$2() {
 	var style = createElement$1('style');
-	style.id = "svelte-376884130-style";
-	style.textContent = "\n[svelte-376884130][data-clickable=true], [svelte-376884130] [data-clickable=true] {\n\tcursor: pointer;\n}\n[svelte-376884130].event, [svelte-376884130] .event {\n\tposition: absolute;\n\n\twidth: 48px;\n\t-webkit-border-radius: 10px;\n\t-moz-border-radius: 10px;\n\tborder-radius: 10px;\n}\n[svelte-376884130].event[data-cut-off-at-start=true], [svelte-376884130] .event[data-cut-off-at-start=true] {\n\t-webkit-border-top-right-radius: 0;\n\t-webkit-border-top-left-radius: 0;\n\tborder-top-right-radius: 0;\n\tborder-top-left-radius: 0;\n}\n[svelte-376884130].event[data-cut-off-at-end=true], [svelte-376884130] .event[data-cut-off-at-end=true] {\n\t-webkit-border-bottom-right-radius: 0;\n\t-webkit-border-bottom-left-radius: 0;\n\tborder-bottom-right-radius: 0;\n\tborder-bottom-left-radius: 0;\n}\n[svelte-376884130].event:hover, [svelte-376884130] .event:hover {\n\tbackground-color: red;\n}\n\n";
+	style.id = 'svelte-2387132463-style';
+	style.textContent = "[svelte-2387132463][data-clickable=true],[svelte-2387132463] [data-clickable=true]{cursor:pointer}[svelte-2387132463].event,[svelte-2387132463] .event{position:absolute;width:48px;-webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px}[svelte-2387132463].event[data-cut-off-at-start=true],[svelte-2387132463] .event[data-cut-off-at-start=true]{-webkit-border-top-right-radius:0;-webkit-border-top-left-radius:0;border-top-right-radius:0;border-top-left-radius:0}[svelte-2387132463].event[data-cut-off-at-end=true],[svelte-2387132463] .event[data-cut-off-at-end=true]{-webkit-border-bottom-right-radius:0;-webkit-border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-left-radius:0}[svelte-2387132463].event:hover,[svelte-2387132463] .event:hover{background-color:red}";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$3(state, component) {
-	var each_block_anchor;
+	var each_block_lookup = Object.create(null),
+	    each_block_head,
+	    each_block_last,
+	    each_block_anchor;
 
 	var each_block_value = state.timeline;
 
-	var each_block_iterations = [];
-
 	for (var i = 0; i < each_block_value.length; i += 1) {
-		each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+		var key = each_block_value[i].slug;
+		var each_block_iteration = each_block_lookup[key] = create_each_block$1(state, each_block_value, each_block_value[i], i, component, key);
+
+		if (each_block_last) each_block_last.next = each_block_iteration;
+		each_block_iteration.last = each_block_last;
+		each_block_last = each_block_iteration;
+
+		if (i === 0) each_block_head = each_block_iteration;
+	}
+
+	function each_block_destroy(iteration) {
+		iteration.unmount();
+		iteration.destroy();
+		each_block_lookup[iteration.key] = null;
 	}
 
 	return {
 		create: function create() {
-			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].create();
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.create();
+				each_block_iteration = each_block_iteration.next;
 			}
 
 			each_block_anchor = createComment$1();
 		},
 
 		mount: function mount(target, anchor) {
-			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].mount(target, anchor);
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.mount(target, anchor);
+				each_block_iteration = each_block_iteration.next;
 			}
 
 			insertNode$1(each_block_anchor, target, anchor);
@@ -1700,74 +1840,146 @@ function create_main_fragment$3(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed || 'multiplyDaysByHeight' in changed || 'visibleEventSlugs' in changed || 'slugToTopRatio' in changed || 'slugToBottomRatio' in changed || 'singleDayHeight' in changed || 'clickable' in changed) {
-				for (var i = 0; i < each_block_value.length; i += 1) {
-					if (each_block_iterations[i]) {
-						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+			var each_block_expected = each_block_head;
+			var each_block_last = null;
+
+			var discard_pile = [];
+
+			for (i = 0; i < each_block_value.length; i += 1) {
+				var key = each_block_value[i].slug;
+				var each_block_iteration = each_block_lookup[key];
+
+				if (each_block_iteration) each_block_iteration.update(changed, state, each_block_value, each_block_value[i], i);
+
+				if (each_block_expected) {
+					if (key === each_block_expected.key) {
+						each_block_expected = each_block_expected.next;
 					} else {
-						each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
-						each_block_iterations[i].create();
-						each_block_iterations[i].mount(each_block_anchor.parentNode, each_block_anchor);
+						if (each_block_iteration) {
+							// probably a deletion
+							while (each_block_expected && each_block_expected.key !== key) {
+								each_block_expected.discard = true;
+								discard_pile.push(each_block_expected);
+								each_block_expected = each_block_expected.next;
+							}
+
+							each_block_expected = each_block_expected && each_block_expected.next;
+							each_block_iteration.discard = false;
+							each_block_iteration.last = each_block_last;
+
+							if (!each_block_expected) each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
+						} else {
+							// key is being inserted
+							each_block_iteration = each_block_lookup[key] = create_each_block$1(state, each_block_value, each_block_value[i], i, component, key);
+							each_block_iteration.create();
+							each_block_iteration.mount(each_block_anchor.parentNode, each_block_expected.first);
+
+							each_block_expected.last = each_block_iteration;
+							each_block_iteration.next = each_block_expected;
+						}
+					}
+				} else {
+					// we're appending from this point forward
+					if (each_block_iteration) {
+						each_block_iteration.discard = false;
+						each_block_iteration.next = null;
+						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
+					} else {
+						each_block_iteration = each_block_lookup[key] = create_each_block$1(state, each_block_value, each_block_value[i], i, component, key);
+						each_block_iteration.create();
+						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 					}
 				}
 
-				for (; i < each_block_iterations.length; i += 1) {
-					each_block_iterations[i].unmount();
-					each_block_iterations[i].destroy();
-				}
-				each_block_iterations.length = each_block_value.length;
+				if (each_block_last) each_block_last.next = each_block_iteration;
+				each_block_iteration.last = each_block_last;
+				each_block_last = each_block_iteration;
 			}
+
+			if (each_block_last) each_block_last.next = null;
+
+			while (each_block_expected) {
+				each_block_destroy(each_block_expected);
+				each_block_expected = each_block_expected.next;
+			}
+
+			for (i = 0; i < discard_pile.length; i += 1) {
+				var each_block_iteration = discard_pile[i];
+				if (each_block_iteration.discard) {
+					each_block_destroy(each_block_iteration);
+				}
+			}
+
+			each_block_head = each_block_lookup[each_block_value[0] && each_block_value[0].slug];
 		},
 
 		unmount: function unmount() {
-			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].unmount();
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.unmount();
+				each_block_iteration = each_block_iteration.next;
 			}
 
 			detachNode$1(each_block_anchor);
 		},
 
 		destroy: function destroy() {
-			destroyEach(each_block_iterations, false, 0);
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.destroy(false);
+				each_block_iteration = each_block_iteration.next;
+			}
 		}
 	};
 }
 
-function create_each_block$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var if_block_anchor;
+function create_each_block$1(state, each_block_value, timelineEvent, index, component, key) {
+	var first, if_block_anchor;
 
-	function get_block(state, each_block_value, timelineEvent, timelineEvent_index) {
+	function get_block(state, each_block_value, timelineEvent, index) {
 		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block$2;
 		return create_if_block_1$2;
 	}
 
-	var current_block = get_block(state, each_block_value, timelineEvent, timelineEvent_index);
-	var if_block = current_block(state, each_block_value, timelineEvent, timelineEvent_index, component);
+	var current_block = get_block(state, each_block_value, timelineEvent, index);
+	var if_block = current_block(state, each_block_value, timelineEvent, index, component);
 
 	return {
+		key: key,
+
+		first: null,
+
 		create: function create() {
+			first = createComment$1();
 			if_block.create();
 			if_block_anchor = createComment$1();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			this.first = first;
 		},
 
 		mount: function mount(target, anchor) {
+			insertNode$1(first, target, anchor);
 			if_block.mount(target, anchor);
 			insertNode$1(if_block_anchor, target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			if (current_block === (current_block = get_block(state, each_block_value, timelineEvent, timelineEvent_index)) && if_block) {
-				if_block.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			if (current_block === (current_block = get_block(state, each_block_value, timelineEvent, index)) && if_block) {
+				if_block.update(changed, state, each_block_value, timelineEvent, index);
 			} else {
 				if_block.unmount();
 				if_block.destroy();
-				if_block = current_block(state, each_block_value, timelineEvent, timelineEvent_index, component);
+				if_block = current_block(state, each_block_value, timelineEvent, index, component);
 				if_block.create();
 				if_block.mount(if_block_anchor.parentNode, if_block_anchor);
 			}
 		},
 
 		unmount: function unmount() {
+			detachNode$1(first);
 			if_block.unmount();
 			detachNode$1(if_block_anchor);
 		},
@@ -1778,66 +1990,149 @@ function create_each_block$1(state, each_block_value, timelineEvent, timelineEve
 	};
 }
 
-function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, index, component, key) {
 	var visibility_1_updating = false,
 	    visibility_1_updating_1 = false,
-	    visibility_1_updating_2 = false;
+	    visibility_1_updating_2 = false,
+	    visibility_1_updating_3 = false,
+	    visibility_1_updating_4 = false,
+	    visibility_1_updating_5 = false;
 
-	var visibility_1_yield_fragment = create_visibility_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component);
+	var visibility_1_yield_fragment = create_visibility_yield_fragment(state, each_block_value, timelineEvent, index, component);
 
-	var visibility_1_initial_data = {};
+	var visibility_1_initial_data = {
+		logName: "Events single: " + timelineEvent.slug,
+		updateOnChange: index
+	};
 	if (timelineEvent.slug in state.visibleEventSlugs) visibility_1_initial_data.visible = state.visibleEventSlugs[timelineEvent.slug];
 	if (timelineEvent.slug in state.slugToTopRatio) visibility_1_initial_data.topRatio = state.slugToTopRatio[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToTop) visibility_1_initial_data.top = state.slugToTop[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToBottom) visibility_1_initial_data.bottom = state.slugToBottom[timelineEvent.slug];
 	if (timelineEvent.slug in state.slugToBottomRatio) visibility_1_initial_data.bottomRatio = state.slugToBottomRatio[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToRight) visibility_1_initial_data.right = state.slugToRight[timelineEvent.slug];
 	var visibility_1 = new Visibility({
 		_root: component._root,
 		_yield: visibility_1_yield_fragment,
 		data: visibility_1_initial_data
 	});
 
-	component._bindings.push(function () {
-		if (visibility_1._torndown) return;
-		visibility_1.observe('visible', function (value) {
-			if (visibility_1_updating) return;
-			visibility_1_updating = true;
-			var state = component.get();
-			state.visibleEventSlugs[timelineEvent.slug] = value;
-			component._set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
-			visibility_1_updating = false;
-		}, { init: differs$1(visibility_1.get('visible'), state.visibleEventSlugs[timelineEvent.slug]) });
+	function observer(value) {
+		if (visibility_1_updating) return;
+		visibility_1_updating = true;
+		var state = component.get();
+		state.visibleEventSlugs[timelineEvent.slug] = value;
+		component.set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
+		visibility_1_updating = false;
+	}
+
+	visibility_1.observe('visible', observer, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('visible');
+		if (differs$1(value, state.visibleEventSlugs[timelineEvent.slug])) {
+			observer.call(visibility_1, value);
+		}
 	});
 
-	component._bindings.push(function () {
-		if (visibility_1._torndown) return;
-		visibility_1.observe('topRatio', function (value) {
-			if (visibility_1_updating_1) return;
-			visibility_1_updating_1 = true;
-			var state = component.get();
-			state.slugToTopRatio[timelineEvent.slug] = value;
-			component._set({ slugToTopRatio: state.slugToTopRatio, timeline: state.timeline });
-			visibility_1_updating_1 = false;
-		}, { init: differs$1(visibility_1.get('topRatio'), state.slugToTopRatio[timelineEvent.slug]) });
+	function observer_1(value) {
+		if (visibility_1_updating_1) return;
+		visibility_1_updating_1 = true;
+		var state = component.get();
+		state.slugToTopRatio[timelineEvent.slug] = value;
+		component.set({ slugToTopRatio: state.slugToTopRatio, timeline: state.timeline });
+		visibility_1_updating_1 = false;
+	}
+
+	visibility_1.observe('topRatio', observer_1, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('topRatio');
+		if (differs$1(value, state.slugToTopRatio[timelineEvent.slug])) {
+			observer_1.call(visibility_1, value);
+		}
 	});
 
-	component._bindings.push(function () {
-		if (visibility_1._torndown) return;
-		visibility_1.observe('bottomRatio', function (value) {
-			if (visibility_1_updating_2) return;
-			visibility_1_updating_2 = true;
-			var state = component.get();
-			state.slugToBottomRatio[timelineEvent.slug] = value;
-			component._set({ slugToBottomRatio: state.slugToBottomRatio, timeline: state.timeline });
-			visibility_1_updating_2 = false;
-		}, { init: differs$1(visibility_1.get('bottomRatio'), state.slugToBottomRatio[timelineEvent.slug]) });
+	function observer_2(value) {
+		if (visibility_1_updating_2) return;
+		visibility_1_updating_2 = true;
+		var state = component.get();
+		state.slugToTop[timelineEvent.slug] = value;
+		component.set({ slugToTop: state.slugToTop, timeline: state.timeline });
+		visibility_1_updating_2 = false;
+	}
+
+	visibility_1.observe('top', observer_2, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('top');
+		if (differs$1(value, state.slugToTop[timelineEvent.slug])) {
+			observer_2.call(visibility_1, value);
+		}
+	});
+
+	function observer_3(value) {
+		if (visibility_1_updating_3) return;
+		visibility_1_updating_3 = true;
+		var state = component.get();
+		state.slugToBottom[timelineEvent.slug] = value;
+		component.set({ slugToBottom: state.slugToBottom, timeline: state.timeline });
+		visibility_1_updating_3 = false;
+	}
+
+	visibility_1.observe('bottom', observer_3, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('bottom');
+		if (differs$1(value, state.slugToBottom[timelineEvent.slug])) {
+			observer_3.call(visibility_1, value);
+		}
+	});
+
+	function observer_4(value) {
+		if (visibility_1_updating_4) return;
+		visibility_1_updating_4 = true;
+		var state = component.get();
+		state.slugToBottomRatio[timelineEvent.slug] = value;
+		component.set({ slugToBottomRatio: state.slugToBottomRatio, timeline: state.timeline });
+		visibility_1_updating_4 = false;
+	}
+
+	visibility_1.observe('bottomRatio', observer_4, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('bottomRatio');
+		if (differs$1(value, state.slugToBottomRatio[timelineEvent.slug])) {
+			observer_4.call(visibility_1, value);
+		}
+	});
+
+	function observer_5(value) {
+		if (visibility_1_updating_5) return;
+		visibility_1_updating_5 = true;
+		var state = component.get();
+		state.slugToRight[timelineEvent.slug] = value;
+		component.set({ slugToRight: state.slugToRight, timeline: state.timeline });
+		visibility_1_updating_5 = false;
+	}
+
+	visibility_1.observe('right', observer_5, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('right');
+		if (differs$1(value, state.slugToRight[timelineEvent.slug])) {
+			observer_5.call(visibility_1, value);
+		}
 	});
 
 	visibility_1._context = {
 		state: state,
 		each_block_value: each_block_value,
-		timelineEvent_index: timelineEvent_index
+		index: index
 	};
 
 	return {
+		key: key,
+
 		create: function create() {
 			visibility_1_yield_fragment.create();
 			visibility_1._fragment.create();
@@ -1847,8 +2142,8 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 			visibility_1._fragment.mount(target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, index);
 
 			if (!visibility_1_updating && 'visibleEventSlugs' in changed || 'timeline' in changed) {
 				visibility_1_updating = true;
@@ -1862,15 +2157,40 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 				visibility_1_updating_1 = false;
 			}
 
-			if (!visibility_1_updating_2 && 'slugToBottomRatio' in changed || 'timeline' in changed) {
+			if (!visibility_1_updating_2 && 'slugToTop' in changed || 'timeline' in changed) {
 				visibility_1_updating_2 = true;
-				visibility_1._set({ bottomRatio: state.slugToBottomRatio[timelineEvent.slug] });
+				visibility_1._set({ top: state.slugToTop[timelineEvent.slug] });
 				visibility_1_updating_2 = false;
+			}
+
+			if (!visibility_1_updating_3 && 'slugToBottom' in changed || 'timeline' in changed) {
+				visibility_1_updating_3 = true;
+				visibility_1._set({ bottom: state.slugToBottom[timelineEvent.slug] });
+				visibility_1_updating_3 = false;
+			}
+
+			if (!visibility_1_updating_4 && 'slugToBottomRatio' in changed || 'timeline' in changed) {
+				visibility_1_updating_4 = true;
+				visibility_1._set({ bottomRatio: state.slugToBottomRatio[timelineEvent.slug] });
+				visibility_1_updating_4 = false;
+			}
+
+			if (!visibility_1_updating_5 && 'slugToRight' in changed || 'timeline' in changed) {
+				visibility_1_updating_5 = true;
+				visibility_1._set({ right: state.slugToRight[timelineEvent.slug] });
+				visibility_1_updating_5 = false;
 			}
 
 			visibility_1._context.state = state;
 			visibility_1._context.each_block_value = each_block_value;
-			visibility_1._context.timelineEvent_index = timelineEvent_index;
+			visibility_1._context.index = index;
+
+			var visibility_1_changes = {};
+
+			if ('timeline' in changed) visibility_1_changes.logName = "Events single: " + timelineEvent.slug;
+			visibility_1_changes.updateOnChange = index;
+
+			if (Object.keys(visibility_1_changes).length) visibility_1._set(visibility_1_changes);
 		},
 
 		unmount: function unmount() {
@@ -1884,20 +2204,20 @@ function create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent,
 	};
 }
 
-function create_visibility_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var div, div_data_title_value, div_data_days_value, div_style_value;
+function create_visibility_yield_fragment(state, each_block_value, timelineEvent, index, component, key) {
+	var div, div_style_value;
 
 	return {
+		key: key,
+
 		create: function create() {
 			div = createElement$1('div');
 			this.hydrate();
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-376884130', '');
+			encapsulateStyles$2(div);
 			div.className = "event";
-			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
-			setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
 			div.style.cssText = div_style_value = "\n\t\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
 			addListener$1(div, 'mouseover', mouseover_handler);
 			addListener$1(div, 'mouseleave', mouseleave_handler);
@@ -1905,7 +2225,7 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 			div._svelte = {
 				component: component,
 				each_block_value: each_block_value,
-				timelineEvent_index: timelineEvent_index
+				index: index
 			};
 		},
 
@@ -1913,21 +2233,13 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 			insertNode$1(div, target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
-				setAttribute(div, 'data-title', div_data_title_value);
-			}
-
-			if (div_data_days_value !== (div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1)) {
-				setAttribute(div, 'data-days', div_data_days_value);
-			}
-
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
 			if (div_style_value !== (div_style_value = "\n\t\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
 			div._svelte.each_block_value = each_block_value;
-			div._svelte.timelineEvent_index = timelineEvent_index;
+			div._svelte.index = index;
 		},
 
 		unmount: function unmount() {
@@ -1941,66 +2253,149 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 	};
 }
 
-function create_link_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+function create_link_yield_fragment(state, each_block_value, timelineEvent, index, component, key) {
 	var visibility_1_updating = false,
 	    visibility_1_updating_1 = false,
-	    visibility_1_updating_2 = false;
+	    visibility_1_updating_2 = false,
+	    visibility_1_updating_3 = false,
+	    visibility_1_updating_4 = false,
+	    visibility_1_updating_5 = false;
 
-	var visibility_1_yield_fragment = create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, timelineEvent_index, component);
+	var visibility_1_yield_fragment = create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, index, component);
 
-	var visibility_1_initial_data = {};
+	var visibility_1_initial_data = {
+		logName: "Events long: " + timelineEvent.slug,
+		updateOnChange: index
+	};
 	if (timelineEvent.slug in state.visibleEventSlugs) visibility_1_initial_data.visible = state.visibleEventSlugs[timelineEvent.slug];
 	if (timelineEvent.slug in state.slugToTopRatio) visibility_1_initial_data.topRatio = state.slugToTopRatio[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToTop) visibility_1_initial_data.top = state.slugToTop[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToBottom) visibility_1_initial_data.bottom = state.slugToBottom[timelineEvent.slug];
 	if (timelineEvent.slug in state.slugToBottomRatio) visibility_1_initial_data.bottomRatio = state.slugToBottomRatio[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToRight) visibility_1_initial_data.right = state.slugToRight[timelineEvent.slug];
 	var visibility_1 = new Visibility({
 		_root: component._root,
 		_yield: visibility_1_yield_fragment,
 		data: visibility_1_initial_data
 	});
 
-	component._bindings.push(function () {
-		if (visibility_1._torndown) return;
-		visibility_1.observe('visible', function (value) {
-			if (visibility_1_updating) return;
-			visibility_1_updating = true;
-			var state = component.get();
-			state.visibleEventSlugs[timelineEvent.slug] = value;
-			component._set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
-			visibility_1_updating = false;
-		}, { init: differs$1(visibility_1.get('visible'), state.visibleEventSlugs[timelineEvent.slug]) });
+	function observer(value) {
+		if (visibility_1_updating) return;
+		visibility_1_updating = true;
+		var state = component.get();
+		state.visibleEventSlugs[timelineEvent.slug] = value;
+		component.set({ visibleEventSlugs: state.visibleEventSlugs, timeline: state.timeline });
+		visibility_1_updating = false;
+	}
+
+	visibility_1.observe('visible', observer, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('visible');
+		if (differs$1(value, state.visibleEventSlugs[timelineEvent.slug])) {
+			observer.call(visibility_1, value);
+		}
 	});
 
-	component._bindings.push(function () {
-		if (visibility_1._torndown) return;
-		visibility_1.observe('topRatio', function (value) {
-			if (visibility_1_updating_1) return;
-			visibility_1_updating_1 = true;
-			var state = component.get();
-			state.slugToTopRatio[timelineEvent.slug] = value;
-			component._set({ slugToTopRatio: state.slugToTopRatio, timeline: state.timeline });
-			visibility_1_updating_1 = false;
-		}, { init: differs$1(visibility_1.get('topRatio'), state.slugToTopRatio[timelineEvent.slug]) });
+	function observer_1(value) {
+		if (visibility_1_updating_1) return;
+		visibility_1_updating_1 = true;
+		var state = component.get();
+		state.slugToTopRatio[timelineEvent.slug] = value;
+		component.set({ slugToTopRatio: state.slugToTopRatio, timeline: state.timeline });
+		visibility_1_updating_1 = false;
+	}
+
+	visibility_1.observe('topRatio', observer_1, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('topRatio');
+		if (differs$1(value, state.slugToTopRatio[timelineEvent.slug])) {
+			observer_1.call(visibility_1, value);
+		}
 	});
 
-	component._bindings.push(function () {
-		if (visibility_1._torndown) return;
-		visibility_1.observe('bottomRatio', function (value) {
-			if (visibility_1_updating_2) return;
-			visibility_1_updating_2 = true;
-			var state = component.get();
-			state.slugToBottomRatio[timelineEvent.slug] = value;
-			component._set({ slugToBottomRatio: state.slugToBottomRatio, timeline: state.timeline });
-			visibility_1_updating_2 = false;
-		}, { init: differs$1(visibility_1.get('bottomRatio'), state.slugToBottomRatio[timelineEvent.slug]) });
+	function observer_2(value) {
+		if (visibility_1_updating_2) return;
+		visibility_1_updating_2 = true;
+		var state = component.get();
+		state.slugToTop[timelineEvent.slug] = value;
+		component.set({ slugToTop: state.slugToTop, timeline: state.timeline });
+		visibility_1_updating_2 = false;
+	}
+
+	visibility_1.observe('top', observer_2, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('top');
+		if (differs$1(value, state.slugToTop[timelineEvent.slug])) {
+			observer_2.call(visibility_1, value);
+		}
+	});
+
+	function observer_3(value) {
+		if (visibility_1_updating_3) return;
+		visibility_1_updating_3 = true;
+		var state = component.get();
+		state.slugToBottom[timelineEvent.slug] = value;
+		component.set({ slugToBottom: state.slugToBottom, timeline: state.timeline });
+		visibility_1_updating_3 = false;
+	}
+
+	visibility_1.observe('bottom', observer_3, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('bottom');
+		if (differs$1(value, state.slugToBottom[timelineEvent.slug])) {
+			observer_3.call(visibility_1, value);
+		}
+	});
+
+	function observer_4(value) {
+		if (visibility_1_updating_4) return;
+		visibility_1_updating_4 = true;
+		var state = component.get();
+		state.slugToBottomRatio[timelineEvent.slug] = value;
+		component.set({ slugToBottomRatio: state.slugToBottomRatio, timeline: state.timeline });
+		visibility_1_updating_4 = false;
+	}
+
+	visibility_1.observe('bottomRatio', observer_4, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('bottomRatio');
+		if (differs$1(value, state.slugToBottomRatio[timelineEvent.slug])) {
+			observer_4.call(visibility_1, value);
+		}
+	});
+
+	function observer_5(value) {
+		if (visibility_1_updating_5) return;
+		visibility_1_updating_5 = true;
+		var state = component.get();
+		state.slugToRight[timelineEvent.slug] = value;
+		component.set({ slugToRight: state.slugToRight, timeline: state.timeline });
+		visibility_1_updating_5 = false;
+	}
+
+	visibility_1.observe('right', observer_5, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('right');
+		if (differs$1(value, state.slugToRight[timelineEvent.slug])) {
+			observer_5.call(visibility_1, value);
+		}
 	});
 
 	visibility_1._context = {
 		state: state,
 		each_block_value: each_block_value,
-		timelineEvent_index: timelineEvent_index
+		index: index
 	};
 
 	return {
+		key: key,
+
 		create: function create() {
 			visibility_1_yield_fragment.create();
 			visibility_1._fragment.create();
@@ -2010,8 +2405,8 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 			visibility_1._fragment.mount(target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, index);
 
 			if (!visibility_1_updating && 'visibleEventSlugs' in changed || 'timeline' in changed) {
 				visibility_1_updating = true;
@@ -2025,15 +2420,40 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 				visibility_1_updating_1 = false;
 			}
 
-			if (!visibility_1_updating_2 && 'slugToBottomRatio' in changed || 'timeline' in changed) {
+			if (!visibility_1_updating_2 && 'slugToTop' in changed || 'timeline' in changed) {
 				visibility_1_updating_2 = true;
-				visibility_1._set({ bottomRatio: state.slugToBottomRatio[timelineEvent.slug] });
+				visibility_1._set({ top: state.slugToTop[timelineEvent.slug] });
 				visibility_1_updating_2 = false;
+			}
+
+			if (!visibility_1_updating_3 && 'slugToBottom' in changed || 'timeline' in changed) {
+				visibility_1_updating_3 = true;
+				visibility_1._set({ bottom: state.slugToBottom[timelineEvent.slug] });
+				visibility_1_updating_3 = false;
+			}
+
+			if (!visibility_1_updating_4 && 'slugToBottomRatio' in changed || 'timeline' in changed) {
+				visibility_1_updating_4 = true;
+				visibility_1._set({ bottomRatio: state.slugToBottomRatio[timelineEvent.slug] });
+				visibility_1_updating_4 = false;
+			}
+
+			if (!visibility_1_updating_5 && 'slugToRight' in changed || 'timeline' in changed) {
+				visibility_1_updating_5 = true;
+				visibility_1._set({ right: state.slugToRight[timelineEvent.slug] });
+				visibility_1_updating_5 = false;
 			}
 
 			visibility_1._context.state = state;
 			visibility_1._context.each_block_value = each_block_value;
-			visibility_1._context.timelineEvent_index = timelineEvent_index;
+			visibility_1._context.index = index;
+
+			var visibility_1_changes = {};
+
+			if ('timeline' in changed) visibility_1_changes.logName = "Events long: " + timelineEvent.slug;
+			visibility_1_changes.updateOnChange = index;
+
+			if (Object.keys(visibility_1_changes).length) visibility_1._set(visibility_1_changes);
 		},
 
 		unmount: function unmount() {
@@ -2047,24 +2467,22 @@ function create_link_yield_fragment(state, each_block_value, timelineEvent, time
 	};
 }
 
-function create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, timelineEvent_index, component) {
-	var div, div_data_title_value, div_id_value, div_data_top_value, div_data_left_value, div_style_value, div_data_days_value, div_data_cut_off_at_start_value, div_data_cut_off_at_end_value;
+function create_visibility_yield_fragment_1(state, each_block_value, timelineEvent, index, component, key) {
+	var div, div_id_value, div_style_value, div_data_cut_off_at_start_value, div_data_cut_off_at_end_value;
 
 	return {
+		key: key,
+
 		create: function create() {
 			div = createElement$1('div');
 			this.hydrate();
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-376884130', '');
-			setAttribute(div, 'data-title', div_data_title_value = timelineEvent.title);
+			encapsulateStyles$2(div);
 			div.id = div_id_value = timelineEvent.slug;
-			setAttribute(div, 'data-top', div_data_top_value = state.multiplyDaysByHeight(timelineEvent.axisAfterStart));
-			setAttribute(div, 'data-left', div_data_left_value = template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel));
-			div.className = "event";
 			div.style.cssText = div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
-			setAttribute(div, 'data-days', div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1);
+			div.className = "event";
 			setAttribute(div, 'data-cut-off-at-start', div_data_cut_off_at_start_value = timelineEvent.axis.cutOffAtStart);
 			setAttribute(div, 'data-cut-off-at-end', div_data_cut_off_at_end_value = timelineEvent.axis.cutOffAtEnd);
 			addListener$1(div, 'mouseover', mouseover_handler_1);
@@ -2073,7 +2491,7 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 			div._svelte = {
 				component: component,
 				each_block_value: each_block_value,
-				timelineEvent_index: timelineEvent_index
+				index: index
 			};
 		},
 
@@ -2081,29 +2499,13 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 			insertNode$1(div, target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			if (div_data_title_value !== (div_data_title_value = timelineEvent.title)) {
-				setAttribute(div, 'data-title', div_data_title_value);
-			}
-
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
 			if (div_id_value !== (div_id_value = timelineEvent.slug)) {
 				div.id = div_id_value;
 			}
 
-			if (div_data_top_value !== (div_data_top_value = state.multiplyDaysByHeight(timelineEvent.axisAfterStart))) {
-				setAttribute(div, 'data-top', div_data_top_value);
-			}
-
-			if (div_data_left_value !== (div_data_left_value = template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel))) {
-				setAttribute(div, 'data-left', div_data_left_value);
-			}
-
 			if (div_style_value !== (div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t")) {
 				div.style.cssText = div_style_value;
-			}
-
-			if (div_data_days_value !== (div_data_days_value = timelineEvent.axis.end - timelineEvent.axis.start + 1)) {
-				setAttribute(div, 'data-days', div_data_days_value);
 			}
 
 			if (div_data_cut_off_at_start_value !== (div_data_cut_off_at_start_value = timelineEvent.axis.cutOffAtStart)) {
@@ -2115,7 +2517,7 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 			}
 
 			div._svelte.each_block_value = each_block_value;
-			div._svelte.timelineEvent_index = timelineEvent_index;
+			div._svelte.index = index;
 		},
 
 		unmount: function unmount() {
@@ -2129,9 +2531,9 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 	};
 }
 
-function create_if_block$2(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+function create_if_block$2(state, each_block_value, timelineEvent, index, component, key) {
 
-	var vcenter_1_yield_fragment = create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, timelineEvent_index, component);
+	var vcenter_1_yield_fragment = create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, index, component);
 
 	var vcenter_1 = new VerticallyCentered({
 		_root: component._root,
@@ -2140,6 +2542,8 @@ function create_if_block$2(state, each_block_value, timelineEvent, timelineEvent
 	});
 
 	return {
+		key: key,
+
 		create: function create() {
 			vcenter_1_yield_fragment.create();
 			vcenter_1._fragment.create();
@@ -2149,15 +2553,15 @@ function create_if_block$2(state, each_block_value, timelineEvent, timelineEvent
 			vcenter_1._fragment.mount(target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			vcenter_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			vcenter_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, index);
 
 			var vcenter_1_changes = {};
 
 			if ('timeline' in changed) vcenter_1_changes.left = template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
 			if ('multiplyDaysByHeight' in changed || 'timeline' in changed) vcenter_1_changes.point = state.multiplyDaysByHeight(timelineEvent.axisAfterStart);
 
-			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
+			if (Object.keys(vcenter_1_changes).length) vcenter_1._set(vcenter_1_changes);
 		},
 
 		unmount: function unmount() {
@@ -2171,9 +2575,9 @@ function create_if_block$2(state, each_block_value, timelineEvent, timelineEvent
 	};
 }
 
-function create_if_block_1$2(state, each_block_value, timelineEvent, timelineEvent_index, component) {
+function create_if_block_1$2(state, each_block_value, timelineEvent, index, component, key) {
 
-	var link_1_yield_fragment = create_link_yield_fragment(state, each_block_value, timelineEvent, timelineEvent_index, component);
+	var link_1_yield_fragment = create_link_yield_fragment(state, each_block_value, timelineEvent, index, component);
 
 	var link_1 = new template$3.components.Link({
 		_root: component._root,
@@ -2182,6 +2586,8 @@ function create_if_block_1$2(state, each_block_value, timelineEvent, timelineEve
 	});
 
 	return {
+		key: key,
+
 		create: function create() {
 			link_1_yield_fragment.create();
 			link_1._fragment.create();
@@ -2191,14 +2597,14 @@ function create_if_block_1$2(state, each_block_value, timelineEvent, timelineEve
 			link_1._fragment.mount(target, anchor);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, timelineEvent_index) {
-			link_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, timelineEvent_index);
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			link_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, index);
 
 			var link_1_changes = {};
 
 			if ('clickable' in changed || 'timeline' in changed) link_1_changes.parameters = state.clickable ? { zoom: timelineEvent.slug } : null;
 
-			if (Object.keys(link_1_changes).length) link_1.set(link_1_changes);
+			if (Object.keys(link_1_changes).length) link_1._set(link_1_changes);
 		},
 
 		unmount: function unmount() {
@@ -2215,32 +2621,32 @@ function create_if_block_1$2(state, each_block_value, timelineEvent, timelineEve
 function mouseover_handler(event) {
 	var component = this._svelte.component;
 	var each_block_value = this._svelte.each_block_value,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value[timelineEvent_index];
+	    index = this._svelte.index,
+	    timelineEvent = each_block_value[index];
 	component.fire('startHover', timelineEvent);
 }
 
 function mouseleave_handler(event) {
 	var component = this._svelte.component;
 	var each_block_value = this._svelte.each_block_value,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value[timelineEvent_index];
+	    index = this._svelte.index,
+	    timelineEvent = each_block_value[index];
 	component.fire('endHover', timelineEvent);
 }
 
 function mouseover_handler_1(event) {
 	var component = this._svelte.component;
 	var each_block_value = this._svelte.each_block_value,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value[timelineEvent_index];
+	    index = this._svelte.index,
+	    timelineEvent = each_block_value[index];
 	component.fire('startHover', timelineEvent);
 }
 
 function mouseleave_handler_1(event) {
 	var component = this._svelte.component;
 	var each_block_value = this._svelte.each_block_value,
-	    timelineEvent_index = this._svelte.timelineEvent_index,
-	    timelineEvent = each_block_value[timelineEvent_index];
+	    index = this._svelte.index,
+	    timelineEvent = each_block_value[index];
 	component.fire('endHover', timelineEvent);
 }
 
@@ -2260,9 +2666,13 @@ function Events(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-376884130-style")) add_css$2();
-	this._renderHooks = [];
-	this._bindings = [];
+	if (!document.getElementById('svelte-2387132463-style')) add_css$2();
+
+	if (!options._root) {
+		this._oncreate = [];
+		this._beforecreate = [];
+		this._aftercreate = [];
+	}
 
 	this._fragment = create_main_fragment$3(this._state, this);
 
@@ -2271,9 +2681,13 @@ function Events(options) {
 		this._fragment.mount(options.target, null);
 	}
 
-	while (this._bindings.length) {
-		this._bindings.pop()();
-	}this._flush();
+	if (!options._root) {
+		this._lock = true;
+		callAll$1(this._beforecreate);
+		callAll$1(this._oncreate);
+		callAll$1(this._aftercreate);
+		this._lock = false;
+	}
 }
 
 assign$1(Events.prototype, proto);
@@ -2285,9 +2699,6 @@ Events.prototype._set = function _set(newState) {
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
-	while (this._bindings.length) {
-		this._bindings.pop()();
-	}this._flush();
 };
 
 Events.prototype.teardown = Events.prototype.destroy = function destroy(detach) {
@@ -2305,6 +2716,10 @@ function recompute$4(state, newState, oldState, isInitial) {
 	if (isInitial || 'hoveredEvent' in newState && differs$1(state.hoveredEvent, oldState.hoveredEvent)) {
 		state.outline = newState.outline = template$5.computed.outline(state.hoveredEvent);
 	}
+
+	if (isInitial || 'slugToVerticalCenter' in newState && differs$1(state.slugToVerticalCenter, oldState.slugToVerticalCenter) || 'slugToLeft' in newState && differs$1(state.slugToLeft, oldState.slugToLeft) || 'slugToVisible' in newState && differs$1(state.slugToVisible, oldState.slugToVisible) || 'timeline' in newState && differs$1(state.timeline, oldState.timeline)) {
+		state.slugToPoints = newState.slugToPoints = template$5.computed.slugToPoints(state.slugToVerticalCenter, state.slugToLeft, state.slugToVisible, state.timeline);
+	}
 }
 
 var template$5 = function () {
@@ -2316,12 +2731,25 @@ var template$5 = function () {
 	var noopString = function noopString() {
 		return '';
 	};
+	var allSlugsExistInMap = function allSlugsExistInMap(events, map) {
+		return events.every(function (event) {
+			return map[event.slug];
+		});
+	};
+	var missing = function missing(events, map) {
+		return events.find(function (event) {
+			return !map[event.slug];
+		}).slug;
+	};
 
 	return {
 		data: function data() {
 			return {
 				descriptionHeight: 40,
-				buffer: 4
+				buffer: 4,
+				slugToVerticalCenter: Object.create(null),
+				slugToLeft: Object.create(null),
+				slugToVisible: Object.create(null)
 			};
 		},
 
@@ -2330,41 +2758,105 @@ var template$5 = function () {
 				return hoveredEvent ? function (timelineEvent) {
 					return getOutlineCssString(hoveredEvent, timelineEvent);
 				} : noopString;
+			},
+			slugToPoints: function slugToPoints(slugToVerticalCenter, slugToLeft, slugToVisible, timeline) {
+				if (!allSlugsExistInMap(timeline, slugToVerticalCenter)) {
+					console.log('allSlugsExistInMap fails with slugToVerticalCenter when finding', missing(timeline, slugToVerticalCenter));
+				}
+				// if (!allSlugsExistInMap(timeline, slugToLeft)) {
+				// 	console.log('allSlugsExistInMap fails with slugToLeft when finding', missing(timeline, slugToLeft))
+				// }
+
+				if (!allSlugsExistInMap(timeline, slugToVerticalCenter) || !allSlugsExistInMap(timeline, slugToLeft)) {
+					return null;
+				}
+
+				var map = {}; //Object.create(null)
+
+				Object.entries(slugToVisible).filter(function (_ref) {
+					var _ref2 = slicedToArray(_ref, 2),
+					    visible = _ref2[1];
+
+					return visible;
+				}).map(function (_ref3) {
+					var _ref4 = slicedToArray(_ref3, 1),
+					    slug = _ref4[0];
+
+					return slug;
+				}).forEach(function (slug) {
+					map[slug] = {
+						x: slugToLeft[slug],
+						y: slugToVerticalCenter[slug]
+					};
+
+					if (!slugToLeft[slug]) {
+						console.error('No slugToLeft for', slug);
+					}
+					if (!slugToVerticalCenter[slug]) {
+						console.error('No slugToVerticalCenter for', slug);
+					}
+				});
+
+				// console.log('slugToPoints returning', Object.keys(map).length, map)
+
+				return map;
 			}
 		}
 	};
 }();
 
+function encapsulateStyles$3(node) {
+	setAttribute(node, 'svelte-656401876', '');
+}
+
 function add_css$3() {
 	var style = createElement$1('style');
-	style.id = "svelte-2385669870-style";
-	style.textContent = "\n[svelte-2385669870].event-description, [svelte-2385669870] .event-description {\n\tborder-width: 2px;\n\tborder-style: solid;\n\tpadding: 4px 8px;\n\tmargin: 8px 0px;\n}\n";
+	style.id = 'svelte-656401876-style';
+	style.textContent = "[svelte-656401876].event-description,[svelte-656401876] .event-description{border-width:2px;border-style:solid;padding:4px 8px;margin:8px 0px}";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$5(state, component) {
-	var each_block_anchor;
+	var each_block_lookup = Object.create(null),
+	    each_block_head,
+	    each_block_last,
+	    each_block_anchor;
 
 	var each_block_value = state.timeline;
 
-	var each_block_iterations = [];
-
 	for (var i = 0; i < each_block_value.length; i += 1) {
-		each_block_iterations[i] = create_each_block$2(state, each_block_value, each_block_value[i], i, component);
+		var key = each_block_value[i].slug;
+		var each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
+
+		if (each_block_last) each_block_last.next = each_block_iteration;
+		each_block_iteration.last = each_block_last;
+		each_block_last = each_block_iteration;
+
+		if (i === 0) each_block_head = each_block_iteration;
+	}
+
+	function each_block_destroy(iteration) {
+		iteration.unmount();
+		iteration.destroy();
+		each_block_lookup[iteration.key] = null;
 	}
 
 	return {
 		create: function create() {
-			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].create();
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.create();
+				each_block_iteration = each_block_iteration.next;
 			}
 
 			each_block_anchor = createComment$1();
 		},
 
 		mount: function mount(target, anchor) {
-			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].mount(target, anchor);
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.mount(target, anchor);
+				each_block_iteration = each_block_iteration.next;
 			}
 
 			insertNode$1(each_block_anchor, target, anchor);
@@ -2373,43 +2865,252 @@ function create_main_fragment$5(state, component) {
 		update: function update(changed, state) {
 			var each_block_value = state.timeline;
 
-			if ('timeline' in changed || 'outline' in changed) {
-				for (var i = 0; i < each_block_value.length; i += 1) {
-					if (each_block_iterations[i]) {
-						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+			var each_block_expected = each_block_head;
+			var each_block_last = null;
+
+			var discard_pile = [];
+
+			for (i = 0; i < each_block_value.length; i += 1) {
+				var key = each_block_value[i].slug;
+				var each_block_iteration = each_block_lookup[key];
+
+				if (each_block_iteration) each_block_iteration.update(changed, state, each_block_value, each_block_value[i], i);
+
+				if (each_block_expected) {
+					if (key === each_block_expected.key) {
+						each_block_expected = each_block_expected.next;
 					} else {
-						each_block_iterations[i] = create_each_block$2(state, each_block_value, each_block_value[i], i, component);
-						each_block_iterations[i].create();
-						each_block_iterations[i].mount(each_block_anchor.parentNode, each_block_anchor);
+						if (each_block_iteration) {
+							// probably a deletion
+							while (each_block_expected && each_block_expected.key !== key) {
+								each_block_expected.discard = true;
+								discard_pile.push(each_block_expected);
+								each_block_expected = each_block_expected.next;
+							}
+
+							each_block_expected = each_block_expected && each_block_expected.next;
+							each_block_iteration.discard = false;
+							each_block_iteration.last = each_block_last;
+
+							if (!each_block_expected) each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
+						} else {
+							// key is being inserted
+							each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
+							each_block_iteration.create();
+							each_block_iteration.mount(each_block_anchor.parentNode, each_block_expected.first);
+
+							each_block_expected.last = each_block_iteration;
+							each_block_iteration.next = each_block_expected;
+						}
+					}
+				} else {
+					// we're appending from this point forward
+					if (each_block_iteration) {
+						each_block_iteration.discard = false;
+						each_block_iteration.next = null;
+						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
+					} else {
+						each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
+						each_block_iteration.create();
+						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 					}
 				}
 
-				for (; i < each_block_iterations.length; i += 1) {
-					each_block_iterations[i].unmount();
-					each_block_iterations[i].destroy();
-				}
-				each_block_iterations.length = each_block_value.length;
+				if (each_block_last) each_block_last.next = each_block_iteration;
+				each_block_iteration.last = each_block_last;
+				each_block_last = each_block_iteration;
 			}
+
+			if (each_block_last) each_block_last.next = null;
+
+			while (each_block_expected) {
+				each_block_destroy(each_block_expected);
+				each_block_expected = each_block_expected.next;
+			}
+
+			for (i = 0; i < discard_pile.length; i += 1) {
+				var each_block_iteration = discard_pile[i];
+				if (each_block_iteration.discard) {
+					each_block_destroy(each_block_iteration);
+				}
+			}
+
+			each_block_head = each_block_lookup[each_block_value[0] && each_block_value[0].slug];
 		},
 
 		unmount: function unmount() {
-			for (var i = 0; i < each_block_iterations.length; i += 1) {
-				each_block_iterations[i].unmount();
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.unmount();
+				each_block_iteration = each_block_iteration.next;
 			}
 
 			detachNode$1(each_block_anchor);
 		},
 
 		destroy: function destroy() {
-			destroyEach(each_block_iterations, false, 0);
+			var each_block_iteration = each_block_head;
+			while (each_block_iteration) {
+				each_block_iteration.destroy(false);
+				each_block_iteration = each_block_iteration.next;
+			}
 		}
 	};
 }
 
-function create_each_block$2(state, each_block_value, timelineEvent, i, component) {
+function create_each_block$2(state, each_block_value, timelineEvent, index, component, key) {
+	var first,
+	    visibility_1_updating = false,
+	    visibility_1_updating_1 = false,
+	    visibility_1_updating_2 = false;
+
+	var visibility_1_yield_fragment = create_visibility_yield_fragment$1(state, each_block_value, timelineEvent, index, component);
+
+	var visibility_1_initial_data = {
+		logName: "Description: " + timelineEvent.slug,
+		updateOnChange: index
+	};
+	if (timelineEvent.slug in state.slugToVerticalCenter) visibility_1_initial_data.verticalCenter = state.slugToVerticalCenter[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToLeft) visibility_1_initial_data.left = state.slugToLeft[timelineEvent.slug];
+	if (timelineEvent.slug in state.slugToVisible) visibility_1_initial_data.visible = state.slugToVisible[timelineEvent.slug];
+	var visibility_1 = new Visibility({
+		_root: component._root,
+		_yield: visibility_1_yield_fragment,
+		data: visibility_1_initial_data
+	});
+
+	function observer(value) {
+		if (visibility_1_updating) return;
+		visibility_1_updating = true;
+		var state = component.get();
+		state.slugToVerticalCenter[timelineEvent.slug] = value;
+		component.set({ slugToVerticalCenter: state.slugToVerticalCenter, timeline: state.timeline });
+		visibility_1_updating = false;
+	}
+
+	visibility_1.observe('verticalCenter', observer, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('verticalCenter');
+		if (differs$1(value, state.slugToVerticalCenter[timelineEvent.slug])) {
+			observer.call(visibility_1, value);
+		}
+	});
+
+	function observer_1(value) {
+		if (visibility_1_updating_1) return;
+		visibility_1_updating_1 = true;
+		var state = component.get();
+		state.slugToLeft[timelineEvent.slug] = value;
+		component.set({ slugToLeft: state.slugToLeft, timeline: state.timeline });
+		visibility_1_updating_1 = false;
+	}
+
+	visibility_1.observe('left', observer_1, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('left');
+		if (differs$1(value, state.slugToLeft[timelineEvent.slug])) {
+			observer_1.call(visibility_1, value);
+		}
+	});
+
+	function observer_2(value) {
+		if (visibility_1_updating_2) return;
+		visibility_1_updating_2 = true;
+		var state = component.get();
+		state.slugToVisible[timelineEvent.slug] = value;
+		component.set({ slugToVisible: state.slugToVisible, timeline: state.timeline });
+		visibility_1_updating_2 = false;
+	}
+
+	visibility_1.observe('visible', observer_2, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = visibility_1.get('visible');
+		if (differs$1(value, state.slugToVisible[timelineEvent.slug])) {
+			observer_2.call(visibility_1, value);
+		}
+	});
+
+	visibility_1._context = {
+		state: state,
+		each_block_value: each_block_value,
+		index: index
+	};
+
+	return {
+		key: key,
+
+		first: null,
+
+		create: function create() {
+			first = createComment$1();
+			visibility_1_yield_fragment.create();
+			visibility_1._fragment.create();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			this.first = first;
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(first, target, anchor);
+			visibility_1._fragment.mount(target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			visibility_1_yield_fragment.update(changed, state, each_block_value, timelineEvent, index);
+
+			if (!visibility_1_updating && 'slugToVerticalCenter' in changed || 'timeline' in changed) {
+				visibility_1_updating = true;
+				visibility_1._set({ verticalCenter: state.slugToVerticalCenter[timelineEvent.slug] });
+				visibility_1_updating = false;
+			}
+
+			if (!visibility_1_updating_1 && 'slugToLeft' in changed || 'timeline' in changed) {
+				visibility_1_updating_1 = true;
+				visibility_1._set({ left: state.slugToLeft[timelineEvent.slug] });
+				visibility_1_updating_1 = false;
+			}
+
+			if (!visibility_1_updating_2 && 'slugToVisible' in changed || 'timeline' in changed) {
+				visibility_1_updating_2 = true;
+				visibility_1._set({ visible: state.slugToVisible[timelineEvent.slug] });
+				visibility_1_updating_2 = false;
+			}
+
+			visibility_1._context.state = state;
+			visibility_1._context.each_block_value = each_block_value;
+			visibility_1._context.index = index;
+
+			var visibility_1_changes = {};
+
+			if ('timeline' in changed) visibility_1_changes.logName = "Description: " + timelineEvent.slug;
+			visibility_1_changes.updateOnChange = index;
+
+			if (Object.keys(visibility_1_changes).length) visibility_1._set(visibility_1_changes);
+		},
+
+		unmount: function unmount() {
+			detachNode$1(first);
+			visibility_1._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			visibility_1_yield_fragment.destroy();
+			visibility_1.destroy(false);
+		}
+	};
+}
+
+function create_visibility_yield_fragment$1(state, each_block_value, timelineEvent, index, component, key) {
 	var div, div_style_value, text_value, text;
 
 	return {
+		key: key,
+
 		create: function create() {
 			div = createElement$1('div');
 			text = createText(text_value = timelineEvent.title);
@@ -2417,9 +3118,9 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-2385669870', '');
+			encapsulateStyles$3(div);
 			div.className = "event-description";
-			div.style.cssText = div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t";
+			div.style.cssText = div_style_value = "\n\t\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t\t" + state.outline(timelineEvent) + "\n\t\t\t";
 		},
 
 		mount: function mount(target, anchor) {
@@ -2427,8 +3128,8 @@ function create_each_block$2(state, each_block_value, timelineEvent, i, componen
 			appendNode(text, div);
 		},
 
-		update: function update(changed, state, each_block_value, timelineEvent, i) {
-			if (div_style_value !== (div_style_value = "\n\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t" + state.outline(timelineEvent) + "\n\t\t")) {
+		update: function update(changed, state, each_block_value, timelineEvent, index) {
+			if (div_style_value !== (div_style_value = "\n\t\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t\t" + state.outline(timelineEvent) + "\n\t\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
@@ -2461,13 +3162,27 @@ function EventDescriptions(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-2385669870-style")) add_css$3();
+	if (!document.getElementById('svelte-656401876-style')) add_css$3();
+
+	if (!options._root) {
+		this._oncreate = [];
+		this._beforecreate = [];
+		this._aftercreate = [];
+	}
 
 	this._fragment = create_main_fragment$5(this._state, this);
 
 	if (options.target) {
 		this._fragment.create();
 		this._fragment.mount(options.target, null);
+	}
+
+	if (!options._root) {
+		this._lock = true;
+		callAll$1(this._beforecreate);
+		callAll$1(this._oncreate);
+		callAll$1(this._aftercreate);
+		this._lock = false;
 	}
 }
 
@@ -2739,6 +3454,43 @@ var sortRange = function sortRange(ary, getRangeValues) {
 		return rangeSort(bValue, bValue, getRangeValues(a));
 	});
 };
+
+function createIndentLevelCalculator() {
+	var indentLevels = [];
+	return function (event) {
+		var eventDate = event.amd;
+		var replaceIndent = indentLevels.findIndex(function (previousDate) {
+			return previousDate.end < eventDate.start;
+		});
+		if (replaceIndent === -1) {
+			indentLevels.push(eventDate);
+			return indentLevels.length - 1;
+		} else {
+			indentLevels[replaceIndent] = eventDate;
+			return replaceIndent;
+		}
+	};
+}
+
+function addIndentAndAxisAfterStart(events, startDay, endDay) {
+	var getIndentLevel = createIndentLevelCalculator();
+	return events.map(function (event) {
+		if (event.axis.start === undefined || event.axis.end === undefined) {
+			console.error(event);
+			throw new Error("No axis values for " + event.title);
+		}
+		var axisAfterStart = Math.max(event.axis.start - startDay, 0);
+		var eventDays = event.axis.end - event.axis.start + 1;
+		var daysBeforeStart = Math.max(startDay - event.axis.start, 0);
+		var daysAfterEnd = Math.max(event.axis.end - endDay, 0);
+		var visibleDays = eventDays - daysBeforeStart - daysAfterEnd;
+		return Object.assign({
+			indentLevel: getIndentLevel(event),
+			axisAfterStart: axisAfterStart,
+			visibleDays: visibleDays
+		}, event);
+	});
+}
 
 function fromHex(r, e, n) {
   var t = r.conversions,
@@ -3306,44 +4058,14 @@ function recompute$1(state, newState, oldState, isInitial) {
 	if (isInitial || 'visibleEvents' in newState && differs$1(state.visibleEvents, oldState.visibleEvents) || 'hoveredEvent' in newState && differs$1(state.hoveredEvent, oldState.hoveredEvent)) {
 		state.eventsToHighlight = newState.eventsToHighlight = template$1.computed.eventsToHighlight(state.visibleEvents, state.hoveredEvent);
 	}
+
+	if (isInitial || 'eventsToHighlight' in newState && differs$1(state.eventsToHighlight, oldState.eventsToHighlight) || 'slugToVisibleDescriptionPoints' in newState && differs$1(state.slugToVisibleDescriptionPoints, oldState.slugToVisibleDescriptionPoints)) {
+		state.identifyingLinePoints = newState.identifyingLinePoints = template$1.computed.identifyingLinePoints(state.eventsToHighlight, state.slugToVisibleDescriptionPoints);
+	}
 }
 
 var template$1 = function () {
-	function createIndentLevelCalculator() {
-		var indentLevels = [];
-		return function (event) {
-			var eventDate = event.amd;
-			var replaceIndent = indentLevels.findIndex(function (previousDate) {
-				return previousDate.end < eventDate.start;
-			});
-			if (replaceIndent === -1) {
-				indentLevels.push(eventDate);
-				return indentLevels.length - 1;
-			} else {
-				indentLevels[replaceIndent] = eventDate;
-				return replaceIndent;
-			}
-		};
-	}
-	function addIndentAndAxisAfterStart(events, startDay, endDay) {
-		var getIndentLevel = createIndentLevelCalculator();
-		return events.map(function (event) {
-			if (event.axis.start === undefined || event.axis.end === undefined) {
-				console.error(event);
-				throw new Error('No axis values for ' + event.title);
-			}
-			var axisAfterStart = Math.max(event.axis.start - startDay, 0);
-			var eventDays = event.axis.end - event.axis.start + 1;
-			var daysBeforeStart = Math.max(startDay - event.axis.start, 0);
-			var daysAfterEnd = Math.max(event.axis.end - endDay, 0);
-			var visibleDays = eventDays - daysBeforeStart - daysAfterEnd;
-			return Object.assign({
-				indentLevel: getIndentLevel(event),
-				axisAfterStart: axisAfterStart,
-				visibleDays: visibleDays
-			}, event);
-		});
-	}
+	var EMPTY_ARRAY = [];
 
 	var defaultZoomedDayHeight = 0.5;
 	var topZoom = {
@@ -3404,16 +4126,16 @@ var template$1 = function () {
 		});
 	}
 
-	var centerRatio = 0.6;
-	var topMarginRatio = (1 - centerRatio) / 2;
-	var bottomMarginRatio = centerRatio + topMarginRatio;
+	var viewportHighlightRatio = 0.6;
+	var topMarginRatio = (1 - viewportHighlightRatio) / 2;
+	var bottomMarginRatio = viewportHighlightRatio + topMarginRatio;
 	var numberOfEventsToHighlight = 6;
 
 	var A_IS_FIRST = -1;
 	var B_IS_FIRST = 1;
 
 	var distanceToCenter = function distanceToCenter(event) {
-		return Math.abs(0.5 - event.centerPoint);
+		return Math.abs(0.5 - event.centerPointRatio);
 	};
 	var sortByClosestToCenter = function sortByClosestToCenter(eventA, eventB) {
 		var distanceA = distanceToCenter(eventA);
@@ -3436,19 +4158,21 @@ var template$1 = function () {
 			var isInsideCenter = topIsInCenter && bottomIsInCenter;
 			var overlapsCenter = topIsInCenter || bottomIsInCenter;
 
-			var centerPoint = (event.topRatio + event.bottomRatio) / 2;
+			var centerPointRatio = (event.topRatio + event.bottomRatio) / 2;
+			var centerPoint = (event.top + event.bottom) / 2;
 
 			return Object.assign({
 				isInsideCenter: isInsideCenter,
-				centerPoint: centerPoint,
-				overlapsCenter: overlapsCenter
+				centerPointRatio: centerPointRatio,
+				overlapsCenter: overlapsCenter,
+				centerPoint: centerPoint
 			}, event);
 		});
 
-		// console.log('overlaps the center', eventsWithCalculations
+		// console.log('centerPointRatio', eventsWithCalculations
 		// 	.filter(event => event.overlapsCenter)
 		// 	.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
-		// 	.map(event => event.title)
+		// 	.map(event => event.centerPointRatio)
 		// )
 
 		var prioritizedEvents = eventsWithCalculations.filter(function (event) {
@@ -3486,7 +4210,9 @@ var template$1 = function () {
 	return {
 		data: function data() {
 			return {
-				visibleEvents: []
+				visibleEvents: [],
+				slugToVisibleDescriptionPoints: null,
+				slugToTimelineRight: null
 			};
 		},
 
@@ -3554,6 +4280,56 @@ var template$1 = function () {
 			},
 			eventsToHighlight: function eventsToHighlight(visibleEvents, hoveredEvent) {
 				return filterToHighlightedEvents(visibleEvents, hoveredEvent);
+			},
+			identifyingLinePoints: function identifyingLinePoints(eventsToHighlight, slugToVisibleDescriptionPoints) {
+				if (!slugToVisibleDescriptionPoints) {
+					// console.log('returning dummy array')
+					return EMPTY_ARRAY;
+				}
+
+				var viewportHeight = window.document.documentElement.clientHeight;
+				var ratioToPoint = function ratioToPoint(ratio) {
+					return viewportHeight * ratio;
+				};
+
+				eventsToHighlight.forEach(function (_ref) {
+					var slug = _ref.slug;
+
+					if (!slugToVisibleDescriptionPoints[slug]) {
+						console.error('no VisibleDescriptionPoint found for', slug);
+					}
+				});
+
+				// console.log(slugToVisibleDescriptionPoints)
+
+				// console.log(
+				// 	eventsToHighlight.filter(({ slug }) => {
+				// 		return slugToVisibleDescriptionPoints[slug]
+				// 	}).map(event => `${event.title}, ${event.centerPoint}`)
+				// )
+
+				var nextStep = eventsToHighlight.filter(function (_ref2) {
+					var slug = _ref2.slug;
+
+					return slugToVisibleDescriptionPoints[slug];
+				}).map(function (event) {
+					return Object.assign({
+						from: {
+							y: event.centerPoint,
+							x: event.right
+						},
+						to: slugToVisibleDescriptionPoints[event.slug],
+						color: event.color,
+						hoverColor: event.hoverColor
+						// y: event.amd.start === event.amd.end ? ratioToPoint(event.centerPointRatio) : null
+					}, event);
+				});
+
+				// console.log(nextStep)
+
+				// console.log(JSON.stringify(nextStep, null, '\t'))
+				// console.log('highlighted:', eventsToHighlight.length, 'displayable:', nextStep.length)
+				// const ratioTo
 			}
 		},
 		helpers: {
@@ -3570,33 +4346,38 @@ var template$1 = function () {
 					hoveredEvent: null
 				});
 			}
+		},
+		oncreate: function oncreate() {
+			// this.observe('slugToVisibleDescriptionPoints', () => {
+			// 	console.log('slugToVisibleDescriptionPoints', this.get('slugToVisibleDescriptionPoints'))
+			// })
 		}
-		// oncreate() {
-		// 	this.observe('visibleEvents', () => {
-		// 		console.log(this.get())
-		// 	})
-		// }
 	};
 }();
 
+function encapsulateStyles(node) {
+	setAttribute(node, 'svelte-3110490369', '');
+}
+
 function add_css() {
 	var style = createElement$1('style');
-	style.id = "svelte-3519468498-style";
-	style.textContent = "\n[svelte-3519468498].timeline-container, [svelte-3519468498] .timeline-container {\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\talign-items: flex-start;\n}\n[svelte-3519468498].timeline-column, [svelte-3519468498] .timeline-column {\n\tposition: relative;\n}\n[svelte-3519468498].axis, [svelte-3519468498] .axis {\n\tfont-size: 10px;\n\twidth: 100px;\n\ttext-align: right;\n}\n[svelte-3519468498].axis[data-relevant=true], [svelte-3519468498] .axis[data-relevant=true] {\n\tcolor: red;\n}\n[svelte-3519468498].event-description-column, [svelte-3519468498] .event-description-column {\n\tdisplay: flex;\n\talign-items: center;\n\n\tposition: fixed;\n\ttop: 0;\n\theight: 100%;\n}\n";
+	style.id = 'svelte-3110490369-style';
+	style.textContent = "[svelte-3110490369].timeline-container,[svelte-3110490369] .timeline-container{display:flex;flex-wrap:nowrap;align-items:flex-start}[svelte-3110490369].timeline-column,[svelte-3110490369] .timeline-column{position:relative}[svelte-3110490369].axis,[svelte-3110490369] .axis{font-size:10px;width:100px;text-align:right}[svelte-3110490369].axis[data-relevant=true],[svelte-3110490369] .axis[data-relevant=true]{color:red}[svelte-3110490369].event-description-column,[svelte-3110490369] .event-description-column{display:flex;align-items:center;position:fixed;top:0;height:100%}";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$1(state, component) {
 	var div,
 	    div_1,
-	    text,
+	    text_1,
 	    div_2,
 	    div_2_style_value,
 	    events_updating = false,
-	    text_1,
+	    text_3,
 	    div_3,
 	    div_4,
-	    div_5;
+	    div_5,
+	    eventdescriptions_updating = false;
 
 	var each_block_value = state.axis;
 
@@ -3626,27 +4407,55 @@ function create_main_fragment$1(state, component) {
 		component.endHover(event);
 	});
 
-	component._bindings.push(function () {
-		if (events._torndown) return;
-		events.observe('visibleEvents', function (value) {
-			if (events_updating) return;
-			events_updating = true;
-			component._set({ visibleEvents: value });
-			events_updating = false;
-		}, { init: differs$1(events.get('visibleEvents'), state.visibleEvents) });
+	function observer(value) {
+		if (events_updating) return;
+		events_updating = true;
+		component.set({ visibleEvents: value });
+		events_updating = false;
+	}
+
+	events.observe('visibleEvents', observer, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = events.get('visibleEvents');
+		if (differs$1(value, state.visibleEvents)) {
+			observer.call(events, value);
+		}
 	});
 
 	events._context = {
 		state: state
 	};
 
+	var eventdescriptions_initial_data = {
+		timeline: state.eventsToHighlight,
+		hoveredEvent: state.hoveredEvent
+	};
+	if ('slugToVisibleDescriptionPoints' in state) eventdescriptions_initial_data.slugToPoints = state.slugToVisibleDescriptionPoints;
 	var eventdescriptions = new EventDescriptions({
 		_root: component._root,
-		data: {
-			timeline: state.eventsToHighlight,
-			hoveredEvent: state.hoveredEvent
+		data: eventdescriptions_initial_data
+	});
+
+	function observer_1(value) {
+		if (eventdescriptions_updating) return;
+		eventdescriptions_updating = true;
+		component.set({ slugToVisibleDescriptionPoints: value });
+		eventdescriptions_updating = false;
+	}
+
+	eventdescriptions.observe('slugToPoints', observer_1, { init: false });
+
+	component._root._beforecreate.push(function () {
+		var value = eventdescriptions.get('slugToPoints');
+		if (differs$1(value, state.slugToVisibleDescriptionPoints)) {
+			observer_1.call(eventdescriptions, value);
 		}
 	});
+
+	eventdescriptions._context = {
+		state: state
+	};
 
 	return {
 		create: function create() {
@@ -3657,10 +4466,10 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].create();
 			}
 
-			text = createText("\n\t");
+			text_1 = createText("\n\t");
 			div_2 = createElement$1('div');
 			events._fragment.create();
-			text_1 = createText("\n\t");
+			text_3 = createText("\n\t");
 			div_3 = createElement$1('div');
 			div_4 = createElement$1('div');
 			div_5 = createElement$1('div');
@@ -3669,7 +4478,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(div, 'svelte-3519468498', '');
+			encapsulateStyles(div);
 			div.className = "timeline-container";
 			div_1.className = "timeline-column";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
@@ -3687,10 +4496,10 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].mount(div_1, null);
 			}
 
-			appendNode(text, div);
+			appendNode(text_1, div);
 			appendNode(div_2, div);
 			events._fragment.mount(div_2, null);
-			appendNode(text_1, div);
+			appendNode(text_3, div);
 			appendNode(div_3, div);
 			appendNode(div_4, div_3);
 			appendNode(div_5, div_4);
@@ -3738,14 +4547,22 @@ function create_main_fragment$1(state, component) {
 			events_changes.clickable = true;
 			if ('currentZoom' in changed) events_changes.ignoreType = state.currentZoom.ignoreType;
 
-			if (Object.keys(events_changes).length) events.set(events_changes);
+			if (Object.keys(events_changes).length) events._set(events_changes);
+
+			if (!eventdescriptions_updating && 'slugToVisibleDescriptionPoints' in changed) {
+				eventdescriptions_updating = true;
+				eventdescriptions._set({ slugToPoints: state.slugToVisibleDescriptionPoints });
+				eventdescriptions_updating = false;
+			}
+
+			eventdescriptions._context.state = state;
 
 			var eventdescriptions_changes = {};
 
 			if ('eventsToHighlight' in changed) eventdescriptions_changes.timeline = state.eventsToHighlight;
 			if ('hoveredEvent' in changed) eventdescriptions_changes.hoveredEvent = state.hoveredEvent;
 
-			if (Object.keys(eventdescriptions_changes).length) eventdescriptions.set(eventdescriptions_changes);
+			if (Object.keys(eventdescriptions_changes).length) eventdescriptions._set(eventdescriptions_changes);
 		},
 
 		unmount: function unmount() {
@@ -3792,7 +4609,7 @@ function create_each_block(state, each_block_value, date, date_index, component)
 
 			if ('multiplyDaysByHeight' in changed || 'distanceFromStartDay' in changed || 'axis' in changed) vcenter_1_changes.point = state.multiplyDaysByHeight(state.distanceFromStartDay(date.axisPoint));
 
-			if (Object.keys(vcenter_1_changes).length) vcenter_1.set(vcenter_1_changes);
+			if (Object.keys(vcenter_1_changes).length) vcenter_1._set(vcenter_1_changes);
 		},
 
 		unmount: function unmount() {
@@ -3935,9 +4752,17 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById("svelte-3519468498-style")) add_css();
-	this._renderHooks = [];
-	this._bindings = [];
+	if (!document.getElementById('svelte-3110490369-style')) add_css();
+
+	var oncreate = template$1.oncreate.bind(this);
+
+	if (!options._root) {
+		this._oncreate = [oncreate];
+		this._beforecreate = [];
+		this._aftercreate = [];
+	} else {
+		this._root._oncreate.push(oncreate);
+	}
 
 	this._fragment = create_main_fragment$1(this._state, this);
 
@@ -3946,9 +4771,13 @@ function Main(options) {
 		this._fragment.mount(options.target, null);
 	}
 
-	while (this._bindings.length) {
-		this._bindings.pop()();
-	}this._flush();
+	if (!options._root) {
+		this._lock = true;
+		callAll$1(this._beforecreate);
+		callAll$1(this._oncreate);
+		callAll$1(this._aftercreate);
+		this._lock = false;
+	}
 }
 
 assign$1(Main.prototype, template$1.methods, proto);
@@ -3960,9 +4789,6 @@ Main.prototype._set = function _set(newState) {
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
-	while (this._bindings.length) {
-		this._bindings.pop()();
-	}this._flush();
 };
 
 Main.prototype.teardown = Main.prototype.destroy = function destroy(detach) {
@@ -5062,4 +5888,3 @@ var component = new Main({
 attachQuerystringData(component);
 
 }());
-//# sourceMappingURL=bundle.js.map
