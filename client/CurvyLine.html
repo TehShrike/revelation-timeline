@@ -8,6 +8,7 @@
 <style>
 canvas {
 	position: fixed;
+	pointer-events: none;
 }
 </style>
 
@@ -94,6 +95,9 @@ export default {
 			}
 
 			const context = this.refs.canvas.getContext('2d')
+			context.lineWidth = 2
+			context.lineCap = 'stroke'
+
 			context.strokeStyle = color
 			context.clearRect(0, 0, width, height)
 			context.beginPath()

@@ -3343,6 +3343,9 @@ var template$6 = function () {
 				};
 
 				var context = this.refs.canvas.getContext('2d');
+				context.lineWidth = 2;
+				context.lineCap = 'stroke';
+
 				context.strokeStyle = color;
 				context.clearRect(0, 0, width, height);
 				context.beginPath();
@@ -3355,13 +3358,13 @@ var template$6 = function () {
 }();
 
 function encapsulateStyles$4(node) {
-	setAttribute(node, 'svelte-3734778586', '');
+	setAttribute(node, 'svelte-3456690565', '');
 }
 
 function add_css$4() {
 	var style = createElement$1('style');
-	style.id = 'svelte-3734778586-style';
-	style.textContent = "canvas[svelte-3734778586],[svelte-3734778586] canvas{position:fixed}";
+	style.id = 'svelte-3456690565-style';
+	style.textContent = "canvas[svelte-3456690565],[svelte-3456690565] canvas{position:fixed;pointer-events:none}";
 	appendNode(style, document.head);
 }
 
@@ -3427,7 +3430,7 @@ function CurvyLine(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById('svelte-3734778586-style')) add_css$4();
+	if (!document.getElementById('svelte-3456690565-style')) add_css$4();
 
 	var oncreate = template$6.oncreate.bind(this);
 
