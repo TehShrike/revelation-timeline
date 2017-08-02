@@ -23,6 +23,9 @@
 			bind:visibleEvents
 		/>
 	</div>
+	{{#each connectingLines as line @slug}}
+		<CurvyLine from="{{line.from}}" to="{{line.to}}" color="{{line.color}}" slug="{{line.slug}}" />
+	{{/each}}
 	<div class="timeline-column">
 		<div class="event-description-column">
 			<div>
@@ -35,6 +38,7 @@
 		</div>
 	</div>
 </div>
+
 <style>
 .timeline-container {
 	display: flex;
@@ -66,6 +70,7 @@
 import VCenter from './VerticallyCentered.html'
 import Events from './Events.html'
 import EventDescriptions from './EventDescriptions.html'
+import CurvyLine from './CurvyLine.html'
 
 import createTimelineAxis from './create-timeline-axis.js'
 import addAxisPoints from '../timeline-data/add-axis-points-to-timeline-data.js'
@@ -263,20 +268,20 @@ export default {
 			return max < event.indentLevel ? event.indentLevel : max
 		}, 0),
 		eventsToHighlight: (visibleEvents, hoveredEvent) => filterToHighlightedEvents(visibleEvents, hoveredEvent),
-		identifyingLinePoints: (eventsToHighlight, slugToVisibleDescriptionPoints) => {
+		connectingLines: (eventsToHighlight, slugToVisibleDescriptionPoints) => {
 			if (!slugToVisibleDescriptionPoints) {
-				// console.log('returning dummy array')
+				console.log('returning dummy array')
 				return EMPTY_ARRAY
 			}
 
-			const viewportHeight = window.document.documentElement.clientHeight
-			const ratioToPoint = ratio => viewportHeight * ratio
+			// const viewportHeight = window.document.documentElement.clientHeight
+			// const ratioToPoint = ratio => viewportHeight * ratio
 
-			eventsToHighlight.forEach(({ slug }) => {
-				if (!slugToVisibleDescriptionPoints[slug]) {
-					console.error('no VisibleDescriptionPoint found for', slug)
-				}
-			})
+			// eventsToHighlight.forEach(({ slug }) => {
+			// 	if (!slugToVisibleDescriptionPoints[slug]) {
+			// 		console.error('no VisibleDescriptionPoint found for', slug)
+			// 	}
+			// })
 
 			// console.log(slugToVisibleDescriptionPoints)
 
@@ -286,9 +291,9 @@ export default {
 			// 	}).map(event => `${event.title}, ${event.centerPoint}`)
 			// )
 
-			const nextStep = eventsToHighlight.filter(({ slug }) => {
+			const linesToDraw = eventsToHighlight.filter(({ slug }) => {
 				return slugToVisibleDescriptionPoints[slug]
-			}).map(event => Object.assign({
+			}).map(event => ({
 				from: {
 					y: event.centerPoint,
 					x: event.right,
@@ -296,14 +301,16 @@ export default {
 				to: slugToVisibleDescriptionPoints[event.slug],
 				color: event.color,
 				hoverColor: event.hoverColor,
+				slug: event.slug,
 				// y: event.amd.start === event.amd.end ? ratioToPoint(event.centerPointRatio) : null
-			}, event))
+			}))
 
-			// console.log(nextStep)
+			// console.log(linesToDraw)
 
-			// console.log(JSON.stringify(nextStep, null, '\t'))
-			// console.log('highlighted:', eventsToHighlight.length, 'displayable:', nextStep.length)
-			// const ratioTo
+			// console.log(JSON.stringify(linesToDraw, null, '\t'))
+			// console.log('highlighted:', eventsToHighlight.length, 'displayable:', linesToDraw.length)
+
+			return linesToDraw
 		},
 	},
 	helpers: {
@@ -325,6 +332,7 @@ export default {
 		VCenter,
 		Events,
 		EventDescriptions,
+		CurvyLine,
 	},
 	oncreate() {
 		// this.observe('slugToVisibleDescriptionPoints', () => {

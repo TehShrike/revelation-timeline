@@ -13,6 +13,8 @@ object-assign
 @license MIT
 */
 
+/* eslint-disable no-unused-vars */
+
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -1210,6 +1212,7 @@ function detachNode$1(node) {
 	node.parentNode.removeChild(node);
 }
 
+// TODO this is out of date
 function destroyEach(iterations, detach, start) {
 	for (var i = start; i < iterations.length; i += 1) {
 		if (iterations[i]) iterations[i].destroy(detach);
@@ -2760,9 +2763,9 @@ var template$5 = function () {
 				} : noopString;
 			},
 			slugToPoints: function slugToPoints(slugToVerticalCenter, slugToLeft, slugToVisible, timeline) {
-				if (!allSlugsExistInMap(timeline, slugToVerticalCenter)) {
-					console.log('allSlugsExistInMap fails with slugToVerticalCenter when finding', missing(timeline, slugToVerticalCenter));
-				}
+				// if (!allSlugsExistInMap(timeline, slugToVerticalCenter)) {
+				// 	console.log('allSlugsExistInMap fails with slugToVerticalCenter when finding', missing(timeline, slugToVerticalCenter))
+				// }
 				// if (!allSlugsExistInMap(timeline, slugToLeft)) {
 				// 	console.log('allSlugsExistInMap fails with slugToLeft when finding', missing(timeline, slugToLeft))
 				// }
@@ -2806,13 +2809,13 @@ var template$5 = function () {
 }();
 
 function encapsulateStyles$3(node) {
-	setAttribute(node, 'svelte-656401876', '');
+	setAttribute(node, 'svelte-2804816764', '');
 }
 
 function add_css$3() {
 	var style = createElement$1('style');
-	style.id = 'svelte-656401876-style';
-	style.textContent = "[svelte-656401876].event-description,[svelte-656401876] .event-description{border-width:2px;border-style:solid;padding:4px 8px;margin:8px 0px}";
+	style.id = 'svelte-2804816764-style';
+	style.textContent = "[svelte-2804816764].event-description,[svelte-2804816764] .event-description{border-width:2px;border-style:solid;padding:4px 8px;margin:8px 0px}";
 	appendNode(style, document.head);
 }
 
@@ -3162,7 +3165,7 @@ function EventDescriptions(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById('svelte-656401876-style')) add_css$3();
+	if (!document.getElementById('svelte-2804816764-style')) add_css$3();
 
 	if (!options._root) {
 		this._oncreate = [];
@@ -3199,6 +3202,267 @@ EventDescriptions.prototype._set = function _set(newState) {
 
 EventDescriptions.prototype.teardown = EventDescriptions.prototype.destroy = function destroy(detach) {
 	this.fire('destroy');
+
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
+	this._fragment = null;
+
+	this._state = {};
+	this._torndown = true;
+};
+
+function recompute$5(state, newState, oldState, isInitial) {
+	if (isInitial || 'from' in newState && differs$1(state.from, oldState.from) || 'to' in newState && differs$1(state.to, oldState.to)) {
+		state.leftmostPoint = newState.leftmostPoint = template$6.computed.leftmostPoint(state.from, state.to);
+		state.rightmostPoint = newState.rightmostPoint = template$6.computed.rightmostPoint(state.from, state.to);
+		state.topmostPoint = newState.topmostPoint = template$6.computed.topmostPoint(state.from, state.to);
+		state.bottommostPoint = newState.bottommostPoint = template$6.computed.bottommostPoint(state.from, state.to);
+		state.top = newState.top = template$6.computed.top(state.from, state.to);
+		state.left = newState.left = template$6.computed.left(state.from, state.to);
+	}
+
+	if (isInitial || 'leftmostPoint' in newState && differs$1(state.leftmostPoint, oldState.leftmostPoint) || 'rightmostPoint' in newState && differs$1(state.rightmostPoint, oldState.rightmostPoint)) {
+		state.width = newState.width = template$6.computed.width(state.leftmostPoint, state.rightmostPoint);
+	}
+
+	if (isInitial || 'topmostPoint' in newState && differs$1(state.topmostPoint, oldState.topmostPoint) || 'bottommostPoint' in newState && differs$1(state.bottommostPoint, oldState.bottommostPoint)) {
+		state.height = newState.height = template$6.computed.height(state.topmostPoint, state.bottommostPoint);
+	}
+}
+
+var template$6 = function () {
+	var greatest = function greatest(a, b, property) {
+		return a[property] > b[property] ? a : b;
+	};
+	var least = function least(a, b, property) {
+		return a[property] > b[property] ? b : a;
+	};
+
+	return {
+		data: function data() {
+			return {
+				drawingOnNextFrame: false
+			};
+		},
+		oncreate: function oncreate() {
+			var _this = this;
+
+			this.drawOnNextFrame();
+
+			var listener = function listener() {
+				return _this.drawOnNextFrame();
+			};
+
+			this.observe('from', listener);
+			this.observe('to', listener);
+			this.observe('color', listener);
+
+			globalUpdateEmitter.on('update', listener);
+
+			this.set({
+				listener: listener
+			});
+
+			console.log('Creating curvy line for', this.get('slug'));
+		},
+		ondestroy: function ondestroy() {
+			this.set({
+				destroyed: true
+			});
+			var listener = this.get('listener');
+			globalUpdateEmitter.removeListener('update', listener);
+			console.log('Destroying curvy line for', this.get('slug'));
+		},
+
+		computed: {
+			leftmostPoint: function leftmostPoint(from, to) {
+				return least(from, to, 'x');
+			},
+			rightmostPoint: function rightmostPoint(from, to) {
+				return greatest(from, to, 'x');
+			},
+			topmostPoint: function topmostPoint(from, to) {
+				return least(from, to, 'y');
+			},
+			bottommostPoint: function bottommostPoint(from, to) {
+				return greatest(from, to, 'y');
+			},
+			top: function top(from, to) {
+				return Math.min(from.y, to.y);
+			},
+			left: function left(from, to) {
+				return Math.min(from.x, to.x);
+			},
+			width: function width(leftmostPoint, rightmostPoint) {
+				return rightmostPoint.x - leftmostPoint.x;
+			},
+			height: function height(topmostPoint, bottommostPoint) {
+				return bottommostPoint.y - topmostPoint.y;
+			}
+		},
+		methods: {
+			drawOnNextFrame: function drawOnNextFrame() {
+				var _this2 = this;
+
+				if (this._fragment && !this.get('drawingOnNextFrame')) {
+					this.set({
+						drawingOnNextFrame: true
+					});
+					window.requestAnimationFrame(function () {
+						if (_this2._fragment && !_this2.get('destroyed')) {
+							_this2.draw();
+							_this2.set({
+								drawingOnNextFrame: false
+							});
+						}
+					});
+				}
+			},
+			draw: function draw() {
+				if (!this.refs.canvas || this.get('destroyed')) {
+					return;
+				}
+
+				var _get = this.get(),
+				    width = _get.width,
+				    height = _get.height,
+				    leftmostPoint = _get.leftmostPoint,
+				    topmostPoint = _get.topmostPoint,
+				    color = _get.color;
+
+				var topLeftToBottomRight = leftmostPoint === topmostPoint;
+				var bottomLeftToTopRight = !topLeftToBottomRight;
+
+				var startLeft = {
+					x: 0,
+					y: topLeftToBottomRight ? 0 : height
+				};
+				var endRight = {
+					x: width,
+					y: bottomLeftToTopRight ? 0 : height
+				};
+
+				var context = this.refs.canvas.getContext('2d');
+				context.strokeStyle = color;
+				context.clearRect(0, 0, width, height);
+				context.beginPath();
+				context.moveTo(startLeft.x, startLeft.y);
+				context.bezierCurveTo(width * .3, height * .7, width * .7, height * .3, endRight.x, endRight.y);
+				context.stroke();
+			}
+		}
+	};
+}();
+
+function encapsulateStyles$4(node) {
+	setAttribute(node, 'svelte-3734778586', '');
+}
+
+function add_css$4() {
+	var style = createElement$1('style');
+	style.id = 'svelte-3734778586-style';
+	style.textContent = "canvas[svelte-3734778586],[svelte-3734778586] canvas{position:fixed}";
+	appendNode(style, document.head);
+}
+
+function create_main_fragment$6(state, component) {
+	var canvas, canvas_width_value, canvas_height_value, canvas_style_value;
+
+	return {
+		create: function create() {
+			canvas = createElement$1('canvas');
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			encapsulateStyles$4(canvas);
+			canvas.width = canvas_width_value = state.width;
+			canvas.height = canvas_height_value = state.height;
+			canvas.style.cssText = canvas_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(canvas, target, anchor);
+			component.refs.canvas = canvas;
+		},
+
+		update: function update(changed, state) {
+			if (canvas_width_value !== (canvas_width_value = state.width)) {
+				canvas.width = canvas_width_value;
+			}
+
+			if (canvas_height_value !== (canvas_height_value = state.height)) {
+				canvas.height = canvas_height_value;
+			}
+
+			if (canvas_style_value !== (canvas_style_value = "top: " + state.top + "px; left: " + state.left + "px;")) {
+				canvas.style.cssText = canvas_style_value;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(canvas);
+		},
+
+		destroy: function destroy() {
+			if (component.refs.canvas === canvas) component.refs.canvas = null;
+		}
+	};
+}
+
+function CurvyLine(options) {
+	options = options || {};
+	this.refs = {};
+	this._state = assign$1(template$6.data(), options.data);
+	recompute$5(this._state, this._state, {}, true);
+
+	this._observers = {
+		pre: Object.create(null),
+		post: Object.create(null)
+	};
+
+	this._handlers = Object.create(null);
+
+	this._root = options._root || this;
+	this._yield = options._yield;
+
+	this._torndown = false;
+	if (!document.getElementById('svelte-3734778586-style')) add_css$4();
+
+	var oncreate = template$6.oncreate.bind(this);
+
+	if (!options._root) {
+		this._oncreate = [oncreate];
+	} else {
+		this._root._oncreate.push(oncreate);
+	}
+
+	this._fragment = create_main_fragment$6(this._state, this);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+
+	if (!options._root) {
+		callAll$1(this._oncreate);
+	}
+}
+
+assign$1(CurvyLine.prototype, template$6.methods, proto);
+
+CurvyLine.prototype._set = function _set(newState) {
+	var oldState = this._state;
+	this._state = assign$1({}, oldState, newState);
+	recompute$5(this._state, newState, oldState, false);
+	dispatchObservers$1(this, this._observers.pre, newState, oldState);
+	this._fragment.update(newState, this._state);
+	dispatchObservers$1(this, this._observers.post, newState, oldState);
+};
+
+CurvyLine.prototype.teardown = CurvyLine.prototype.destroy = function destroy(detach) {
+	this.fire('destroy');
+	template$6.ondestroy.call(this);
 
 	if (detach !== false) this._fragment.unmount();
 	this._fragment.destroy();
@@ -3359,12 +3623,6 @@ function calculateAxisPoints(dates) {
 		}
 	});
 }
-
-// console.log(createTimelineAxis(require('./filter-and-sort')(require('./timeline-data')), 5).map(date => {
-// 	return Object.assign({
-// 		afterCrucifixion: (date.start || date.amd) - 1471937
-// 	}, date)
-// }))
 
 var addAxisPointsToTimelineData_1 = addAxisPointsToTimelineData;
 
@@ -4060,7 +4318,7 @@ function recompute$1(state, newState, oldState, isInitial) {
 	}
 
 	if (isInitial || 'eventsToHighlight' in newState && differs$1(state.eventsToHighlight, oldState.eventsToHighlight) || 'slugToVisibleDescriptionPoints' in newState && differs$1(state.slugToVisibleDescriptionPoints, oldState.slugToVisibleDescriptionPoints)) {
-		state.identifyingLinePoints = newState.identifyingLinePoints = template$1.computed.identifyingLinePoints(state.eventsToHighlight, state.slugToVisibleDescriptionPoints);
+		state.connectingLines = newState.connectingLines = template$1.computed.connectingLines(state.eventsToHighlight, state.slugToVisibleDescriptionPoints);
 	}
 }
 
@@ -4281,24 +4539,20 @@ var template$1 = function () {
 			eventsToHighlight: function eventsToHighlight(visibleEvents, hoveredEvent) {
 				return filterToHighlightedEvents(visibleEvents, hoveredEvent);
 			},
-			identifyingLinePoints: function identifyingLinePoints(eventsToHighlight, slugToVisibleDescriptionPoints) {
+			connectingLines: function connectingLines(eventsToHighlight, slugToVisibleDescriptionPoints) {
 				if (!slugToVisibleDescriptionPoints) {
-					// console.log('returning dummy array')
+					console.log('returning dummy array');
 					return EMPTY_ARRAY;
 				}
 
-				var viewportHeight = window.document.documentElement.clientHeight;
-				var ratioToPoint = function ratioToPoint(ratio) {
-					return viewportHeight * ratio;
-				};
+				// const viewportHeight = window.document.documentElement.clientHeight
+				// const ratioToPoint = ratio => viewportHeight * ratio
 
-				eventsToHighlight.forEach(function (_ref) {
-					var slug = _ref.slug;
-
-					if (!slugToVisibleDescriptionPoints[slug]) {
-						console.error('no VisibleDescriptionPoint found for', slug);
-					}
-				});
+				// eventsToHighlight.forEach(({ slug }) => {
+				// 	if (!slugToVisibleDescriptionPoints[slug]) {
+				// 		console.error('no VisibleDescriptionPoint found for', slug)
+				// 	}
+				// })
 
 				// console.log(slugToVisibleDescriptionPoints)
 
@@ -4308,28 +4562,30 @@ var template$1 = function () {
 				// 	}).map(event => `${event.title}, ${event.centerPoint}`)
 				// )
 
-				var nextStep = eventsToHighlight.filter(function (_ref2) {
-					var slug = _ref2.slug;
+				var linesToDraw = eventsToHighlight.filter(function (_ref) {
+					var slug = _ref.slug;
 
 					return slugToVisibleDescriptionPoints[slug];
 				}).map(function (event) {
-					return Object.assign({
+					return {
 						from: {
 							y: event.centerPoint,
 							x: event.right
 						},
 						to: slugToVisibleDescriptionPoints[event.slug],
 						color: event.color,
-						hoverColor: event.hoverColor
+						hoverColor: event.hoverColor,
+						slug: event.slug
 						// y: event.amd.start === event.amd.end ? ratioToPoint(event.centerPointRatio) : null
-					}, event);
+					};
 				});
 
-				// console.log(nextStep)
+				// console.log(linesToDraw)
 
-				// console.log(JSON.stringify(nextStep, null, '\t'))
-				// console.log('highlighted:', eventsToHighlight.length, 'displayable:', nextStep.length)
-				// const ratioTo
+				// console.log(JSON.stringify(linesToDraw, null, '\t'))
+				// console.log('highlighted:', eventsToHighlight.length, 'displayable:', linesToDraw.length)
+
+				return linesToDraw;
 			}
 		},
 		helpers: {
@@ -4356,13 +4612,13 @@ var template$1 = function () {
 }();
 
 function encapsulateStyles(node) {
-	setAttribute(node, 'svelte-3110490369', '');
+	setAttribute(node, 'svelte-1463462598', '');
 }
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = 'svelte-3110490369-style';
-	style.textContent = "[svelte-3110490369].timeline-container,[svelte-3110490369] .timeline-container{display:flex;flex-wrap:nowrap;align-items:flex-start}[svelte-3110490369].timeline-column,[svelte-3110490369] .timeline-column{position:relative}[svelte-3110490369].axis,[svelte-3110490369] .axis{font-size:10px;width:100px;text-align:right}[svelte-3110490369].axis[data-relevant=true],[svelte-3110490369] .axis[data-relevant=true]{color:red}[svelte-3110490369].event-description-column,[svelte-3110490369] .event-description-column{display:flex;align-items:center;position:fixed;top:0;height:100%}";
+	style.id = 'svelte-1463462598-style';
+	style.textContent = "[svelte-1463462598].timeline-container,[svelte-1463462598] .timeline-container{display:flex;flex-wrap:nowrap;align-items:flex-start}[svelte-1463462598].timeline-column,[svelte-1463462598] .timeline-column{position:relative}[svelte-1463462598].axis,[svelte-1463462598] .axis{font-size:10px;width:100px;text-align:right}[svelte-1463462598].axis[data-relevant=true],[svelte-1463462598] .axis[data-relevant=true]{color:red}[svelte-1463462598].event-description-column,[svelte-1463462598] .event-description-column{display:flex;align-items:center;position:fixed;top:0;height:100%}";
 	appendNode(style, document.head);
 }
 
@@ -4374,6 +4630,10 @@ function create_main_fragment$1(state, component) {
 	    div_2_style_value,
 	    events_updating = false,
 	    text_3,
+	    each_block_1_lookup = Object.create(null),
+	    each_block_1_head,
+	    each_block_1_last,
+	    text_4,
 	    div_3,
 	    div_4,
 	    div_5,
@@ -4427,6 +4687,25 @@ function create_main_fragment$1(state, component) {
 		state: state
 	};
 
+	var each_block_value_1 = state.connectingLines;
+
+	for (var i = 0; i < each_block_value_1.length; i += 1) {
+		var key = each_block_value_1[i].slug;
+		var each_block_1_iteration = each_block_1_lookup[key] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component, key);
+
+		if (each_block_1_last) each_block_1_last.next = each_block_1_iteration;
+		each_block_1_iteration.last = each_block_1_last;
+		each_block_1_last = each_block_1_iteration;
+
+		if (i === 0) each_block_1_head = each_block_1_iteration;
+	}
+
+	function each_block_1_destroy(iteration) {
+		iteration.unmount();
+		iteration.destroy();
+		each_block_1_lookup[iteration.key] = null;
+	}
+
 	var eventdescriptions_initial_data = {
 		timeline: state.eventsToHighlight,
 		hoveredEvent: state.hoveredEvent
@@ -4470,6 +4749,14 @@ function create_main_fragment$1(state, component) {
 			div_2 = createElement$1('div');
 			events._fragment.create();
 			text_3 = createText("\n\t");
+
+			var each_block_1_iteration = each_block_1_head;
+			while (each_block_1_iteration) {
+				each_block_1_iteration.create();
+				each_block_1_iteration = each_block_1_iteration.next;
+			}
+
+			text_4 = createText("\n\t");
 			div_3 = createElement$1('div');
 			div_4 = createElement$1('div');
 			div_5 = createElement$1('div');
@@ -4500,6 +4787,14 @@ function create_main_fragment$1(state, component) {
 			appendNode(div_2, div);
 			events._fragment.mount(div_2, null);
 			appendNode(text_3, div);
+
+			var each_block_1_iteration = each_block_1_head;
+			while (each_block_1_iteration) {
+				each_block_1_iteration.mount(div, null);
+				each_block_1_iteration = each_block_1_iteration.next;
+			}
+
+			appendNode(text_4, div);
 			appendNode(div_3, div);
 			appendNode(div_4, div_3);
 			appendNode(div_5, div_4);
@@ -4549,6 +4844,80 @@ function create_main_fragment$1(state, component) {
 
 			if (Object.keys(events_changes).length) events._set(events_changes);
 
+			var each_block_value_1 = state.connectingLines;
+
+			var each_block_1_expected = each_block_1_head;
+			var each_block_1_last = null;
+
+			var discard_pile = [];
+
+			for (i = 0; i < each_block_value_1.length; i += 1) {
+				var key = each_block_value_1[i].slug;
+				var each_block_1_iteration = each_block_1_lookup[key];
+
+				if (each_block_1_iteration) each_block_1_iteration.update(changed, state, each_block_value_1, each_block_value_1[i], i);
+
+				if (each_block_1_expected) {
+					if (key === each_block_1_expected.key) {
+						each_block_1_expected = each_block_1_expected.next;
+					} else {
+						if (each_block_1_iteration) {
+							// probably a deletion
+							while (each_block_1_expected && each_block_1_expected.key !== key) {
+								each_block_1_expected.discard = true;
+								discard_pile.push(each_block_1_expected);
+								each_block_1_expected = each_block_1_expected.next;
+							}
+
+							each_block_1_expected = each_block_1_expected && each_block_1_expected.next;
+							each_block_1_iteration.discard = false;
+							each_block_1_iteration.last = each_block_1_last;
+
+							if (!each_block_1_expected) each_block_1_iteration.mount(div, text_4);
+						} else {
+							// key is being inserted
+							each_block_1_iteration = each_block_1_lookup[key] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component, key);
+							each_block_1_iteration.create();
+							each_block_1_iteration.mount(div, each_block_1_expected.first);
+
+							each_block_1_expected.last = each_block_1_iteration;
+							each_block_1_iteration.next = each_block_1_expected;
+						}
+					}
+				} else {
+					// we're appending from this point forward
+					if (each_block_1_iteration) {
+						each_block_1_iteration.discard = false;
+						each_block_1_iteration.next = null;
+						each_block_1_iteration.mount(div, text_4);
+					} else {
+						each_block_1_iteration = each_block_1_lookup[key] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component, key);
+						each_block_1_iteration.create();
+						each_block_1_iteration.mount(div, text_4);
+					}
+				}
+
+				if (each_block_1_last) each_block_1_last.next = each_block_1_iteration;
+				each_block_1_iteration.last = each_block_1_last;
+				each_block_1_last = each_block_1_iteration;
+			}
+
+			if (each_block_1_last) each_block_1_last.next = null;
+
+			while (each_block_1_expected) {
+				each_block_1_destroy(each_block_1_expected);
+				each_block_1_expected = each_block_1_expected.next;
+			}
+
+			for (i = 0; i < discard_pile.length; i += 1) {
+				var each_block_1_iteration = discard_pile[i];
+				if (each_block_1_iteration.discard) {
+					each_block_1_destroy(each_block_1_iteration);
+				}
+			}
+
+			each_block_1_head = each_block_1_lookup[each_block_value_1[0] && each_block_value_1[0].slug];
+
 			if (!eventdescriptions_updating && 'slugToVisibleDescriptionPoints' in changed) {
 				eventdescriptions_updating = true;
 				eventdescriptions._set({ slugToPoints: state.slugToVisibleDescriptionPoints });
@@ -4577,6 +4946,13 @@ function create_main_fragment$1(state, component) {
 			destroyEach(each_block_iterations, false, 0);
 
 			events.destroy(false);
+
+			var each_block_1_iteration = each_block_1_head;
+			while (each_block_1_iteration) {
+				each_block_1_iteration.destroy(false);
+				each_block_1_iteration = each_block_1_iteration.next;
+			}
+
 			eventdescriptions.destroy(false);
 		}
 	};
@@ -4736,6 +5112,61 @@ function create_if_block_1$1(state, each_block_value, date, date_index, componen
 	};
 }
 
+function create_each_block_1(state, each_block_value_1, line, line_index, component, key) {
+	var first;
+
+	var curvyline = new CurvyLine({
+		_root: component._root,
+		data: {
+			from: line.from,
+			to: line.to,
+			color: line.color,
+			slug: line.slug
+		}
+	});
+
+	return {
+		key: key,
+
+		first: null,
+
+		create: function create() {
+			first = createComment$1();
+			curvyline._fragment.create();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			this.first = first;
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(first, target, anchor);
+			curvyline._fragment.mount(target, anchor);
+		},
+
+		update: function update(changed, state, each_block_value_1, line, line_index) {
+			var curvyline_changes = {};
+
+			if ('connectingLines' in changed) curvyline_changes.from = line.from;
+			if ('connectingLines' in changed) curvyline_changes.to = line.to;
+			if ('connectingLines' in changed) curvyline_changes.color = line.color;
+			if ('connectingLines' in changed) curvyline_changes.slug = line.slug;
+
+			if (Object.keys(curvyline_changes).length) curvyline._set(curvyline_changes);
+		},
+
+		unmount: function unmount() {
+			detachNode$1(first);
+			curvyline._fragment.unmount();
+		},
+
+		destroy: function destroy() {
+			curvyline.destroy(false);
+		}
+	};
+}
+
 function Main(options) {
 	options = options || {};
 	this._state = assign$1(template$1.data(), options.data);
@@ -4752,7 +5183,7 @@ function Main(options) {
 	this._yield = options._yield;
 
 	this._torndown = false;
-	if (!document.getElementById('svelte-3110490369-style')) add_css();
+	if (!document.getElementById('svelte-1463462598-style')) add_css();
 
 	var oncreate = template$1.oncreate.bind(this);
 
@@ -5888,3 +6319,4 @@ var component = new Main({
 attachQuerystringData(component);
 
 }());
+//# sourceMappingURL=bundle.js.map

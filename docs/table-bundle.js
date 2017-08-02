@@ -1704,7 +1704,12 @@ function on$1(eventName, handler) {
 
 function set$2(newState) {
 	this._set(assign$1({}, newState));
+	if (this._root._lock) return;
+	this._root._lock = true;
+	callAll$1(this._root._beforecreate);
 	callAll$1(this._root._oncreate);
+	callAll$1(this._root._aftercreate);
+	this._root._lock = false;
 }
 
 function callAll$1(fns) {
@@ -1888,10 +1893,14 @@ var template$1 = function () {
 	};
 }();
 
+function encapsulateStyles(node) {
+	setAttribute(node, 'svelte-1759661908', '');
+}
+
 function add_css() {
 	var style = createElement$1('style');
 	style.id = 'svelte-1759661908-style';
-	style.textContent = "\n[svelte-1759661908][data-wrap=false], [svelte-1759661908] [data-wrap=false] {\n\twhite-space: nowrap;\n}\n";
+	style.textContent = "[svelte-1759661908][data-wrap=false],[svelte-1759661908] [data-wrap=false]{white-space:nowrap}";
 	appendNode(style, document.head);
 }
 
@@ -1945,7 +1954,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			setAttribute(table, 'svelte-1759661908', '');
+			encapsulateStyles(table);
 			table.className = "pure-table pure-table-bordered";
 		},
 
@@ -1975,7 +1984,7 @@ function create_main_fragment$1(state, component) {
 
 			if ('sort' in changed) link_1_changes.parameters = { sort: state.sort === 'bydate' ? 'byverse' : 'bydate' };
 
-			if (Object.keys(link_1_changes).length) link_1.set(link_1_changes);
+			if (Object.keys(link_1_changes).length) link_1._set(link_1_changes);
 
 			var each_block_value = state.columnOrder;
 
@@ -2218,7 +2227,12 @@ function TableMain(options) {
 
 	this._torndown = false;
 	if (!document.getElementById('svelte-1759661908-style')) add_css();
-	this._oncreate = [];
+
+	if (!options._root) {
+		this._oncreate = [];
+		this._beforecreate = [];
+		this._aftercreate = [];
+	}
 
 	this._fragment = create_main_fragment$1(this._state, this);
 
@@ -2227,7 +2241,13 @@ function TableMain(options) {
 		this._fragment.mount(options.target, null);
 	}
 
-	callAll$1(this._oncreate);
+	if (!options._root) {
+		this._lock = true;
+		callAll$1(this._beforecreate);
+		callAll$1(this._oncreate);
+		callAll$1(this._aftercreate);
+		this._lock = false;
+	}
 }
 
 assign$1(TableMain.prototype, proto);
@@ -2239,7 +2259,6 @@ TableMain.prototype._set = function _set(newState) {
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
-	callAll$1(this._oncreate);
 };
 
 TableMain.prototype.teardown = TableMain.prototype.destroy = function destroy(detach) {
