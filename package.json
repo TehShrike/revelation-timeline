@@ -8,8 +8,8 @@
     "build:client": "rollup -c",
     "watch:client": "rollup -c -w --dev",
     "build:data": "pushd timeline-data && node ./transform-timeline-to-json.js && popd",
-    "build:table": "rollup -c -i ./table-client/index.js -o ./docs/table-bundle.js",
-    "watch:table": "rollup -c -w --dev -i ./table-client/index.js -o ./docs/table-bundle.js",
+    "build:table": "rollup -c -i ./table-client/index.js -o ./public/table-bundle.js",
+    "watch:table": "rollup -c -w --dev -i ./table-client/index.js -o ./public/table-bundle.js",
     "build": "npm run build:data && npm run build:client && npm run build:table",
     "watch:data": "watch \"npm run build:data\" ./timeline-data"
   },
@@ -37,6 +37,7 @@
     "got": "6.7.1",
     "multi-part-range-compare": "~1.0.3",
     "regex-fun": "~2.0.1",
+    "revelation-project-menu": "1.0.1",
     "right-pad": "1.0.1",
     "rollup": "0.43.0",
     "rollup-plugin-babel": "2.7.1",
