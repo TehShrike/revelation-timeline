@@ -7,7 +7,7 @@ export default {
 	format: 'iife',
 	entry: 'client/index.js',
 	dest: './public/bundle.js',
-	// sourceMap: true,
+	sourceMap: true,
 	plugins: [
 		svelte(),
 		commonjs(),
