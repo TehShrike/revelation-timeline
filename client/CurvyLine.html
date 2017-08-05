@@ -42,9 +42,6 @@ export default {
 		console.log('Creating curvy line for', this.get('slug'))
 	},
 	ondestroy() {
-		this.set({
-			destroyed: true
-		})
 		const listener = this.get('listener')
 		motionEventEmitter.removeListener('update', listener)
 		console.log('Destroying curvy line for', this.get('slug'))
@@ -61,12 +58,12 @@ export default {
 	},
 	methods: {
 		drawOnNextFrame() {
-			if (this._fragment && !this.get('drawingOnNextFrame')) {
+			if (!this._destroyed && !this.get('drawingOnNextFrame')) {
 				this.set({
 					drawingOnNextFrame: true
 				})
 				window.requestAnimationFrame(() => {
-					if (this._fragment && !this.get('destroyed')) {
+					if (!this._destroyed) {
 						this.draw()
 						this.set({
 							drawingOnNextFrame: false
@@ -76,7 +73,7 @@ export default {
 			}
 		},
 		draw() {
-			if (!this.refs.canvas || this.get('destroyed')) {
+			if (!this.refs.canvas) {
 				return
 			}
 
