@@ -13,6 +13,8 @@ object-assign
 @license MIT
 */
 
+/* eslint-disable no-unused-vars */
+
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -1210,6 +1212,7 @@ function detachNode$1(node) {
 	node.parentNode.removeChild(node);
 }
 
+// TODO this is out of date
 function destroyEach(iterations, detach, start) {
 	for (var i = start; i < iterations.length; i += 1) {
 		if (iterations[i]) iterations[i].destroy(detach);
@@ -1968,27 +1971,26 @@ var template$5 = function () {
 			};
 			globalUpdateEmitter.on('update', componentListener);
 
-			// this.set({
-			// 	listener: componentListener
-			// })
+			this.set({
+				listener: componentListener
+			});
 
-			// try {
-			// 	this.updateVisibility()
-			// } catch (e) {
-			// 	console.error('Error in oncreate for some reason', e)
-			// }
+			try {
+				this.updateVisibility();
+			} catch (e) {
+				console.error('Error in oncreate for some reason', e);
+			}
 
-
-			// this.observe('updateOnChange', () => {
-			// 	// https://github.com/sveltejs/svelte/issues/730
-			// 	Promise.resolve().then(() => {
-			// 		try {
-			// 			this.updateVisibility()
-			// 		} catch (e) {
-			// 			console.error('There was an error trying to update visibility', e)
-			// 		}
-			// 	})
-			// })
+			this.observe('updateOnChange', function () {
+				// https://github.com/sveltejs/svelte/issues/730
+				Promise.resolve().then(function () {
+					try {
+						_this.updateVisibility();
+					} catch (e) {
+						console.error('There was an error trying to update visibility', e);
+					}
+				});
+			});
 		},
 		ondestroy: function ondestroy() {
 			var componentListener = this.get('listener');
@@ -2011,10 +2013,6 @@ var template$5 = function () {
 				}
 			},
 			updateVisibility: function updateVisibility() {
-				if (!this.refs._fragment) {
-					return;
-				}
-
 				if (!this.refs.element) {
 					// this.log('!!!!!!!!!!!No element found!!!!!!!!!!!!!!!!!!')
 					this.setNotVisible();
@@ -3720,9 +3718,6 @@ var template$7 = function () {
 			console.log('Creating curvy line for', this.get('slug'));
 		},
 		ondestroy: function ondestroy() {
-			this.set({
-				destroyed: true
-			});
 			var listener = this.get('listener');
 			globalUpdateEmitter.removeListener('update', listener);
 			console.log('Destroying curvy line for', this.get('slug'));
@@ -3758,12 +3753,12 @@ var template$7 = function () {
 			drawOnNextFrame: function drawOnNextFrame() {
 				var _this2 = this;
 
-				if (this._fragment && !this.get('drawingOnNextFrame')) {
+				if (!this._destroyed && !this.get('drawingOnNextFrame')) {
 					this.set({
 						drawingOnNextFrame: true
 					});
 					window.requestAnimationFrame(function () {
-						if (_this2._fragment && !_this2.get('destroyed')) {
+						if (!_this2._destroyed) {
 							_this2.draw();
 							_this2.set({
 								drawingOnNextFrame: false
@@ -3773,7 +3768,7 @@ var template$7 = function () {
 				}
 			},
 			draw: function draw() {
-				if (!this.refs.canvas || this.get('destroyed')) {
+				if (!this.refs.canvas) {
 					return;
 				}
 
@@ -3812,13 +3807,13 @@ var template$7 = function () {
 }();
 
 function encapsulateStyles$5(node) {
-	setAttribute(node, 'svelte-3456690565', '');
+	setAttribute(node, 'svelte-3821241417', '');
 }
 
 function add_css$5() {
 	var style = createElement$1('style');
-	style.id = 'svelte-3456690565-style';
-	style.textContent = "canvas[svelte-3456690565],[svelte-3456690565] canvas{position:fixed;pointer-events:none}";
+	style.id = 'svelte-3821241417-style';
+	style.textContent = "canvas[svelte-3821241417],[svelte-3821241417] canvas{position:fixed;pointer-events:none}";
 	appendNode(style, document.head);
 }
 
@@ -3884,7 +3879,7 @@ function CurvyLine(options) {
 	this._yield = options._yield;
 
 	this._destroyed = false;
-	if (!document.getElementById('svelte-3456690565-style')) add_css$5();
+	if (!document.getElementById('svelte-3821241417-style')) add_css$5();
 
 	var oncreate = template$7.oncreate.bind(this);
 
@@ -4081,12 +4076,6 @@ function calculateAxisPoints(dates) {
 		}
 	});
 }
-
-// console.log(createTimelineAxis(require('./filter-and-sort')(require('./timeline-data')), 5).map(date => {
-// 	return Object.assign({
-// 		afterCrucifixion: (date.start || date.amd) - 1471937
-// 	}, date)
-// }))
 
 var addAxisPointsToTimelineData_1 = addAxisPointsToTimelineData;
 
@@ -6788,7 +6777,7 @@ var getCurrentParameters = index$1.getCurrentParameters;
 
 
 var component = new Main({
-	target: document.querySelector('#container'),
+	target: document.querySelector('#target'),
 	data: {
 		timelineData: timelineData, // no need to re-sort, is pre-sorted by transform-timeline-to-json.js
 		querystringParameters: getCurrentParameters()
@@ -6798,3 +6787,4 @@ var component = new Main({
 attachQuerystringData(component);
 
 }());
+//# sourceMappingURL=bundle.js.map

@@ -2346,13 +2346,13 @@ var template$1 = function () {
 }();
 
 function encapsulateStyles(node) {
-	setAttribute(node, 'svelte-2722108932', '');
+	setAttribute(node, 'svelte-3770024735', '');
 }
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = 'svelte-2722108932-style';
-	style.textContent = "[svelte-2722108932][data-wrap=false],[svelte-2722108932] [data-wrap=false]{white-space:nowrap}";
+	style.id = 'svelte-3770024735-style';
+	style.textContent = "[svelte-3770024735][data-wrap=false],[svelte-3770024735] [data-wrap=false]{white-space:nowrap}[svelte-3770024735]#container,[svelte-3770024735] #container{margin-top:16px}";
 	appendNode(style, document.head);
 }
 
@@ -2690,7 +2690,7 @@ function TableMain(options) {
 	this._yield = options._yield;
 
 	this._destroyed = false;
-	if (!document.getElementById('svelte-2722108932-style')) add_css();
+	if (!document.getElementById('svelte-3770024735-style')) add_css();
 
 	if (!options._root) {
 		this._oncreate = [];
