@@ -6,8 +6,8 @@ import svelte from 'rollup-plugin-svelte'
 export default {
 	format: 'iife',
 	entry: 'client/index.js',
-	dest: './docs/bundle.js',
-	sourceMap: true,
+	dest: './public/bundle.js',
+	// sourceMap: true,
 	plugins: [
 		svelte(),
 		commonjs(),

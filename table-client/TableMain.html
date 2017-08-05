@@ -1,29 +1,34 @@
-<Link parameters="{{ { sort: sort === 'bydate' ? 'byverse' : 'bydate' } }}">
-	View {{sort === 'bydate' ? 'by verse' : 'by date'}}
-</Link>
+<RevelationProjectMenu />
 
-<table class="pure-table pure-table-bordered">
-	<thead>
-		<tr>
-			{{#each columnOrder as column}}
-				<th>
-					{{column.header}}
-				</th>
-			{{/each}}
-		</tr>		
-	</thead>
-	<tbody>
-		{{#each events as row}}
+<div id="container">
+	<Link parameters="{{ { sort: sort === 'bydate' ? 'byverse' : 'bydate' } }}">
+		View {{sort === 'bydate' ? 'by verse' : 'by date'}}
+	</Link>
+
+	<table class="pure-table pure-table-bordered">
+		<thead>
 			<tr>
-			{{#each columnOrder as column}}
-				<td data-wrap="{{column.wrap}}">
-					{{formatters[column.property](row)}}
-				</td>
-			{{/each}}				
+				{{#each columnOrder as column}}
+					<th>
+						{{column.header}}
+					</th>
+				{{/each}}
 			</tr>
-		{{/each}}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			{{#each events as row}}
+				<tr>
+				{{#each columnOrder as column}}
+					<td data-wrap="{{column.wrap}}">
+						{{formatters[column.property](row)}}
+					</td>
+				{{/each}}
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
+
 
 <style>
 [data-wrap=false] {
@@ -39,6 +44,8 @@ const { relative: sortRange } = multiPartRangeCompare
 
 import routerInstance from 'svelte-querystring-router'
 const { Link } = routerInstance
+
+import RevelationProjectMenu from 'revelation-project-menu'
 
 
 const referenceRegex = createRegex()
@@ -73,7 +80,7 @@ function getColumnOrders() {
 	return {
 		bydate: [columns.date, columns.temple, columns.revelationReferences, columns.title],
 		byverse: [columns.reference, columns.date, columns.temple, columns.title]
-	}	
+	}
 }
 
 const columnOrders = getColumnOrders()
@@ -136,7 +143,8 @@ export default {
 		events: (sort, eventsByReference, eventsWithVerses) => sort === 'bydate' ? eventsWithVerses : eventsByReference
 	},
 	components: {
-		Link
+		Link,
+		RevelationProjectMenu,
 	}
 }
 </script>

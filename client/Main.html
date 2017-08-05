@@ -1,4 +1,6 @@
-<div class="timeline-container">
+<RevelationProjectMenu />
+
+<div id="container" class="timeline-container">
 	<div class="timeline-column" style="width: 100px; margin-right: 10px;">
 		{{#each axis as date}}
 		<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
@@ -12,7 +14,7 @@
 		</VCenter>
 		{{/each}}
 	</div>
-	<div class="timeline-column" style="width: {{multiplyIndentByWidth(indentLevels + 1.5)}}px">
+	<div class="timeline-column" style="width: {{multiplyIndentByWidth(indentLevels + 1)}}px">
 		<Events
 			timeline="{{relevantEventsWithAxis}}"
 			on:startHover="startHover(event)"
@@ -67,6 +69,8 @@
 </style>
 
 <script>
+import RevelationProjectMenu from 'revelation-project-menu'
+
 import VCenter from './VerticallyCentered.html'
 import Events from './Events.html'
 import EventDescriptions from './EventDescriptions.html'
@@ -333,6 +337,7 @@ export default {
 		Events,
 		EventDescriptions,
 		CurvyLine,
+		RevelationProjectMenu,
 	},
 	oncreate() {
 		// this.observe('slugToVisibleDescriptionPoints', () => {

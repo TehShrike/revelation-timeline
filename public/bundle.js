@@ -13,8 +13,6 @@ object-assign
 @license MIT
 */
 
-/* eslint-disable no-unused-vars */
-
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -1212,7 +1210,6 @@ function detachNode$1(node) {
 	node.parentNode.removeChild(node);
 }
 
-// TODO this is out of date
 function destroyEach(iterations, detach, start) {
 	for (var i = start; i < iterations.length; i += 1) {
 		if (iterations[i]) iterations[i].destroy(detach);
@@ -1341,12 +1338,460 @@ var proto = {
 };
 
 function recompute$2(state, newState, oldState, isInitial) {
-	if (isInitial || 'point' in newState && differs$1(state.point, oldState.point) || 'height' in newState && differs$1(state.height, oldState.height)) {
-		state.top = newState.top = template$2.computed.top(state.point, state.height);
+	if (isInitial || 'root' in newState && differs$1(state.root, oldState.root) || 'pathname' in newState && differs$1(state.pathname, oldState.pathname)) {
+		state.route = newState.route = template$2.computed.route(state.root, state.pathname);
+	}
+
+	if (isInitial || 'menu' in newState && differs$1(state.menu, oldState.menu)) {
+		state.possibleRoutes = newState.possibleRoutes = template$2.computed.possibleRoutes(state.menu);
+	}
+
+	if (isInitial || 'route' in newState && differs$1(state.route, oldState.route) || 'possibleRoutes' in newState && differs$1(state.possibleRoutes, oldState.possibleRoutes)) {
+		state.activeMenuItems = newState.activeMenuItems = template$2.computed.activeMenuItems(state.route, state.possibleRoutes);
+	}
+
+	if (isInitial || 'activeMenuItems' in newState && differs$1(state.activeMenuItems, oldState.activeMenuItems)) {
+		state.isActive = newState.isActive = template$2.computed.isActive(state.activeMenuItems);
+	}
+
+	if (isInitial || 'root' in newState && differs$1(state.root, oldState.root)) {
+		state.makeUrl = newState.makeUrl = template$2.computed.makeUrl(state.root);
+	}
+
+	if (isInitial || 'activeMenuItems' in newState && differs$1(state.activeMenuItems, oldState.activeMenuItems)) {
+		state.activeParentMenuItem = newState.activeParentMenuItem = template$2.computed.activeParentMenuItem(state.activeMenuItems);
 	}
 }
 
 var template$2 = function () {
+	var flatmap = function flatmap(array, fn) {
+		var output = [];
+		array.forEach(function (item) {
+			var additions = fn(item);
+			Array.isArray(additions) ? output.push.apply(output, toConsumableArray(additions)) : output.push(additions);
+		});
+		return output;
+	};
+
+	var joinRoutes = function joinRoutes() {
+		for (var _len = arguments.length, items = Array(_len), _key = 0; _key < _len; _key++) {
+			items[_key] = arguments[_key];
+		}
+
+		return items.map(function (item) {
+			return item.route;
+		}).join('');
+	};
+	var removeTrailingSlash = function removeTrailingSlash(route) {
+		return route[route.length - 1] === '/' ? route.slice(0, route.length - 1) : route;
+	};
+	var exactMatchIgnoringTrailingSlash = function exactMatchIgnoringTrailingSlash(routeA, routeB) {
+		return removeTrailingSlash(routeA) === removeTrailingSlash(routeB);
+	};
+
+	var possibilities = function possibilities(menu) {
+		return flatmap(menu, function (item) {
+			return item.children ? item.children.map(function (child) {
+				return { route: joinRoutes(item, child), hierarchy: [item, child] };
+			}) : { route: item.route, hierarchy: [item] };
+		});
+	};
+
+	return {
+		data: function data() {
+			return {
+				root: '',
+				pathname: document.location.pathname,
+				menu: [{
+					name: 'Project Home',
+					route: '/'
+				}, {
+					name: 'Historical timeline',
+					route: '/timeline/',
+					children: [{
+						name: 'Timeline',
+						route: ''
+					}, {
+						name: 'Table of dates',
+						route: 'table.html'
+					}]
+				}, {
+					name: 'The structure of the book',
+					route: '/structure/',
+					children: [{
+						name: 'Explanation',
+						route: 'explanation.html'
+					}, {
+						name: 'The book',
+						route: ''
+					}]
+				}]
+			};
+		},
+
+		computed: {
+			route: function route(root, pathname) {
+				return pathname.indexOf(root) === 0 ? pathname.slice(root.length) : pathname;
+			},
+			possibleRoutes: function possibleRoutes(menu) {
+				return possibilities(menu);
+			},
+			activeMenuItems: function activeMenuItems(route, possibleRoutes) {
+				var currentRoute = possibleRoutes.find(function (possibility) {
+					return exactMatchIgnoringTrailingSlash(route, possibility.route);
+				});
+
+				return currentRoute && currentRoute.hierarchy;
+			},
+			isActive: function isActive(activeMenuItems) {
+				return function () {
+					for (var _len2 = arguments.length, items = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+						items[_key2] = arguments[_key2];
+					}
+
+					return activeMenuItems && items.every(function (item, i) {
+						return activeMenuItems[i] && item.route === activeMenuItems[i].route;
+					});
+				};
+			},
+			makeUrl: function makeUrl(root) {
+				return function () {
+					return root + joinRoutes.apply(undefined, arguments);
+				};
+			},
+			activeParentMenuItem: function activeParentMenuItem(activeMenuItems) {
+				return activeMenuItems && activeMenuItems[0];
+			}
+		}
+	};
+}();
+
+function encapsulateStyles$1(node) {
+	setAttribute(node, 'svelte-2164047804', '');
+}
+
+function add_css$1() {
+	var style = createElement$1('style');
+	style.id = 'svelte-2164047804-style';
+	style.textContent = "a[svelte-2164047804],[svelte-2164047804] a{white-space:nowrap;display:block}[svelte-2164047804].menu,[svelte-2164047804] .menu{display:flex;flex-wrap:wrap;font-family:Verdana, sans-serif;font-size:16px}[svelte-2164047804].parent-menu-box,[svelte-2164047804] .parent-menu-box{margin:4px}[svelte-2164047804].menu-item,[svelte-2164047804] .menu-item{padding:8px 16px;background-color:#e0e0e0;color:black;border-radius:2px}[svelte-2164047804].menu-item[data-active=true],[svelte-2164047804] .menu-item[data-active=true]{font-weight:bold}[svelte-2164047804].child-menu,[svelte-2164047804] .child-menu{padding-left:4px;padding-right:4px}[svelte-2164047804].child-item,[svelte-2164047804] .child-item{padding:4px 8px;color:black;background-color:#f5f5f5;font-size:14px}[svelte-2164047804].child-item[data-active=true],[svelte-2164047804] .child-item[data-active=true]{font-weight:bold}";
+	appendNode(style, document.head);
+}
+
+function create_main_fragment$2(state, component) {
+	var div, text_1, if_block_anchor;
+
+	var each_block_value = state.menu;
+
+	var each_block_iterations = [];
+
+	for (var i = 0; i < each_block_value.length; i += 1) {
+		each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+	}
+
+	var if_block = state.activeParentMenuItem && state.activeParentMenuItem.children && create_if_block$2(state, component);
+
+	return {
+		create: function create() {
+			div = createElement$1('div');
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].create();
+			}
+
+			text_1 = createText("\n");
+			if (if_block) if_block.create();
+			if_block_anchor = createComment$1();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			encapsulateStyles$1(div);
+			div.className = "menu";
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(div, target, anchor);
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].mount(div, null);
+			}
+
+			insertNode$1(text_1, target, anchor);
+			if (if_block) if_block.mount(target, anchor);
+			insertNode$1(if_block_anchor, target, anchor);
+		},
+
+		update: function update(changed, state) {
+			var each_block_value = state.menu;
+
+			if ('makeUrl' in changed || 'menu' in changed || 'isActive' in changed) {
+				for (var i = 0; i < each_block_value.length; i += 1) {
+					if (each_block_iterations[i]) {
+						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+					} else {
+						each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+						each_block_iterations[i].create();
+						each_block_iterations[i].mount(div, null);
+					}
+				}
+
+				for (; i < each_block_iterations.length; i += 1) {
+					each_block_iterations[i].unmount();
+					each_block_iterations[i].destroy();
+				}
+				each_block_iterations.length = each_block_value.length;
+			}
+
+			if (state.activeParentMenuItem && state.activeParentMenuItem.children) {
+				if (if_block) {
+					if_block.update(changed, state);
+				} else {
+					if_block = create_if_block$2(state, component);
+					if_block.create();
+					if_block.mount(if_block_anchor.parentNode, if_block_anchor);
+				}
+			} else if (if_block) {
+				if_block.unmount();
+				if_block.destroy();
+				if_block = null;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(div);
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].unmount();
+			}
+
+			detachNode$1(text_1);
+			if (if_block) if_block.unmount();
+			detachNode$1(if_block_anchor);
+		},
+
+		destroy: function destroy() {
+			destroyEach(each_block_iterations, false, 0);
+
+			if (if_block) if_block.destroy();
+		}
+	};
+}
+
+function create_each_block$1(state, each_block_value, item, item_index, component) {
+	var span, a, a_href_value, a_data_active_value, text_value, text;
+
+	return {
+		create: function create() {
+			span = createElement$1('span');
+			a = createElement$1('a');
+			text = createText(text_value = item.name);
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			span.className = "parent-menu-box";
+			a.href = a_href_value = state.makeUrl(item);
+			a.className = "menu-item";
+			setAttribute(a, 'data-active', a_data_active_value = state.isActive(item));
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(span, target, anchor);
+			appendNode(a, span);
+			appendNode(text, a);
+		},
+
+		update: function update(changed, state, each_block_value, item, item_index) {
+			if (a_href_value !== (a_href_value = state.makeUrl(item))) {
+				a.href = a_href_value;
+			}
+
+			if (a_data_active_value !== (a_data_active_value = state.isActive(item))) {
+				setAttribute(a, 'data-active', a_data_active_value);
+			}
+
+			if (text_value !== (text_value = item.name)) {
+				text.data = text_value;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(span);
+		},
+
+		destroy: noop$1
+	};
+}
+
+function create_each_block_1$1(state, each_block_value, child, child_index, component) {
+	var a, a_href_value, a_data_active_value, text_value, text;
+
+	return {
+		create: function create() {
+			a = createElement$1('a');
+			text = createText(text_value = child.name);
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			a.href = a_href_value = state.makeUrl(state.activeParentMenuItem, child);
+			a.className = "child-item";
+			setAttribute(a, 'data-active', a_data_active_value = state.isActive(state.activeParentMenuItem, child));
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(a, target, anchor);
+			appendNode(text, a);
+		},
+
+		update: function update(changed, state, each_block_value, child, child_index) {
+			if (a_href_value !== (a_href_value = state.makeUrl(state.activeParentMenuItem, child))) {
+				a.href = a_href_value;
+			}
+
+			if (a_data_active_value !== (a_data_active_value = state.isActive(state.activeParentMenuItem, child))) {
+				setAttribute(a, 'data-active', a_data_active_value);
+			}
+
+			if (text_value !== (text_value = child.name)) {
+				text.data = text_value;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(a);
+		},
+
+		destroy: noop$1
+	};
+}
+
+function create_if_block$2(state, component) {
+	var span;
+
+	var each_block_value = state.activeParentMenuItem.children;
+
+	var each_block_1_iterations = [];
+
+	for (var i = 0; i < each_block_value.length; i += 1) {
+		each_block_1_iterations[i] = create_each_block_1$1(state, each_block_value, each_block_value[i], i, component);
+	}
+
+	return {
+		create: function create() {
+			span = createElement$1('span');
+
+			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
+				each_block_1_iterations[i].create();
+			}
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			encapsulateStyles$1(span);
+			span.className = "menu child-menu";
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(span, target, anchor);
+
+			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
+				each_block_1_iterations[i].mount(span, null);
+			}
+		},
+
+		update: function update(changed, state) {
+			var each_block_value = state.activeParentMenuItem.children;
+
+			if ('makeUrl' in changed || 'activeParentMenuItem' in changed || 'isActive' in changed) {
+				for (var i = 0; i < each_block_value.length; i += 1) {
+					if (each_block_1_iterations[i]) {
+						each_block_1_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+					} else {
+						each_block_1_iterations[i] = create_each_block_1$1(state, each_block_value, each_block_value[i], i, component);
+						each_block_1_iterations[i].create();
+						each_block_1_iterations[i].mount(span, null);
+					}
+				}
+
+				for (; i < each_block_1_iterations.length; i += 1) {
+					each_block_1_iterations[i].unmount();
+					each_block_1_iterations[i].destroy();
+				}
+				each_block_1_iterations.length = each_block_value.length;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(span);
+
+			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
+				each_block_1_iterations[i].unmount();
+			}
+		},
+
+		destroy: function destroy() {
+			destroyEach(each_block_1_iterations, false, 0);
+		}
+	};
+}
+
+function Menu(options) {
+	options = options || {};
+	this._state = assign$1(template$2.data(), options.data);
+	recompute$2(this._state, this._state, {}, true);
+
+	this._observers = {
+		pre: Object.create(null),
+		post: Object.create(null)
+	};
+
+	this._handlers = Object.create(null);
+
+	this._root = options._root || this;
+	this._yield = options._yield;
+
+	this._destroyed = false;
+	if (!document.getElementById('svelte-2164047804-style')) add_css$1();
+
+	this._fragment = create_main_fragment$2(this._state, this);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+}
+
+assign$1(Menu.prototype, proto);
+
+Menu.prototype._set = function _set(newState) {
+	var oldState = this._state;
+	this._state = assign$1({}, oldState, newState);
+	recompute$2(this._state, newState, oldState, false);
+	dispatchObservers$1(this, this._observers.pre, newState, oldState);
+	this._fragment.update(newState, this._state);
+	dispatchObservers$1(this, this._observers.post, newState, oldState);
+};
+
+Menu.prototype.teardown = Menu.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
+	this.fire('destroy');
+
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
+	this._fragment = null;
+
+	this._state = {};
+	this._destroyed = true;
+};
+
+function recompute$3(state, newState, oldState, isInitial) {
+	if (isInitial || 'point' in newState && differs$1(state.point, oldState.point) || 'height' in newState && differs$1(state.height, oldState.height)) {
+		state.top = newState.top = template$3.computed.top(state.point, state.height);
+	}
+}
+
+var template$3 = function () {
 	return {
 		data: function data() {
 			return {
@@ -1372,18 +1817,18 @@ var template$2 = function () {
 	};
 }();
 
-function encapsulateStyles$1(node) {
+function encapsulateStyles$2(node) {
 	setAttribute(node, 'svelte-2389753504', '');
 }
 
-function add_css$1() {
+function add_css$2() {
 	var style = createElement$1('style');
 	style.id = 'svelte-2389753504-style';
 	style.textContent = "[svelte-2389753504].vcentered,[svelte-2389753504] .vcentered{position:absolute}";
 	appendNode(style, document.head);
 }
 
-function create_main_fragment$2(state, component) {
+function create_main_fragment$3(state, component) {
 	var div, div_style_value;
 
 	return {
@@ -1393,7 +1838,7 @@ function create_main_fragment$2(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			encapsulateStyles$1(div);
+			encapsulateStyles$2(div);
 			div.style.cssText = div_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
 			div.className = "vcentered";
 		},
@@ -1424,8 +1869,8 @@ function create_main_fragment$2(state, component) {
 function VerticallyCentered(options) {
 	options = options || {};
 	this.refs = {};
-	this._state = assign$1(template$2.data(), options.data);
-	recompute$2(this._state, this._state, {}, true);
+	this._state = assign$1(template$3.data(), options.data);
+	recompute$3(this._state, this._state, {}, true);
 
 	this._observers = {
 		pre: Object.create(null),
@@ -1437,10 +1882,10 @@ function VerticallyCentered(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
-	if (!document.getElementById('svelte-2389753504-style')) add_css$1();
+	this._destroyed = false;
+	if (!document.getElementById('svelte-2389753504-style')) add_css$2();
 
-	var oncreate = template$2.oncreate.bind(this);
+	var oncreate = template$3.oncreate.bind(this);
 
 	if (!options._root) {
 		this._oncreate = [oncreate];
@@ -1448,7 +1893,7 @@ function VerticallyCentered(options) {
 		this._root._oncreate.push(oncreate);
 	}
 
-	this._fragment = create_main_fragment$2(this._state, this);
+	this._fragment = create_main_fragment$3(this._state, this);
 
 	if (options.target) {
 		this._fragment.create();
@@ -1465,13 +1910,14 @@ assign$1(VerticallyCentered.prototype, proto);
 VerticallyCentered.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign$1({}, oldState, newState);
-	recompute$2(this._state, newState, oldState, false);
+	recompute$3(this._state, newState, oldState, false);
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
 };
 
 VerticallyCentered.prototype.teardown = VerticallyCentered.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
 
 	if (detach !== false) this._fragment.unmount();
@@ -1479,7 +1925,7 @@ VerticallyCentered.prototype.teardown = VerticallyCentered.prototype.destroy = f
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
 var globalUpdateEmitter = new index$8();
@@ -1508,7 +1954,7 @@ var listener = debounce(function () {
 window.addEventListener('resize', listener);
 window.addEventListener('scroll', listener);
 
-var template$4 = function () {
+var template$5 = function () {
 	var average = function average(a, b) {
 		return (a + b) / 2;
 	};
@@ -1522,26 +1968,27 @@ var template$4 = function () {
 			};
 			globalUpdateEmitter.on('update', componentListener);
 
-			this.set({
-				listener: componentListener
-			});
+			// this.set({
+			// 	listener: componentListener
+			// })
 
-			try {
-				this.updateVisibility();
-			} catch (e) {
-				console.error('Error in oncreate for some reason', e);
-			}
+			// try {
+			// 	this.updateVisibility()
+			// } catch (e) {
+			// 	console.error('Error in oncreate for some reason', e)
+			// }
 
-			this.observe('updateOnChange', function () {
-				// https://github.com/sveltejs/svelte/issues/730
-				Promise.resolve().then(function () {
-					try {
-						_this.updateVisibility();
-					} catch (e) {
-						console.error('There was an error trying to update visibility', e);
-					}
-				});
-			});
+
+			// this.observe('updateOnChange', () => {
+			// 	// https://github.com/sveltejs/svelte/issues/730
+			// 	Promise.resolve().then(() => {
+			// 		try {
+			// 			this.updateVisibility()
+			// 		} catch (e) {
+			// 			console.error('There was an error trying to update visibility', e)
+			// 		}
+			// 	})
+			// })
 		},
 		ondestroy: function ondestroy() {
 			var componentListener = this.get('listener');
@@ -1564,6 +2011,10 @@ var template$4 = function () {
 				}
 			},
 			updateVisibility: function updateVisibility() {
+				if (!this.refs._fragment) {
+					return;
+				}
+
 				if (!this.refs.element) {
 					// this.log('!!!!!!!!!!!No element found!!!!!!!!!!!!!!!!!!')
 					this.setNotVisible();
@@ -1605,7 +2056,7 @@ var template$4 = function () {
 	};
 }();
 
-function create_main_fragment$4(state, component) {
+function create_main_fragment$5(state, component) {
 	var div, div_data_whatever_thingy_value;
 
 	return {
@@ -1656,9 +2107,9 @@ function Visibility(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
+	this._destroyed = false;
 
-	var oncreate = template$4.oncreate.bind(this);
+	var oncreate = template$5.oncreate.bind(this);
 
 	if (!options._root) {
 		this._oncreate = [oncreate];
@@ -1666,7 +2117,7 @@ function Visibility(options) {
 		this._root._oncreate.push(oncreate);
 	}
 
-	this._fragment = create_main_fragment$4(this._state, this);
+	this._fragment = create_main_fragment$5(this._state, this);
 
 	if (options.target) {
 		this._fragment.create();
@@ -1678,7 +2129,7 @@ function Visibility(options) {
 	}
 }
 
-assign$1(Visibility.prototype, template$4.methods, proto);
+assign$1(Visibility.prototype, template$5.methods, proto);
 
 Visibility.prototype._set = function _set(newState) {
 	var oldState = this._state;
@@ -1689,41 +2140,42 @@ Visibility.prototype._set = function _set(newState) {
 };
 
 Visibility.prototype.teardown = Visibility.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
-	template$4.ondestroy.call(this);
+	template$5.ondestroy.call(this);
 
 	if (detach !== false) this._fragment.unmount();
 	this._fragment.destroy();
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
 function multiplyIndentByWidth(indentLevel) {
 	return indentLevel * 60;
 }
 
-function recompute$3(state, newState, oldState, isInitial) {
+function recompute$4(state, newState, oldState, isInitial) {
 	if (isInitial || 'dayHeight' in newState && differs$1(state.dayHeight, oldState.dayHeight)) {
-		state.multiplyDaysByHeight = newState.multiplyDaysByHeight = template$3.computed.multiplyDaysByHeight(state.dayHeight);
-		state.singleDayHeight = newState.singleDayHeight = template$3.computed.singleDayHeight(state.dayHeight);
+		state.multiplyDaysByHeight = newState.multiplyDaysByHeight = template$4.computed.multiplyDaysByHeight(state.dayHeight);
+		state.singleDayHeight = newState.singleDayHeight = template$4.computed.singleDayHeight(state.dayHeight);
 	}
 
 	if (isInitial || 'ignoreType' in newState && differs$1(state.ignoreType, oldState.ignoreType)) {
-		state.ignoreTypeMap = newState.ignoreTypeMap = template$3.computed.ignoreTypeMap(state.ignoreType);
+		state.ignoreTypeMap = newState.ignoreTypeMap = template$4.computed.ignoreTypeMap(state.ignoreType);
 	}
 
 	if (isInitial || 'timeline' in newState && differs$1(state.timeline, oldState.timeline) || 'ignoreTypeMap' in newState && differs$1(state.ignoreTypeMap, oldState.ignoreTypeMap)) {
-		state.nonIgnoredEvents = newState.nonIgnoredEvents = template$3.computed.nonIgnoredEvents(state.timeline, state.ignoreTypeMap);
+		state.nonIgnoredEvents = newState.nonIgnoredEvents = template$4.computed.nonIgnoredEvents(state.timeline, state.ignoreTypeMap);
 	}
 
 	if (isInitial || 'nonIgnoredEvents' in newState && differs$1(state.nonIgnoredEvents, oldState.nonIgnoredEvents) || 'visibleEventSlugs' in newState && differs$1(state.visibleEventSlugs, oldState.visibleEventSlugs) || 'slugToTopRatio' in newState && differs$1(state.slugToTopRatio, oldState.slugToTopRatio) || 'slugToBottomRatio' in newState && differs$1(state.slugToBottomRatio, oldState.slugToBottomRatio) || 'slugToTop' in newState && differs$1(state.slugToTop, oldState.slugToTop) || 'slugToBottom' in newState && differs$1(state.slugToBottom, oldState.slugToBottom) || 'slugToRight' in newState && differs$1(state.slugToRight, oldState.slugToRight)) {
-		state.visibleEvents = newState.visibleEvents = template$3.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs, state.slugToTopRatio, state.slugToBottomRatio, state.slugToTop, state.slugToBottom, state.slugToRight);
+		state.visibleEvents = newState.visibleEvents = template$4.computed.visibleEvents(state.nonIgnoredEvents, state.visibleEventSlugs, state.slugToTopRatio, state.slugToBottomRatio, state.slugToTop, state.slugToBottom, state.slugToRight);
 	}
 }
 
-var template$3 = function () {
+var template$4 = function () {
 	return {
 		data: function data() {
 			var empty = function empty() {
@@ -1783,18 +2235,18 @@ var template$3 = function () {
 	};
 }();
 
-function encapsulateStyles$2(node) {
+function encapsulateStyles$3(node) {
 	setAttribute(node, 'svelte-2387132463', '');
 }
 
-function add_css$2() {
+function add_css$3() {
 	var style = createElement$1('style');
 	style.id = 'svelte-2387132463-style';
 	style.textContent = "[svelte-2387132463][data-clickable=true],[svelte-2387132463] [data-clickable=true]{cursor:pointer}[svelte-2387132463].event,[svelte-2387132463] .event{position:absolute;width:48px;-webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px}[svelte-2387132463].event[data-cut-off-at-start=true],[svelte-2387132463] .event[data-cut-off-at-start=true]{-webkit-border-top-right-radius:0;-webkit-border-top-left-radius:0;border-top-right-radius:0;border-top-left-radius:0}[svelte-2387132463].event[data-cut-off-at-end=true],[svelte-2387132463] .event[data-cut-off-at-end=true]{-webkit-border-bottom-right-radius:0;-webkit-border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-left-radius:0}[svelte-2387132463].event:hover,[svelte-2387132463] .event:hover{background-color:red}";
 	appendNode(style, document.head);
 }
 
-function create_main_fragment$3(state, component) {
+function create_main_fragment$4(state, component) {
 	var each_block_lookup = Object.create(null),
 	    each_block_head,
 	    each_block_last,
@@ -1804,7 +2256,7 @@ function create_main_fragment$3(state, component) {
 
 	for (var i = 0; i < each_block_value.length; i += 1) {
 		var key = each_block_value[i].slug;
-		var each_block_iteration = each_block_lookup[key] = create_each_block$1(state, each_block_value, each_block_value[i], i, component, key);
+		var each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
 
 		if (each_block_last) each_block_last.next = each_block_iteration;
 		each_block_iteration.last = each_block_last;
@@ -1873,7 +2325,7 @@ function create_main_fragment$3(state, component) {
 							if (!each_block_expected) each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 						} else {
 							// key is being inserted
-							each_block_iteration = each_block_lookup[key] = create_each_block$1(state, each_block_value, each_block_value[i], i, component, key);
+							each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
 							each_block_iteration.create();
 							each_block_iteration.mount(each_block_anchor.parentNode, each_block_expected.first);
 
@@ -1888,7 +2340,7 @@ function create_main_fragment$3(state, component) {
 						each_block_iteration.next = null;
 						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 					} else {
-						each_block_iteration = each_block_lookup[key] = create_each_block$1(state, each_block_value, each_block_value[i], i, component, key);
+						each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
 						each_block_iteration.create();
 						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 					}
@@ -1936,11 +2388,11 @@ function create_main_fragment$3(state, component) {
 	};
 }
 
-function create_each_block$1(state, each_block_value, timelineEvent, index, component, key) {
+function create_each_block$2(state, each_block_value, timelineEvent, index, component, key) {
 	var first, if_block_anchor;
 
 	function get_block(state, each_block_value, timelineEvent, index) {
-		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block$2;
+		if (timelineEvent.axis.end === timelineEvent.axis.start) return create_if_block$3;
 		return create_if_block_1$2;
 	}
 
@@ -2219,7 +2671,7 @@ function create_visibility_yield_fragment(state, each_block_value, timelineEvent
 		},
 
 		hydrate: function hydrate(nodes) {
-			encapsulateStyles$2(div);
+			encapsulateStyles$3(div);
 			div.className = "event";
 			div.style.cssText = div_style_value = "\n\t\t\t\t\t\theight: " + state.singleDayHeight + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
 			addListener$1(div, 'mouseover', mouseover_handler);
@@ -2482,9 +2934,9 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 		},
 
 		hydrate: function hydrate(nodes) {
-			encapsulateStyles$2(div);
+			encapsulateStyles$3(div);
 			div.id = div_id_value = timelineEvent.slug;
-			div.style.cssText = div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
+			div.style.cssText = div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$4.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t";
 			div.className = "event";
 			setAttribute(div, 'data-cut-off-at-start', div_data_cut_off_at_start_value = timelineEvent.axis.cutOffAtStart);
 			setAttribute(div, 'data-cut-off-at-end', div_data_cut_off_at_end_value = timelineEvent.axis.cutOffAtEnd);
@@ -2507,7 +2959,7 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 				div.id = div_id_value;
 			}
 
-			if (div_style_value !== (div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t")) {
+			if (div_style_value !== (div_style_value = "\n\t\t\t\t\t\ttop: " + state.multiplyDaysByHeight(timelineEvent.axisAfterStart) + "px;\n\t\t\t\t\t\tleft: " + template$4.helpers.multiplyIndentByWidth(timelineEvent.indentLevel) + "px;\n\t\t\t\t\t\theight: " + state.multiplyDaysByHeight(timelineEvent.visibleDays) + "px;\n\t\t\t\t\t\tbackground-color: " + timelineEvent.color + ";\n\t\t\t\t\t")) {
 				div.style.cssText = div_style_value;
 			}
 
@@ -2534,14 +2986,14 @@ function create_visibility_yield_fragment_1(state, each_block_value, timelineEve
 	};
 }
 
-function create_if_block$2(state, each_block_value, timelineEvent, index, component, key) {
+function create_if_block$3(state, each_block_value, timelineEvent, index, component, key) {
 
 	var vcenter_1_yield_fragment = create_vcenter_yield_fragment$1(state, each_block_value, timelineEvent, index, component);
 
 	var vcenter_1 = new VerticallyCentered({
 		_root: component._root,
 		_yield: vcenter_1_yield_fragment,
-		data: { left: template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: state.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
+		data: { left: template$4.helpers.multiplyIndentByWidth(timelineEvent.indentLevel), point: state.multiplyDaysByHeight(timelineEvent.axisAfterStart) }
 	});
 
 	return {
@@ -2561,7 +3013,7 @@ function create_if_block$2(state, each_block_value, timelineEvent, index, compon
 
 			var vcenter_1_changes = {};
 
-			if ('timeline' in changed) vcenter_1_changes.left = template$3.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
+			if ('timeline' in changed) vcenter_1_changes.left = template$4.helpers.multiplyIndentByWidth(timelineEvent.indentLevel);
 			if ('multiplyDaysByHeight' in changed || 'timeline' in changed) vcenter_1_changes.point = state.multiplyDaysByHeight(timelineEvent.axisAfterStart);
 
 			if (Object.keys(vcenter_1_changes).length) vcenter_1._set(vcenter_1_changes);
@@ -2582,7 +3034,7 @@ function create_if_block_1$2(state, each_block_value, timelineEvent, index, comp
 
 	var link_1_yield_fragment = create_link_yield_fragment(state, each_block_value, timelineEvent, index, component);
 
-	var link_1 = new template$3.components.Link({
+	var link_1 = new template$4.components.Link({
 		_root: component._root,
 		_yield: link_1_yield_fragment,
 		data: { parameters: state.clickable ? { zoom: timelineEvent.slug } : null }
@@ -2655,8 +3107,8 @@ function mouseleave_handler_1(event) {
 
 function Events(options) {
 	options = options || {};
-	this._state = assign$1(template$3.data(), options.data);
-	recompute$3(this._state, this._state, {}, true);
+	this._state = assign$1(template$4.data(), options.data);
+	recompute$4(this._state, this._state, {}, true);
 
 	this._observers = {
 		pre: Object.create(null),
@@ -2668,8 +3120,8 @@ function Events(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
-	if (!document.getElementById('svelte-2387132463-style')) add_css$2();
+	this._destroyed = false;
+	if (!document.getElementById('svelte-2387132463-style')) add_css$3();
 
 	if (!options._root) {
 		this._oncreate = [];
@@ -2677,7 +3129,7 @@ function Events(options) {
 		this._aftercreate = [];
 	}
 
-	this._fragment = create_main_fragment$3(this._state, this);
+	this._fragment = create_main_fragment$4(this._state, this);
 
 	if (options.target) {
 		this._fragment.create();
@@ -2698,13 +3150,14 @@ assign$1(Events.prototype, proto);
 Events.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign$1({}, oldState, newState);
-	recompute$3(this._state, newState, oldState, false);
+	recompute$4(this._state, newState, oldState, false);
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
 };
 
 Events.prototype.teardown = Events.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
 
 	if (detach !== false) this._fragment.unmount();
@@ -2712,20 +3165,20 @@ Events.prototype.teardown = Events.prototype.destroy = function destroy(detach) 
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
-function recompute$4(state, newState, oldState, isInitial) {
+function recompute$5(state, newState, oldState, isInitial) {
 	if (isInitial || 'hoveredEvent' in newState && differs$1(state.hoveredEvent, oldState.hoveredEvent)) {
-		state.outline = newState.outline = template$5.computed.outline(state.hoveredEvent);
+		state.outline = newState.outline = template$6.computed.outline(state.hoveredEvent);
 	}
 
 	if (isInitial || 'slugToVerticalCenter' in newState && differs$1(state.slugToVerticalCenter, oldState.slugToVerticalCenter) || 'slugToLeft' in newState && differs$1(state.slugToLeft, oldState.slugToLeft) || 'slugToVisible' in newState && differs$1(state.slugToVisible, oldState.slugToVisible) || 'timeline' in newState && differs$1(state.timeline, oldState.timeline)) {
-		state.slugToPoints = newState.slugToPoints = template$5.computed.slugToPoints(state.slugToVerticalCenter, state.slugToLeft, state.slugToVisible, state.timeline);
+		state.slugToPoints = newState.slugToPoints = template$6.computed.slugToPoints(state.slugToVerticalCenter, state.slugToLeft, state.slugToVisible, state.timeline);
 	}
 }
 
-var template$5 = function () {
+var template$6 = function () {
 
 	function getOutlineCssString(hoveredEvent, timelineEvent) {
 		return hoveredEvent.slug === timelineEvent.slug ? 'outline: 4px solid ' + timelineEvent.color + ';' : '';
@@ -2808,18 +3261,18 @@ var template$5 = function () {
 	};
 }();
 
-function encapsulateStyles$3(node) {
+function encapsulateStyles$4(node) {
 	setAttribute(node, 'svelte-2804816764', '');
 }
 
-function add_css$3() {
+function add_css$4() {
 	var style = createElement$1('style');
 	style.id = 'svelte-2804816764-style';
 	style.textContent = "[svelte-2804816764].event-description,[svelte-2804816764] .event-description{border-width:2px;border-style:solid;padding:4px 8px;margin:8px 0px}";
 	appendNode(style, document.head);
 }
 
-function create_main_fragment$5(state, component) {
+function create_main_fragment$6(state, component) {
 	var each_block_lookup = Object.create(null),
 	    each_block_head,
 	    each_block_last,
@@ -2829,7 +3282,7 @@ function create_main_fragment$5(state, component) {
 
 	for (var i = 0; i < each_block_value.length; i += 1) {
 		var key = each_block_value[i].slug;
-		var each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
+		var each_block_iteration = each_block_lookup[key] = create_each_block$3(state, each_block_value, each_block_value[i], i, component, key);
 
 		if (each_block_last) each_block_last.next = each_block_iteration;
 		each_block_iteration.last = each_block_last;
@@ -2898,7 +3351,7 @@ function create_main_fragment$5(state, component) {
 							if (!each_block_expected) each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 						} else {
 							// key is being inserted
-							each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
+							each_block_iteration = each_block_lookup[key] = create_each_block$3(state, each_block_value, each_block_value[i], i, component, key);
 							each_block_iteration.create();
 							each_block_iteration.mount(each_block_anchor.parentNode, each_block_expected.first);
 
@@ -2913,7 +3366,7 @@ function create_main_fragment$5(state, component) {
 						each_block_iteration.next = null;
 						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 					} else {
-						each_block_iteration = each_block_lookup[key] = create_each_block$2(state, each_block_value, each_block_value[i], i, component, key);
+						each_block_iteration = each_block_lookup[key] = create_each_block$3(state, each_block_value, each_block_value[i], i, component, key);
 						each_block_iteration.create();
 						each_block_iteration.mount(each_block_anchor.parentNode, each_block_anchor);
 					}
@@ -2961,7 +3414,7 @@ function create_main_fragment$5(state, component) {
 	};
 }
 
-function create_each_block$2(state, each_block_value, timelineEvent, index, component, key) {
+function create_each_block$3(state, each_block_value, timelineEvent, index, component, key) {
 	var first,
 	    visibility_1_updating = false,
 	    visibility_1_updating_1 = false,
@@ -3121,7 +3574,7 @@ function create_visibility_yield_fragment$1(state, each_block_value, timelineEve
 		},
 
 		hydrate: function hydrate(nodes) {
-			encapsulateStyles$3(div);
+			encapsulateStyles$4(div);
 			div.className = "event-description";
 			div.style.cssText = div_style_value = "\n\t\t\t\tborder-color: " + timelineEvent.color + ";\n\t\t\t\t" + state.outline(timelineEvent) + "\n\t\t\t";
 		},
@@ -3151,8 +3604,8 @@ function create_visibility_yield_fragment$1(state, each_block_value, timelineEve
 
 function EventDescriptions(options) {
 	options = options || {};
-	this._state = assign$1(template$5.data(), options.data);
-	recompute$4(this._state, this._state, {}, true);
+	this._state = assign$1(template$6.data(), options.data);
+	recompute$5(this._state, this._state, {}, true);
 
 	this._observers = {
 		pre: Object.create(null),
@@ -3164,8 +3617,8 @@ function EventDescriptions(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
-	if (!document.getElementById('svelte-2804816764-style')) add_css$3();
+	this._destroyed = false;
+	if (!document.getElementById('svelte-2804816764-style')) add_css$4();
 
 	if (!options._root) {
 		this._oncreate = [];
@@ -3173,7 +3626,7 @@ function EventDescriptions(options) {
 		this._aftercreate = [];
 	}
 
-	this._fragment = create_main_fragment$5(this._state, this);
+	this._fragment = create_main_fragment$6(this._state, this);
 
 	if (options.target) {
 		this._fragment.create();
@@ -3194,13 +3647,14 @@ assign$1(EventDescriptions.prototype, proto);
 EventDescriptions.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign$1({}, oldState, newState);
-	recompute$4(this._state, newState, oldState, false);
+	recompute$5(this._state, newState, oldState, false);
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
 };
 
 EventDescriptions.prototype.teardown = EventDescriptions.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
 
 	if (detach !== false) this._fragment.unmount();
@@ -3208,29 +3662,29 @@ EventDescriptions.prototype.teardown = EventDescriptions.prototype.destroy = fun
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
-function recompute$5(state, newState, oldState, isInitial) {
+function recompute$6(state, newState, oldState, isInitial) {
 	if (isInitial || 'from' in newState && differs$1(state.from, oldState.from) || 'to' in newState && differs$1(state.to, oldState.to)) {
-		state.leftmostPoint = newState.leftmostPoint = template$6.computed.leftmostPoint(state.from, state.to);
-		state.rightmostPoint = newState.rightmostPoint = template$6.computed.rightmostPoint(state.from, state.to);
-		state.topmostPoint = newState.topmostPoint = template$6.computed.topmostPoint(state.from, state.to);
-		state.bottommostPoint = newState.bottommostPoint = template$6.computed.bottommostPoint(state.from, state.to);
-		state.top = newState.top = template$6.computed.top(state.from, state.to);
-		state.left = newState.left = template$6.computed.left(state.from, state.to);
+		state.leftmostPoint = newState.leftmostPoint = template$7.computed.leftmostPoint(state.from, state.to);
+		state.rightmostPoint = newState.rightmostPoint = template$7.computed.rightmostPoint(state.from, state.to);
+		state.topmostPoint = newState.topmostPoint = template$7.computed.topmostPoint(state.from, state.to);
+		state.bottommostPoint = newState.bottommostPoint = template$7.computed.bottommostPoint(state.from, state.to);
+		state.top = newState.top = template$7.computed.top(state.from, state.to);
+		state.left = newState.left = template$7.computed.left(state.from, state.to);
 	}
 
 	if (isInitial || 'leftmostPoint' in newState && differs$1(state.leftmostPoint, oldState.leftmostPoint) || 'rightmostPoint' in newState && differs$1(state.rightmostPoint, oldState.rightmostPoint)) {
-		state.width = newState.width = template$6.computed.width(state.leftmostPoint, state.rightmostPoint);
+		state.width = newState.width = template$7.computed.width(state.leftmostPoint, state.rightmostPoint);
 	}
 
 	if (isInitial || 'topmostPoint' in newState && differs$1(state.topmostPoint, oldState.topmostPoint) || 'bottommostPoint' in newState && differs$1(state.bottommostPoint, oldState.bottommostPoint)) {
-		state.height = newState.height = template$6.computed.height(state.topmostPoint, state.bottommostPoint);
+		state.height = newState.height = template$7.computed.height(state.topmostPoint, state.bottommostPoint);
 	}
 }
 
-var template$6 = function () {
+var template$7 = function () {
 	var greatest = function greatest(a, b, property) {
 		return a[property] > b[property] ? a : b;
 	};
@@ -3357,18 +3811,18 @@ var template$6 = function () {
 	};
 }();
 
-function encapsulateStyles$4(node) {
+function encapsulateStyles$5(node) {
 	setAttribute(node, 'svelte-3456690565', '');
 }
 
-function add_css$4() {
+function add_css$5() {
 	var style = createElement$1('style');
 	style.id = 'svelte-3456690565-style';
 	style.textContent = "canvas[svelte-3456690565],[svelte-3456690565] canvas{position:fixed;pointer-events:none}";
 	appendNode(style, document.head);
 }
 
-function create_main_fragment$6(state, component) {
+function create_main_fragment$7(state, component) {
 	var canvas, canvas_width_value, canvas_height_value, canvas_style_value;
 
 	return {
@@ -3378,7 +3832,7 @@ function create_main_fragment$6(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			encapsulateStyles$4(canvas);
+			encapsulateStyles$5(canvas);
 			canvas.width = canvas_width_value = state.width;
 			canvas.height = canvas_height_value = state.height;
 			canvas.style.cssText = canvas_style_value = "top: " + state.top + "px; left: " + state.left + "px;";
@@ -3416,8 +3870,8 @@ function create_main_fragment$6(state, component) {
 function CurvyLine(options) {
 	options = options || {};
 	this.refs = {};
-	this._state = assign$1(template$6.data(), options.data);
-	recompute$5(this._state, this._state, {}, true);
+	this._state = assign$1(template$7.data(), options.data);
+	recompute$6(this._state, this._state, {}, true);
 
 	this._observers = {
 		pre: Object.create(null),
@@ -3429,10 +3883,10 @@ function CurvyLine(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
-	if (!document.getElementById('svelte-3456690565-style')) add_css$4();
+	this._destroyed = false;
+	if (!document.getElementById('svelte-3456690565-style')) add_css$5();
 
-	var oncreate = template$6.oncreate.bind(this);
+	var oncreate = template$7.oncreate.bind(this);
 
 	if (!options._root) {
 		this._oncreate = [oncreate];
@@ -3440,7 +3894,7 @@ function CurvyLine(options) {
 		this._root._oncreate.push(oncreate);
 	}
 
-	this._fragment = create_main_fragment$6(this._state, this);
+	this._fragment = create_main_fragment$7(this._state, this);
 
 	if (options.target) {
 		this._fragment.create();
@@ -3452,27 +3906,28 @@ function CurvyLine(options) {
 	}
 }
 
-assign$1(CurvyLine.prototype, template$6.methods, proto);
+assign$1(CurvyLine.prototype, template$7.methods, proto);
 
 CurvyLine.prototype._set = function _set(newState) {
 	var oldState = this._state;
 	this._state = assign$1({}, oldState, newState);
-	recompute$5(this._state, newState, oldState, false);
+	recompute$6(this._state, newState, oldState, false);
 	dispatchObservers$1(this, this._observers.pre, newState, oldState);
 	this._fragment.update(newState, this._state);
 	dispatchObservers$1(this, this._observers.post, newState, oldState);
 };
 
 CurvyLine.prototype.teardown = CurvyLine.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
-	template$6.ondestroy.call(this);
+	template$7.ondestroy.call(this);
 
 	if (detach !== false) this._fragment.unmount();
 	this._fragment.destroy();
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
 var pipe = function pipe(input) {
@@ -3626,6 +4081,12 @@ function calculateAxisPoints(dates) {
 		}
 	});
 }
+
+// console.log(createTimelineAxis(require('./filter-and-sort')(require('./timeline-data')), 5).map(date => {
+// 	return Object.assign({
+// 		afterCrucifixion: (date.start || date.amd) - 1471937
+// 	}, date)
+// }))
 
 var addAxisPointsToTimelineData_1 = addAxisPointsToTimelineData;
 
@@ -4615,32 +5076,37 @@ var template$1 = function () {
 }();
 
 function encapsulateStyles(node) {
-	setAttribute(node, 'svelte-1463462598', '');
+	setAttribute(node, 'svelte-379636149', '');
 }
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = 'svelte-1463462598-style';
-	style.textContent = "[svelte-1463462598].timeline-container,[svelte-1463462598] .timeline-container{display:flex;flex-wrap:nowrap;align-items:flex-start}[svelte-1463462598].timeline-column,[svelte-1463462598] .timeline-column{position:relative}[svelte-1463462598].axis,[svelte-1463462598] .axis{font-size:10px;width:100px;text-align:right}[svelte-1463462598].axis[data-relevant=true],[svelte-1463462598] .axis[data-relevant=true]{color:red}[svelte-1463462598].event-description-column,[svelte-1463462598] .event-description-column{display:flex;align-items:center;position:fixed;top:0;height:100%}";
+	style.id = 'svelte-379636149-style';
+	style.textContent = "[svelte-379636149].timeline-container,[svelte-379636149] .timeline-container{display:flex;flex-wrap:nowrap;align-items:flex-start}[svelte-379636149].timeline-column,[svelte-379636149] .timeline-column{position:relative}[svelte-379636149].axis,[svelte-379636149] .axis{font-size:10px;width:100px;text-align:right}[svelte-379636149].axis[data-relevant=true],[svelte-379636149] .axis[data-relevant=true]{color:red}[svelte-379636149].event-description-column,[svelte-379636149] .event-description-column{display:flex;align-items:center;position:fixed;top:0;height:100%}";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$1(state, component) {
-	var div,
+	var text,
+	    div,
 	    div_1,
-	    text_1,
+	    text_2,
 	    div_2,
 	    div_2_style_value,
 	    events_updating = false,
-	    text_3,
+	    text_4,
 	    each_block_1_lookup = Object.create(null),
 	    each_block_1_head,
 	    each_block_1_last,
-	    text_4,
+	    text_5,
 	    div_3,
 	    div_4,
 	    div_5,
 	    eventdescriptions_updating = false;
+
+	var revelationprojectmenu = new Menu({
+		_root: component._root
+	});
 
 	var each_block_value = state.axis;
 
@@ -4741,6 +5207,8 @@ function create_main_fragment$1(state, component) {
 
 	return {
 		create: function create() {
+			revelationprojectmenu._fragment.create();
+			text = createText("\n\n");
 			div = createElement$1('div');
 			div_1 = createElement$1('div');
 
@@ -4748,10 +5216,10 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].create();
 			}
 
-			text_1 = createText("\n\t");
+			text_2 = createText("\n\t");
 			div_2 = createElement$1('div');
 			events._fragment.create();
-			text_3 = createText("\n\t");
+			text_4 = createText("\n\t");
 
 			var each_block_1_iteration = each_block_1_head;
 			while (each_block_1_iteration) {
@@ -4759,7 +5227,7 @@ function create_main_fragment$1(state, component) {
 				each_block_1_iteration = each_block_1_iteration.next;
 			}
 
-			text_4 = createText("\n\t");
+			text_5 = createText("\n\t");
 			div_3 = createElement$1('div');
 			div_4 = createElement$1('div');
 			div_5 = createElement$1('div');
@@ -4769,6 +5237,7 @@ function create_main_fragment$1(state, component) {
 
 		hydrate: function hydrate(nodes) {
 			encapsulateStyles(div);
+			div.id = "container";
 			div.className = "timeline-container";
 			div_1.className = "timeline-column";
 			div_1.style.cssText = "width: 100px; margin-right: 10px;";
@@ -4779,6 +5248,8 @@ function create_main_fragment$1(state, component) {
 		},
 
 		mount: function mount(target, anchor) {
+			revelationprojectmenu._fragment.mount(target, anchor);
+			insertNode$1(text, target, anchor);
 			insertNode$1(div, target, anchor);
 			appendNode(div_1, div);
 
@@ -4786,10 +5257,10 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].mount(div_1, null);
 			}
 
-			appendNode(text_1, div);
+			appendNode(text_2, div);
 			appendNode(div_2, div);
 			events._fragment.mount(div_2, null);
-			appendNode(text_3, div);
+			appendNode(text_4, div);
 
 			var each_block_1_iteration = each_block_1_head;
 			while (each_block_1_iteration) {
@@ -4797,7 +5268,7 @@ function create_main_fragment$1(state, component) {
 				each_block_1_iteration = each_block_1_iteration.next;
 			}
 
-			appendNode(text_4, div);
+			appendNode(text_5, div);
 			appendNode(div_3, div);
 			appendNode(div_4, div_3);
 			appendNode(div_5, div_4);
@@ -4876,7 +5347,7 @@ function create_main_fragment$1(state, component) {
 							each_block_1_iteration.discard = false;
 							each_block_1_iteration.last = each_block_1_last;
 
-							if (!each_block_1_expected) each_block_1_iteration.mount(div, text_4);
+							if (!each_block_1_expected) each_block_1_iteration.mount(div, text_5);
 						} else {
 							// key is being inserted
 							each_block_1_iteration = each_block_1_lookup[key] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component, key);
@@ -4892,11 +5363,11 @@ function create_main_fragment$1(state, component) {
 					if (each_block_1_iteration) {
 						each_block_1_iteration.discard = false;
 						each_block_1_iteration.next = null;
-						each_block_1_iteration.mount(div, text_4);
+						each_block_1_iteration.mount(div, text_5);
 					} else {
 						each_block_1_iteration = each_block_1_lookup[key] = create_each_block_1(state, each_block_value_1, each_block_value_1[i], i, component, key);
 						each_block_1_iteration.create();
-						each_block_1_iteration.mount(div, text_4);
+						each_block_1_iteration.mount(div, text_5);
 					}
 				}
 
@@ -4938,6 +5409,8 @@ function create_main_fragment$1(state, component) {
 		},
 
 		unmount: function unmount() {
+			revelationprojectmenu._fragment.unmount();
+			detachNode$1(text);
 			detachNode$1(div);
 
 			for (var i = 0; i < each_block_iterations.length; i += 1) {
@@ -4946,6 +5419,8 @@ function create_main_fragment$1(state, component) {
 		},
 
 		destroy: function destroy() {
+			revelationprojectmenu.destroy(false);
+
 			destroyEach(each_block_iterations, false, 0);
 
 			events.destroy(false);
@@ -5185,8 +5660,8 @@ function Main(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
-	if (!document.getElementById('svelte-1463462598-style')) add_css();
+	this._destroyed = false;
+	if (!document.getElementById('svelte-379636149-style')) add_css();
 
 	var oncreate = template$1.oncreate.bind(this);
 
@@ -5226,6 +5701,7 @@ Main.prototype._set = function _set(newState) {
 };
 
 Main.prototype.teardown = Main.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
 
 	if (detach !== false) this._fragment.unmount();
@@ -5233,7 +5709,7 @@ Main.prototype.teardown = Main.prototype.destroy = function destroy(detach) {
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
 var timelineData = [{
@@ -6312,7 +6788,7 @@ var getCurrentParameters = index$1.getCurrentParameters;
 
 
 var component = new Main({
-	target: document.querySelector('#timeline'),
+	target: document.querySelector('#container'),
 	data: {
 		timelineData: timelineData, // no need to re-sort, is pre-sorted by transform-timeline-to-json.js
 		querystringParameters: getCurrentParameters()
@@ -6322,4 +6798,3 @@ var component = new Main({
 attachQuerystringData(component);
 
 }());
-//# sourceMappingURL=bundle.js.map

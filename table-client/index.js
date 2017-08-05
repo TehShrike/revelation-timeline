@@ -7,7 +7,7 @@ import timelineData from '../client/timeline-data.js'
 
 
 const component = new TableMain({
-	target: document.querySelector('#table'),
+	target: document.querySelector('#target'),
 	data: {
 		timelineData,
 		querystringParameters: getCurrentParameters(),

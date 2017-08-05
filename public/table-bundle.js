@@ -1625,6 +1625,10 @@ function createText(data) {
 	return document.createTextNode(data);
 }
 
+function createComment$1() {
+	return document.createComment('');
+}
+
 function setAttribute(node, attribute, value) {
 	node.setAttribute(attribute, value);
 }
@@ -1724,6 +1728,454 @@ var proto = {
 	observe: observe$1,
 	on: on$1,
 	set: set$2
+};
+
+function recompute$2(state, newState, oldState, isInitial) {
+	if (isInitial || 'root' in newState && differs$1(state.root, oldState.root) || 'pathname' in newState && differs$1(state.pathname, oldState.pathname)) {
+		state.route = newState.route = template$2.computed.route(state.root, state.pathname);
+	}
+
+	if (isInitial || 'menu' in newState && differs$1(state.menu, oldState.menu)) {
+		state.possibleRoutes = newState.possibleRoutes = template$2.computed.possibleRoutes(state.menu);
+	}
+
+	if (isInitial || 'route' in newState && differs$1(state.route, oldState.route) || 'possibleRoutes' in newState && differs$1(state.possibleRoutes, oldState.possibleRoutes)) {
+		state.activeMenuItems = newState.activeMenuItems = template$2.computed.activeMenuItems(state.route, state.possibleRoutes);
+	}
+
+	if (isInitial || 'activeMenuItems' in newState && differs$1(state.activeMenuItems, oldState.activeMenuItems)) {
+		state.isActive = newState.isActive = template$2.computed.isActive(state.activeMenuItems);
+	}
+
+	if (isInitial || 'root' in newState && differs$1(state.root, oldState.root)) {
+		state.makeUrl = newState.makeUrl = template$2.computed.makeUrl(state.root);
+	}
+
+	if (isInitial || 'activeMenuItems' in newState && differs$1(state.activeMenuItems, oldState.activeMenuItems)) {
+		state.activeParentMenuItem = newState.activeParentMenuItem = template$2.computed.activeParentMenuItem(state.activeMenuItems);
+	}
+}
+
+var template$2 = function () {
+	var flatmap = function flatmap(array, fn) {
+		var output = [];
+		array.forEach(function (item) {
+			var additions = fn(item);
+			Array.isArray(additions) ? output.push.apply(output, toConsumableArray(additions)) : output.push(additions);
+		});
+		return output;
+	};
+
+	var joinRoutes = function joinRoutes() {
+		for (var _len = arguments.length, items = Array(_len), _key = 0; _key < _len; _key++) {
+			items[_key] = arguments[_key];
+		}
+
+		return items.map(function (item) {
+			return item.route;
+		}).join('');
+	};
+	var removeTrailingSlash = function removeTrailingSlash(route) {
+		return route[route.length - 1] === '/' ? route.slice(0, route.length - 1) : route;
+	};
+	var exactMatchIgnoringTrailingSlash = function exactMatchIgnoringTrailingSlash(routeA, routeB) {
+		return removeTrailingSlash(routeA) === removeTrailingSlash(routeB);
+	};
+
+	var possibilities = function possibilities(menu) {
+		return flatmap(menu, function (item) {
+			return item.children ? item.children.map(function (child) {
+				return { route: joinRoutes(item, child), hierarchy: [item, child] };
+			}) : { route: item.route, hierarchy: [item] };
+		});
+	};
+
+	return {
+		data: function data() {
+			return {
+				root: '',
+				pathname: document.location.pathname,
+				menu: [{
+					name: 'Project Home',
+					route: '/'
+				}, {
+					name: 'Historical timeline',
+					route: '/timeline/',
+					children: [{
+						name: 'Timeline',
+						route: ''
+					}, {
+						name: 'Table of dates',
+						route: 'table.html'
+					}]
+				}, {
+					name: 'The structure of the book',
+					route: '/structure/',
+					children: [{
+						name: 'Explanation',
+						route: 'explanation.html'
+					}, {
+						name: 'The book',
+						route: ''
+					}]
+				}]
+			};
+		},
+
+		computed: {
+			route: function route(root, pathname) {
+				return pathname.indexOf(root) === 0 ? pathname.slice(root.length) : pathname;
+			},
+			possibleRoutes: function possibleRoutes(menu) {
+				return possibilities(menu);
+			},
+			activeMenuItems: function activeMenuItems(route, possibleRoutes) {
+				var currentRoute = possibleRoutes.find(function (possibility) {
+					return exactMatchIgnoringTrailingSlash(route, possibility.route);
+				});
+
+				return currentRoute && currentRoute.hierarchy;
+			},
+			isActive: function isActive(activeMenuItems) {
+				return function () {
+					for (var _len2 = arguments.length, items = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+						items[_key2] = arguments[_key2];
+					}
+
+					return activeMenuItems && items.every(function (item, i) {
+						return activeMenuItems[i] && item.route === activeMenuItems[i].route;
+					});
+				};
+			},
+			makeUrl: function makeUrl(root) {
+				return function () {
+					return root + joinRoutes.apply(undefined, arguments);
+				};
+			},
+			activeParentMenuItem: function activeParentMenuItem(activeMenuItems) {
+				return activeMenuItems && activeMenuItems[0];
+			}
+		}
+	};
+}();
+
+function encapsulateStyles$1(node) {
+	setAttribute(node, 'svelte-2164047804', '');
+}
+
+function add_css$1() {
+	var style = createElement$1('style');
+	style.id = 'svelte-2164047804-style';
+	style.textContent = "a[svelte-2164047804],[svelte-2164047804] a{white-space:nowrap;display:block}[svelte-2164047804].menu,[svelte-2164047804] .menu{display:flex;flex-wrap:wrap;font-family:Verdana, sans-serif;font-size:16px}[svelte-2164047804].parent-menu-box,[svelte-2164047804] .parent-menu-box{margin:4px}[svelte-2164047804].menu-item,[svelte-2164047804] .menu-item{padding:8px 16px;background-color:#e0e0e0;color:black;border-radius:2px}[svelte-2164047804].menu-item[data-active=true],[svelte-2164047804] .menu-item[data-active=true]{font-weight:bold}[svelte-2164047804].child-menu,[svelte-2164047804] .child-menu{padding-left:4px;padding-right:4px}[svelte-2164047804].child-item,[svelte-2164047804] .child-item{padding:4px 8px;color:black;background-color:#f5f5f5;font-size:14px}[svelte-2164047804].child-item[data-active=true],[svelte-2164047804] .child-item[data-active=true]{font-weight:bold}";
+	appendNode(style, document.head);
+}
+
+function create_main_fragment$2(state, component) {
+	var div, text_1, if_block_anchor;
+
+	var each_block_value = state.menu;
+
+	var each_block_iterations = [];
+
+	for (var i = 0; i < each_block_value.length; i += 1) {
+		each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+	}
+
+	var if_block = state.activeParentMenuItem && state.activeParentMenuItem.children && create_if_block$1(state, component);
+
+	return {
+		create: function create() {
+			div = createElement$1('div');
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].create();
+			}
+
+			text_1 = createText("\n");
+			if (if_block) if_block.create();
+			if_block_anchor = createComment$1();
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			encapsulateStyles$1(div);
+			div.className = "menu";
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(div, target, anchor);
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].mount(div, null);
+			}
+
+			insertNode$1(text_1, target, anchor);
+			if (if_block) if_block.mount(target, anchor);
+			insertNode$1(if_block_anchor, target, anchor);
+		},
+
+		update: function update(changed, state) {
+			var each_block_value = state.menu;
+
+			if ('makeUrl' in changed || 'menu' in changed || 'isActive' in changed) {
+				for (var i = 0; i < each_block_value.length; i += 1) {
+					if (each_block_iterations[i]) {
+						each_block_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+					} else {
+						each_block_iterations[i] = create_each_block$1(state, each_block_value, each_block_value[i], i, component);
+						each_block_iterations[i].create();
+						each_block_iterations[i].mount(div, null);
+					}
+				}
+
+				for (; i < each_block_iterations.length; i += 1) {
+					each_block_iterations[i].unmount();
+					each_block_iterations[i].destroy();
+				}
+				each_block_iterations.length = each_block_value.length;
+			}
+
+			if (state.activeParentMenuItem && state.activeParentMenuItem.children) {
+				if (if_block) {
+					if_block.update(changed, state);
+				} else {
+					if_block = create_if_block$1(state, component);
+					if_block.create();
+					if_block.mount(if_block_anchor.parentNode, if_block_anchor);
+				}
+			} else if (if_block) {
+				if_block.unmount();
+				if_block.destroy();
+				if_block = null;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(div);
+
+			for (var i = 0; i < each_block_iterations.length; i += 1) {
+				each_block_iterations[i].unmount();
+			}
+
+			detachNode$1(text_1);
+			if (if_block) if_block.unmount();
+			detachNode$1(if_block_anchor);
+		},
+
+		destroy: function destroy() {
+			destroyEach(each_block_iterations, false, 0);
+
+			if (if_block) if_block.destroy();
+		}
+	};
+}
+
+function create_each_block$1(state, each_block_value, item, item_index, component) {
+	var span, a, a_href_value, a_data_active_value, text_value, text;
+
+	return {
+		create: function create() {
+			span = createElement$1('span');
+			a = createElement$1('a');
+			text = createText(text_value = item.name);
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			span.className = "parent-menu-box";
+			a.href = a_href_value = state.makeUrl(item);
+			a.className = "menu-item";
+			setAttribute(a, 'data-active', a_data_active_value = state.isActive(item));
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(span, target, anchor);
+			appendNode(a, span);
+			appendNode(text, a);
+		},
+
+		update: function update(changed, state, each_block_value, item, item_index) {
+			if (a_href_value !== (a_href_value = state.makeUrl(item))) {
+				a.href = a_href_value;
+			}
+
+			if (a_data_active_value !== (a_data_active_value = state.isActive(item))) {
+				setAttribute(a, 'data-active', a_data_active_value);
+			}
+
+			if (text_value !== (text_value = item.name)) {
+				text.data = text_value;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(span);
+		},
+
+		destroy: noop$1
+	};
+}
+
+function create_each_block_1$1(state, each_block_value, child, child_index, component) {
+	var a, a_href_value, a_data_active_value, text_value, text;
+
+	return {
+		create: function create() {
+			a = createElement$1('a');
+			text = createText(text_value = child.name);
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			a.href = a_href_value = state.makeUrl(state.activeParentMenuItem, child);
+			a.className = "child-item";
+			setAttribute(a, 'data-active', a_data_active_value = state.isActive(state.activeParentMenuItem, child));
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(a, target, anchor);
+			appendNode(text, a);
+		},
+
+		update: function update(changed, state, each_block_value, child, child_index) {
+			if (a_href_value !== (a_href_value = state.makeUrl(state.activeParentMenuItem, child))) {
+				a.href = a_href_value;
+			}
+
+			if (a_data_active_value !== (a_data_active_value = state.isActive(state.activeParentMenuItem, child))) {
+				setAttribute(a, 'data-active', a_data_active_value);
+			}
+
+			if (text_value !== (text_value = child.name)) {
+				text.data = text_value;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(a);
+		},
+
+		destroy: noop$1
+	};
+}
+
+function create_if_block$1(state, component) {
+	var span;
+
+	var each_block_value = state.activeParentMenuItem.children;
+
+	var each_block_1_iterations = [];
+
+	for (var i = 0; i < each_block_value.length; i += 1) {
+		each_block_1_iterations[i] = create_each_block_1$1(state, each_block_value, each_block_value[i], i, component);
+	}
+
+	return {
+		create: function create() {
+			span = createElement$1('span');
+
+			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
+				each_block_1_iterations[i].create();
+			}
+			this.hydrate();
+		},
+
+		hydrate: function hydrate(nodes) {
+			encapsulateStyles$1(span);
+			span.className = "menu child-menu";
+		},
+
+		mount: function mount(target, anchor) {
+			insertNode$1(span, target, anchor);
+
+			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
+				each_block_1_iterations[i].mount(span, null);
+			}
+		},
+
+		update: function update(changed, state) {
+			var each_block_value = state.activeParentMenuItem.children;
+
+			if ('makeUrl' in changed || 'activeParentMenuItem' in changed || 'isActive' in changed) {
+				for (var i = 0; i < each_block_value.length; i += 1) {
+					if (each_block_1_iterations[i]) {
+						each_block_1_iterations[i].update(changed, state, each_block_value, each_block_value[i], i);
+					} else {
+						each_block_1_iterations[i] = create_each_block_1$1(state, each_block_value, each_block_value[i], i, component);
+						each_block_1_iterations[i].create();
+						each_block_1_iterations[i].mount(span, null);
+					}
+				}
+
+				for (; i < each_block_1_iterations.length; i += 1) {
+					each_block_1_iterations[i].unmount();
+					each_block_1_iterations[i].destroy();
+				}
+				each_block_1_iterations.length = each_block_value.length;
+			}
+		},
+
+		unmount: function unmount() {
+			detachNode$1(span);
+
+			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
+				each_block_1_iterations[i].unmount();
+			}
+		},
+
+		destroy: function destroy() {
+			destroyEach(each_block_1_iterations, false, 0);
+		}
+	};
+}
+
+function Menu(options) {
+	options = options || {};
+	this._state = assign$1(template$2.data(), options.data);
+	recompute$2(this._state, this._state, {}, true);
+
+	this._observers = {
+		pre: Object.create(null),
+		post: Object.create(null)
+	};
+
+	this._handlers = Object.create(null);
+
+	this._root = options._root || this;
+	this._yield = options._yield;
+
+	this._destroyed = false;
+	if (!document.getElementById('svelte-2164047804-style')) add_css$1();
+
+	this._fragment = create_main_fragment$2(this._state, this);
+
+	if (options.target) {
+		this._fragment.create();
+		this._fragment.mount(options.target, null);
+	}
+}
+
+assign$1(Menu.prototype, proto);
+
+Menu.prototype._set = function _set(newState) {
+	var oldState = this._state;
+	this._state = assign$1({}, oldState, newState);
+	recompute$2(this._state, newState, oldState, false);
+	dispatchObservers$1(this, this._observers.pre, newState, oldState);
+	this._fragment.update(newState, this._state);
+	dispatchObservers$1(this, this._observers.post, newState, oldState);
+};
+
+Menu.prototype.teardown = Menu.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
+	this.fire('destroy');
+
+	if (detach !== false) this._fragment.unmount();
+	this._fragment.destroy();
+	this._fragment = null;
+
+	this._state = {};
+	this._destroyed = true;
 };
 
 function recompute$1(state, newState, oldState, isInitial) {
@@ -1894,18 +2346,22 @@ var template$1 = function () {
 }();
 
 function encapsulateStyles(node) {
-	setAttribute(node, 'svelte-1759661908', '');
+	setAttribute(node, 'svelte-2722108932', '');
 }
 
 function add_css() {
 	var style = createElement$1('style');
-	style.id = 'svelte-1759661908-style';
-	style.textContent = "[svelte-1759661908][data-wrap=false],[svelte-1759661908] [data-wrap=false]{white-space:nowrap}";
+	style.id = 'svelte-2722108932-style';
+	style.textContent = "[svelte-2722108932][data-wrap=false],[svelte-2722108932] [data-wrap=false]{white-space:nowrap}";
 	appendNode(style, document.head);
 }
 
 function create_main_fragment$1(state, component) {
-	var text, table, thead, tr, text_3, tbody;
+	var text, div, text_1, table, thead, tr, text_4, tbody;
+
+	var revelationprojectmenu = new Menu({
+		_root: component._root
+	});
 
 	var link_1_yield_fragment = create_link_yield_fragment(state, component);
 
@@ -1933,9 +2389,12 @@ function create_main_fragment$1(state, component) {
 
 	return {
 		create: function create() {
+			revelationprojectmenu._fragment.create();
+			text = createText("\n\n");
+			div = createElement$1('div');
 			link_1_yield_fragment.create();
 			link_1._fragment.create();
-			text = createText("\n\n");
+			text_1 = createText("\n\n\t");
 			table = createElement$1('table');
 			thead = createElement$1('thead');
 			tr = createElement$1('tr');
@@ -1944,7 +2403,7 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].create();
 			}
 
-			text_3 = createText("\n\t");
+			text_4 = createText("\n\t\t");
 			tbody = createElement$1('tbody');
 
 			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
@@ -1954,14 +2413,18 @@ function create_main_fragment$1(state, component) {
 		},
 
 		hydrate: function hydrate(nodes) {
-			encapsulateStyles(table);
+			encapsulateStyles(div);
+			div.id = "container";
 			table.className = "pure-table pure-table-bordered";
 		},
 
 		mount: function mount(target, anchor) {
-			link_1._fragment.mount(target, anchor);
+			revelationprojectmenu._fragment.mount(target, anchor);
 			insertNode$1(text, target, anchor);
-			insertNode$1(table, target, anchor);
+			insertNode$1(div, target, anchor);
+			link_1._fragment.mount(div, null);
+			appendNode(text_1, div);
+			appendNode(table, div);
 			appendNode(thead, table);
 			appendNode(tr, thead);
 
@@ -1969,7 +2432,7 @@ function create_main_fragment$1(state, component) {
 				each_block_iterations[i].mount(tr, null);
 			}
 
-			appendNode(text_3, table);
+			appendNode(text_4, table);
 			appendNode(tbody, table);
 
 			for (var i = 0; i < each_block_1_iterations.length; i += 1) {
@@ -2028,9 +2491,9 @@ function create_main_fragment$1(state, component) {
 		},
 
 		unmount: function unmount() {
-			link_1._fragment.unmount();
+			revelationprojectmenu._fragment.unmount();
 			detachNode$1(text);
-			detachNode$1(table);
+			detachNode$1(div);
 
 			for (var i = 0; i < each_block_iterations.length; i += 1) {
 				each_block_iterations[i].unmount();
@@ -2042,6 +2505,7 @@ function create_main_fragment$1(state, component) {
 		},
 
 		destroy: function destroy() {
+			revelationprojectmenu.destroy(false);
 			link_1_yield_fragment.destroy();
 			link_1.destroy(false);
 
@@ -2225,8 +2689,8 @@ function TableMain(options) {
 	this._root = options._root || this;
 	this._yield = options._yield;
 
-	this._torndown = false;
-	if (!document.getElementById('svelte-1759661908-style')) add_css();
+	this._destroyed = false;
+	if (!document.getElementById('svelte-2722108932-style')) add_css();
 
 	if (!options._root) {
 		this._oncreate = [];
@@ -2262,6 +2726,7 @@ TableMain.prototype._set = function _set(newState) {
 };
 
 TableMain.prototype.teardown = TableMain.prototype.destroy = function destroy(detach) {
+	if (this._destroyed) return;
 	this.fire('destroy');
 
 	if (detach !== false) this._fragment.unmount();
@@ -2269,7 +2734,7 @@ TableMain.prototype.teardown = TableMain.prototype.destroy = function destroy(de
 	this._fragment = null;
 
 	this._state = {};
-	this._torndown = true;
+	this._destroyed = true;
 };
 
 var timelineData = [{
@@ -3348,7 +3813,7 @@ var getCurrentParameters = index.getCurrentParameters;
 
 
 var component = new TableMain({
-	target: document.querySelector('#table'),
+	target: document.querySelector('#target'),
 	data: {
 		timelineData: timelineData,
 		querystringParameters: getCurrentParameters()
