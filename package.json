@@ -37,7 +37,7 @@
     "got": "6.7.1",
     "multi-part-range-compare": "~1.0.3",
     "regex-fun": "~2.0.1",
-    "revelation-project-menu": "1.0.1",
+    "revelation-project-menu": "^1.1.0",
     "right-pad": "1.0.1",
     "rollup": "0.43.0",
     "rollup-plugin-babel": "2.7.1",
