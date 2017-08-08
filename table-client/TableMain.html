@@ -1,41 +1,42 @@
 <RevelationProjectMenu />
 
-<div id="container">
-	<Link parameters="{{ { sort: sort === 'bydate' ? 'byverse' : 'bydate' } }}">
+<div class="link">
+	<Link parameters="{{ { sort: sort === 'bydate' ? 'byverse' : 'bydate' } }}" className="link">
 		View {{sort === 'bydate' ? 'by verse' : 'by date'}}
 	</Link>
-
-	<table class="pure-table pure-table-bordered">
-		<thead>
-			<tr>
-				{{#each columnOrder as column}}
-					<th>
-						{{column.header}}
-					</th>
-				{{/each}}
-			</tr>
-		</thead>
-		<tbody>
-			{{#each events as row}}
-				<tr>
-				{{#each columnOrder as column}}
-					<td data-wrap="{{column.wrap}}">
-						{{formatters[column.property](row)}}
-					</td>
-				{{/each}}
-				</tr>
-			{{/each}}
-		</tbody>
-	</table>
 </div>
 
+<table class="pure-table pure-table-bordered">
+	<thead>
+		<tr>
+			{{#each columnOrder as column}}
+				<th>
+					{{column.header}}
+				</th>
+			{{/each}}
+		</tr>
+	</thead>
+	<tbody>
+		{{#each events as row}}
+			<tr>
+			{{#each columnOrder as column}}
+				<td data-wrap="{{column.wrap}}">
+					{{formatters[column.property](row)}}
+				</td>
+			{{/each}}
+			</tr>
+		{{/each}}
+	</tbody>
+</table>
 
 <style>
+.link {
+	text-align: center;
+	margin: 8px;
+}
+
 [data-wrap=false] {
 	white-space: nowrap;
-}
-#container {
-	margin-top: 16px;
 }
 </style>
 
