@@ -4,7 +4,7 @@
 		bind:left="slugToLeft[timelineEvent.slug]"
 		bind:visible="slugToVisible[timelineEvent.slug]"
 		logName="Description: {{timelineEvent.slug}}"
-		updateOnChange="{{index}}"
+		updateOnChange="{{displayPositionIdentifier(index)}}"
 	>
 		<div
 			class="event-description"
@@ -41,6 +41,8 @@ const noopString = () => ''
 const allSlugsExistInMap = (events, map) => events.every(event => map[event.slug])
 const missing = (events, map) => events.find(event => !map[event.slug]).slug
 
+const anOrderOfMagnitudeMoreThanTheMostDescriptionsThatCouldConceivableBeDisplayed = 100
+
 export default {
 	data() {
 		return {
@@ -52,6 +54,9 @@ export default {
 		}
 	},
 	computed: {
+		numberOfEvents: timeline => timeline.length,
+		numberOfEventsIdentifier: numberOfEvents => numberOfEvents * anOrderOfMagnitudeMoreThanTheMostDescriptionsThatCouldConceivableBeDisplayed,
+		displayPositionIdentifier: numberOfEventsIdentifier => index => numberOfEventsIdentifier + index,
 		outline: hoveredEvent =>
 			hoveredEvent
 				? timelineEvent => getOutlineCssString(hoveredEvent, timelineEvent)
@@ -64,15 +69,15 @@ export default {
 			// 	console.log('allSlugsExistInMap fails with slugToLeft when finding', missing(timeline, slugToLeft))
 			// }
 
-			if (!allSlugsExistInMap(timeline, slugToVerticalCenter)
-					|| !allSlugsExistInMap(timeline, slugToLeft)) {
-				return null
-			}
+			// if (!allSlugsExistInMap(timeline, slugToVerticalCenter)
+			// 		|| !allSlugsExistInMap(timeline, slugToLeft)) {
+			// 	return null
+			// }
 
 			const map = {}//Object.create(null)
 
 			Object.entries(slugToVisible)
-				.filter(([ , visible]) => visible)
+				.filter(([ slug, visible]) => visible)// && slugToLeft[slug] && slugToVerticalCenter[slug])
 				.map(([slug, ]) => slug)
 				.forEach(slug => {
 					map[slug] = {
@@ -95,6 +100,6 @@ export default {
 	},
 	components: {
 		Visibility
-	}
+	},
 }
 </script>
