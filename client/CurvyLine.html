@@ -38,13 +38,10 @@ export default {
 		this.set({
 			listener
 		})
-
-		console.log('Creating curvy line for', this.get('slug'))
 	},
 	ondestroy() {
 		const listener = this.get('listener')
 		motionEventEmitter.removeListener('update', listener)
-		console.log('Destroying curvy line for', this.get('slug'))
 	},
 	computed: {
 		leftmostPoint: (from, to) => least(from, to, 'x'),
@@ -58,22 +55,18 @@ export default {
 	},
 	methods: {
 		drawOnNextFrame() {
-			if (!this._destroyed && !this.get('drawingOnNextFrame')) {
+			this.set({
+				drawingOnNextFrame: true
+			})
+			window.requestAnimationFrame(() => {
+				this.draw()
 				this.set({
-					drawingOnNextFrame: true
+					drawingOnNextFrame: false
 				})
-				window.requestAnimationFrame(() => {
-					if (!this._destroyed) {
-						this.draw()
-						this.set({
-							drawingOnNextFrame: false
-						})
-					}
-				})
-			}
+			})
 		},
 		draw() {
-			if (!this.refs.canvas) {
+			if (!this.refs.canvas || this._destroyed) {
 				return
 			}
 

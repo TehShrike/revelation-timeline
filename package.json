@@ -45,7 +45,7 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-svelte": "3.0.1",
     "rollup-watch": "4.0.0",
-    "svelte": "1.28.1",
+    "svelte": "1.29.1",
     "svelte-querystring-router": "1.0.3",
     "then-denodeify": "~1.0.1",
     "verse-reference-regex": "1.0.1"
