@@ -169,15 +169,23 @@ const sortByClosestToCenter = (eventA, eventB) => {
 }
 
 function filterToHighlightedEvents(events, hoveredEvent) {
+	const viewportHeight = window.document.documentElement.clientHeight
+
 	const eventsWithCalculations = events.map(event => {
 		const topIsInCenter = event.topRatio >= topMarginRatio && event.topRatio <= bottomMarginRatio
 		const bottomIsInCenter = event.bottomRatio <= bottomMarginRatio && event.bottomRatio >= topMarginRatio
+		const eventCoversCenter = (event.topRatio <= topMarginRatio && event.bottomRatio >= bottomMarginRatio)
 
 		const isInsideCenter = topIsInCenter && bottomIsInCenter
-		const overlapsCenter = topIsInCenter || bottomIsInCenter
+		const overlapsCenter = topIsInCenter || bottomIsInCenter || eventCoversCenter
 
-		const centerPointRatio = (event.topRatio + event.bottomRatio) / 2
-		const centerPoint = (event.top + event.bottom) / 2
+		const visibleTopRatio = Math.max(event.topRatio, 0)
+		const visibleBottomRatio = Math.min(event.bottomRatio, 1)
+		const centerPointRatio = (visibleTopRatio + visibleBottomRatio) / 2
+
+		const visibleTop = Math.max(event.top, 0)
+		const visibleBottom = Math.min(event.bottom, viewportHeight)
+		const centerPoint = (visibleTop + visibleBottom) / 2
 
 		return Object.assign({
 			isInsideCenter,
