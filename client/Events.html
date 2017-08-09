@@ -46,6 +46,7 @@
 						left: {{multiplyIndentByWidth(timelineEvent.indentLevel)}}px;
 						height: {{multiplyDaysByHeight(timelineEvent.visibleDays)}}px;
 						background-color: {{timelineEvent.color}};
+						margin-bottom: {{bottomOfScreenMargin}}px;
 					"
 					class="event"
 					data-cut-off-at-start="{{timelineEvent.axis.cutOffAtStart}}"
@@ -95,6 +96,10 @@ import VCenter from './VerticallyCentered.html'
 import { multiplyIndentByWidth } from './spacer-functions.js'
 import svelteQuerystringRouter from 'svelte-querystring-router'
 
+// This is a dirty hack that wouldn't be necessary if the relatively
+// positioned containers grew to containe the timeline bars
+const bottomOfScreenMargin = window.document.documentElement.clientHeight * .4
+
 export default {
 	data() {
 		const empty = () => Object.create(null)
@@ -106,7 +111,8 @@ export default {
 			slugToTop: empty(),
 			slugToBottom: empty(),
 			slugToRight: empty(),
-			ignoreType: []
+			ignoreType: [],
+			bottomOfScreenMargin,
 		}
 	},
 	helpers: {
