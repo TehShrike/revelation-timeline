@@ -1,41 +1,49 @@
 <RevelationProjectMenu />
 
-<div id="container" class="timeline-container">
-	<div class="timeline-column" style="width: 100px; margin-right: 10px;">
-		{{#each axis as date}}
-		<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
-			<div class="axis" data-relevant="{{axisIsRelevant(date.amd)}}">
-				{{#if date.type === 'snip'}}
-					...snip ({{date.days}} days)
-				{{else}}
-					{{date.hebrew || date.amd}}
-				{{/if}}
-			</div>
-		</VCenter>
+<div id="container">
+	{{#if currentZoom.type !== 'top'}}
+		<Link parameters="{{ {} }}">
+			« Back to top level
+		</Link>
+	{{/if}}
+
+	<div class="timeline-container">
+		<div class="timeline-column" style="width: 100px; margin-right: 10px;">
+			{{#each axis as date}}
+			<VCenter point="{{multiplyDaysByHeight(distanceFromStartDay(date.axisPoint))}}">
+				<div class="axis" data-relevant="{{axisIsRelevant(date.amd)}}">
+					{{#if date.type === 'snip'}}
+						...snip ({{date.days}} days)
+					{{else}}
+						{{date.hebrew || date.amd}}
+					{{/if}}
+				</div>
+			</VCenter>
+			{{/each}}
+		</div>
+		<div class="timeline-column" style="width: {{multiplyIndentByWidth(indentLevels + 1)}}px">
+			<Events
+				timeline="{{relevantEventsWithAxis}}"
+				on:startHover="startHover(event)"
+				on:endHover="endHover(event)"
+				dayHeight="{{currentZoom.dayHeight}}"
+				clickable="{{true}}"
+				ignoreType="{{currentZoom.ignoreType}}"
+				bind:visibleEvents
+			/>
+		</div>
+		{{#each connectingLines as line @slug}}
+			<CurvyLine from="{{line.from}}" to="{{line.to}}" color="{{line.color}}" slug="{{line.slug}}" />
 		{{/each}}
-	</div>
-	<div class="timeline-column" style="width: {{multiplyIndentByWidth(indentLevels + 1)}}px">
-		<Events
-			timeline="{{relevantEventsWithAxis}}"
-			on:startHover="startHover(event)"
-			on:endHover="endHover(event)"
-			dayHeight="{{currentZoom.dayHeight}}"
-			clickable="{{true}}"
-			ignoreType="{{currentZoom.ignoreType}}"
-			bind:visibleEvents
-		/>
-	</div>
-	{{#each connectingLines as line @slug}}
-		<CurvyLine from="{{line.from}}" to="{{line.to}}" color="{{line.color}}" slug="{{line.slug}}" />
-	{{/each}}
-	<div class="timeline-column">
-		<div class="event-description-column">
-			<div>
-				<EventDescriptions
-					timeline="{{eventsToHighlight}}"
-					hoveredEvent="{{hoveredEvent}}"
-					bind:slugToPoints="slugToVisibleDescriptionPoints"
-				/>
+		<div class="timeline-column">
+			<div class="event-description-column">
+				<div>
+					<EventDescriptions
+						timeline="{{eventsToHighlight}}"
+						hoveredEvent="{{hoveredEvent}}"
+						bind:slugToPoints="slugToVisibleDescriptionPoints"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -43,6 +51,7 @@
 
 <style>
 .timeline-container {
+	margin-top: 16px;
 	display: flex;
 	flex-wrap: nowrap;
 	align-items: flex-start;
@@ -83,6 +92,9 @@ import { multiplyIndentByWidth } from './spacer-functions.js'
 import sortRange from '../timeline-data/sort-range.js'
 import pipe from './pipe.js'
 import addIndentAndAxisAfterStart from './add-timeline-event-indent.js'
+
+import svelteQuerystringRouter from 'svelte-querystring-router'
+const { Link } = svelteQuerystringRouter
 
 import chromatism from 'chromatism'
 
@@ -352,6 +364,7 @@ export default {
 		EventDescriptions,
 		CurvyLine,
 		RevelationProjectMenu,
+		Link,
 	},
 }
 </script>
