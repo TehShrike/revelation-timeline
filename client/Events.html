@@ -4,14 +4,10 @@
 			left="{{multiplyIndentByWidth(timelineEvent.indentLevel)}}"
 			point="{{multiplyDaysByHeight(timelineEvent.axisAfterStart)}}"
 		>
-			<Visibility
-				bind:visible="visibleEventSlugs[timelineEvent.slug]"
-				bind:topRatio="slugToTopRatio[timelineEvent.slug]"
-				bind:top="slugToTop[timelineEvent.slug]"
-				bind:bottom="slugToBottom[timelineEvent.slug]"
-				bind:bottomRatio="slugToBottomRatio[timelineEvent.slug]"
-				bind:right="slugToRight[timelineEvent.slug]"
-				logName="Events single: {{timelineEvent.slug}}"
+			<EfficientVisibilityWrapper
+				parent="{{self}}"
+				parentProperty="slugToVisibility"
+				key="{{timelineEvent.slug}}"
 				updateOnChange="{{index}}"
 			>
 				<div
@@ -23,20 +19,16 @@
 					on:mouseover="fire('startHover', timelineEvent)"
 					on:mouseleave="fire('endHover', timelineEvent)"
 				/>
-			</Visibility>
+			</EfficientVisibilityWrapper>
 		</VCenter>
 	{{else}}
 		<Link
 			parameters="{{ clickable ? { zoom: timelineEvent.slug } : null }}"
 		>
-			<Visibility
-				bind:visible="visibleEventSlugs[timelineEvent.slug]"
-				bind:topRatio="slugToTopRatio[timelineEvent.slug]"
-				bind:top="slugToTop[timelineEvent.slug]"
-				bind:bottom="slugToBottom[timelineEvent.slug]"
-				bind:bottomRatio="slugToBottomRatio[timelineEvent.slug]"
-				bind:right="slugToRight[timelineEvent.slug]"
-				logName="Events long: {{timelineEvent.slug}}"
+			<EfficientVisibilityWrapper
+				parent="{{self}}"
+				parentProperty="slugToVisibility"
+				key="{{timelineEvent.slug}}"
 				updateOnChange="{{index}}"
 			>
 				<div
@@ -54,7 +46,7 @@
 					on:mouseover="fire('startHover', timelineEvent)"
 					on:mouseleave="fire('endHover', timelineEvent)"
 				/>
-			</Visibility>
+			</EfficientVisibilityWrapper>
 		</Link>
 	{{/if}}
 {{/each}}
@@ -90,7 +82,8 @@
 </style>
 
 <script>
-import Visibility from './Visibility.html'
+// import Visibility from './Visibility.html'
+import EfficientVisibilityWrapper from './efficient-visibility-wrapper.js'
 import VCenter from './VerticallyCentered.html'
 
 import { multiplyIndentByWidth } from './spacer-functions.js'
@@ -101,16 +94,13 @@ import svelteQuerystringRouter from 'svelte-querystring-router'
 const bottomOfScreenMargin = window.document.documentElement.clientHeight * .4
 
 export default {
+	oncreate() {
+		this.set({ self: this })
+	},
 	data() {
-		const empty = () => Object.create(null)
 		return {
 			clickable: false,
-			visibleEventSlugs: empty(),
-			slugToTopRatio: empty(),
-			slugToBottomRatio: empty(),
-			slugToTop: empty(),
-			slugToBottom: empty(),
-			slugToRight: empty(),
+			slugToVisibility: null,
 			ignoreType: [],
 			bottomOfScreenMargin,
 		}
@@ -123,20 +113,22 @@ export default {
 		singleDayHeight: dayHeight => Math.max(dayHeight, 8),
 		ignoreTypeMap: ignoreType => ignoreType.reduce((map, type) => (map[type] = true, map), Object.create(null)),
 		nonIgnoredEvents: (timeline, ignoreTypeMap) => timeline.filter(event => !ignoreTypeMap[event.type]),
-		visibleEvents: (nonIgnoredEvents, visibleEventSlugs, slugToTopRatio, slugToBottomRatio, slugToTop, slugToBottom, slugToRight) => nonIgnoredEvents
-			.filter(event => visibleEventSlugs[event.slug])
-			.map(event => Object.assign({
-				topRatio: slugToTopRatio[event.slug],
-				bottomRatio: slugToBottomRatio[event.slug],
-				top: slugToTop[event.slug],
-				bottom: slugToBottom[event.slug],
-				right: slugToRight[event.slug],
-			}, event)),
+		visibleEvents: (nonIgnoredEvents, slugToVisibility) => slugToVisibility
+			? nonIgnoredEvents
+				.filter(event => slugToVisibility[event.slug] && slugToVisibility[event.slug].visible)
+				.map(event => Object.assign({
+					topRatio: slugToVisibility[event.slug].topRatio,
+					bottomRatio: slugToVisibility[event.slug].bottomRatio,
+					top: slugToVisibility[event.slug].top,
+					bottom: slugToVisibility[event.slug].bottom,
+					right: slugToVisibility[event.slug].right,
+				}, event))
+			: [],
 	},
 	components: {
 		VCenter,
 		Link: svelteQuerystringRouter.Link,
-		Visibility
+		EfficientVisibilityWrapper,
 	},
 }
 </script>

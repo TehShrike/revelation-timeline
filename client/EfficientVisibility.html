@@ -1,4 +1,4 @@
-<div ref:element data-whatever-thingy="{{updateOnChange}}">
+<div ref:element>
 	{{yield}}
 </div>
 
@@ -23,25 +23,20 @@ export default {
 		}
 
 
-		this.observe('updateOnChange', () => {
-			// https://github.com/sveltejs/svelte/issues/730
-			Promise.resolve().then(() => {
-				try {
-					this.updateVisibility()
-				} catch (e) {
-					console.error('There was an error trying to update visibility', e)
-				}
-			})
-		})
+		this.observe('updateOnChange', () => this.updateVisibility())
 	},
 	ondestroy() {
 		const componentListener = this.get('listener')
 		globalUpdateEmitter.removeListener('update', componentListener)
+		this.setNotVisible()
 	},
 	methods: {
 		setNotVisible() {
 			if (this.get('visible')) {
-				this.set({
+				this.fire('change', {
+					parent: this.get('parent'),
+					parentProperty: this.get('property'),
+					key: this.get('key'),
 					visible: false,
 					top: null,
 					bottom: null,
@@ -55,7 +50,6 @@ export default {
 		},
 		updateVisibility() {
 			if (!this.refs.element) {
-				// this.log('!!!!!!!!!!!No element found!!!!!!!!!!!!!!!!!!')
 				this.setNotVisible()
 				return
 			}
@@ -68,7 +62,12 @@ export default {
 				const topRatio = relativeToViewport.top / viewportHeight
 				const bottomRatio = relativeToViewport.bottom / viewportHeight
 
-				this.set({
+				this.set({ visible })
+
+				this.fire('change', {
+					parent: this.get('parent'),
+					parentProperty: this.get('parentProperty'),
+					key: this.get('key'),
 					visible,
 					top: relativeToViewport.top,
 					bottom: relativeToViewport.bottom,
@@ -83,14 +82,6 @@ export default {
 				this.setNotVisible()
 			}
 		},
-		log(message) {
-			const logName = this.get('logName')
-			if (logName) {
-				console.log('Visibility -', logName, '-', message)
-			} else {
-				console.log('no logName!!! -', message)
-			}
-		}
 	}
 }
 </script>

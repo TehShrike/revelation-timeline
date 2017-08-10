@@ -83,7 +83,6 @@ import { multiplyIndentByWidth } from './spacer-functions.js'
 import sortRange from '../timeline-data/sort-range.js'
 import pipe from './pipe.js'
 import addIndentAndAxisAfterStart from './add-timeline-event-indent.js'
-import scrollEvents from './scroll-events.js'
 
 import chromatism from 'chromatism'
 
@@ -243,28 +242,7 @@ export default {
 			visibleEvents: [],
 			slugToVisibleDescriptionPoints: null,
 			slugToTimelineRight: null,
-			scrolling: false,
 		}
-	},
-	oncreate() {
-		const scrollStartListener = () => this.set({ scrolling: true })
-		const scrollStopListener = () => this.set({ scrolling: false })
-
-		scrollEvents.on('start', scrollStartListener)
-		scrollEvents.on('stop', scrollStopListener)
-
-		this.set({
-			listeners: {
-				start: scrollStartListener,
-				stop: scrollStopListener,
-			}
-		})
-	},
-	ondestroy() {
-		const listeners = this.get('listeners')
-		Object.keys(listeners, key => {
-			scrollEvents.removeListener(key, listeners[key])
-		})
 	},
 	computed: {
 		zooms: timelineData => timelineData.reduce((map, event) => {
@@ -308,8 +286,8 @@ export default {
 			return max < event.indentLevel ? event.indentLevel : max
 		}, 0),
 		eventsToHighlight: (visibleEvents, hoveredEvent) => filterToHighlightedEvents(visibleEvents, hoveredEvent),
-		connectingLines: (eventsToHighlight, slugToVisibleDescriptionPoints, scrolling) => {
-			if (!slugToVisibleDescriptionPoints || scrolling) {
+		connectingLines: (eventsToHighlight, slugToVisibleDescriptionPoints) => {
+			if (!slugToVisibleDescriptionPoints) {
 				// console.log('returning dummy array')
 				return EMPTY_ARRAY
 			}

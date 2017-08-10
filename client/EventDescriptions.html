@@ -1,9 +1,8 @@
 {{#each timeline as timelineEvent, index @slug}}
-	<Visibility
-		bind:verticalCenter="slugToVerticalCenter[timelineEvent.slug]"
-		bind:left="slugToLeft[timelineEvent.slug]"
-		bind:visible="slugToVisible[timelineEvent.slug]"
-		logName="Description: {{timelineEvent.slug}}"
+	<EfficientVisibility
+		parent="{{self}}"
+		parentProperty="slugToVisibility"
+		key="{{timelineEvent.slug}}"
 		updateOnChange="{{displayPositionIdentifier(index)}}"
 	>
 		<div
@@ -15,7 +14,7 @@
 		>
 			{{timelineEvent.title}}
 		</div>
-	</Visibility>
+	</EfficientVisibility>
 {{/each}}
 
 <style>
@@ -29,7 +28,7 @@
 
 <script>
 
-import Visibility from './Visibility.html'
+import EfficientVisibility from './efficient-visibility-wrapper.js'
 
 function getOutlineCssString(hoveredEvent, timelineEvent) {
 	return hoveredEvent.slug === timelineEvent.slug
@@ -38,19 +37,18 @@ function getOutlineCssString(hoveredEvent, timelineEvent) {
 }
 
 const noopString = () => ''
-const allSlugsExistInMap = (events, map) => events.every(event => map[event.slug])
-const missing = (events, map) => events.find(event => !map[event.slug]).slug
 
 const anOrderOfMagnitudeMoreThanTheMostDescriptionsThatCouldConceivableBeDisplayed = 100
 
 export default {
+	oncreate() {
+		this.set({ self: this })
+	},
 	data() {
 		return {
 			descriptionHeight: 40,
 			buffer: 4,
-			slugToVerticalCenter: Object.create(null),
-			slugToLeft: Object.create(null),
-			slugToVisible: Object.create(null),
+			slugToVisibility: null,
 		}
 	},
 	computed: {
@@ -61,45 +59,34 @@ export default {
 			hoveredEvent
 				? timelineEvent => getOutlineCssString(hoveredEvent, timelineEvent)
 				: noopString,
-		slugToPoints: (slugToVerticalCenter, slugToLeft, slugToVisible, timeline) => {
-			// if (!allSlugsExistInMap(timeline, slugToVerticalCenter)) {
-			// 	console.log('allSlugsExistInMap fails with slugToVerticalCenter when finding', missing(timeline, slugToVerticalCenter))
-			// }
-			// if (!allSlugsExistInMap(timeline, slugToLeft)) {
-			// 	console.log('allSlugsExistInMap fails with slugToLeft when finding', missing(timeline, slugToLeft))
-			// }
-
-			if (!allSlugsExistInMap(timeline, slugToVerticalCenter)
-					|| !allSlugsExistInMap(timeline, slugToLeft)) {
+		slugToPoints: slugToVisibility => {
+			if (!slugToVisibility) {
 				return null
 			}
 
 			const map = {}
 
-			Object.entries(slugToVisible)
-				.filter(([ slug, visible]) => visible)// && slugToLeft[slug] && slugToVerticalCenter[slug])
-				.map(([slug, ]) => slug)
-				.forEach(slug => {
+			Object.entries(slugToVisibility)
+				.filter(([ , visibility ]) => visibility.visible)
+				.forEach(([slug, visibility ]) => {
 					map[slug] = {
-						x: slugToLeft[slug],
-						y: slugToVerticalCenter[slug],
+						x: visibility.left,
+						y: visibility.verticalCenter,
 					}
 
-					if (!slugToLeft[slug]) {
+					if (!visibility.left) {
 						console.error('No slugToLeft for', slug)
 					}
-					if (!slugToVerticalCenter[slug]) {
+					if (!visibility.verticalCenter) {
 						console.error('No slugToVerticalCenter for', slug)
 					}
 				})
-
-			// console.log('slugToPoints returning', Object.keys(map).length, map)
 
 			return map
 		}
 	},
 	components: {
-		Visibility
+		EfficientVisibility
 	},
 }
 </script>

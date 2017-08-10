@@ -1,19 +1,7 @@
 import EventEmitter from 'eventemitter3'
+import debounce from './debounce-to-animation-frame.js'
 
 const globalUpdateEmitter = new EventEmitter()
-
-function debounce(fn) {
-	var alreadyCalled = false
-	return (...args) => {
-		if (!alreadyCalled) {
-			alreadyCalled = true
-			window.requestAnimationFrame(() => {
-				fn(...args)
-				alreadyCalled = false
-			})
-		}
-	}
-}
 
 const listener = debounce(() => globalUpdateEmitter.emit('update'))
 
