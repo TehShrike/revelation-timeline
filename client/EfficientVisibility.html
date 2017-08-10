@@ -4,6 +4,7 @@
 
 <script>
 import globalUpdateEmitter from './motion-event.js'
+import nextTick from 'iso-next-tick'
 
 const average = (a, b) => (a + b) / 2
 
@@ -23,7 +24,7 @@ export default {
 		}
 
 
-		this.observe('updateOnChange', () => this.updateVisibility())
+		this.observe('updateOnChange', () => nextTick(() => this.updateVisibility()))
 	},
 	ondestroy() {
 		const componentListener = this.get('listener')
@@ -33,6 +34,7 @@ export default {
 	methods: {
 		setNotVisible() {
 			if (this.get('visible')) {
+				this.set({ visible: false })
 				this.fire('change', {
 					parent: this.get('parent'),
 					parentProperty: this.get('property'),
