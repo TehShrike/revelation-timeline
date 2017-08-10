@@ -69,12 +69,12 @@ export default {
 			// 	console.log('allSlugsExistInMap fails with slugToLeft when finding', missing(timeline, slugToLeft))
 			// }
 
-			// if (!allSlugsExistInMap(timeline, slugToVerticalCenter)
-			// 		|| !allSlugsExistInMap(timeline, slugToLeft)) {
-			// 	return null
-			// }
+			if (!allSlugsExistInMap(timeline, slugToVerticalCenter)
+					|| !allSlugsExistInMap(timeline, slugToLeft)) {
+				return null
+			}
 
-			const map = {}//Object.create(null)
+			const map = {}
 
 			Object.entries(slugToVisible)
 				.filter(([ slug, visible]) => visible)// && slugToLeft[slug] && slugToVerticalCenter[slug])
