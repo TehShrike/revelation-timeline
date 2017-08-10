@@ -233,7 +233,7 @@ function filterToHighlightedEvents(events, hoveredEvent) {
 	const eventsToShow = needToAddHoveredEvent ? [ hoveredEvent, ...bestEventsToShow ] : bestEventsToShow
 
 	return eventsToShow
-		.sort((eventA, eventB) => eventA.amd.start - eventB.amd.start)
+		.sort((eventA, eventB) => eventA.centerPointRatio - eventB.centerPointRatio)
 }
 
 export default {
